@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>ClinicCare — Sơ đồ UML</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+</head>
+<body>
+
+<header id="topnav">
+  <div id="nav-brand"><strong>🏥 ClinicCare</strong></div>
+  <nav id="nav-scroll">
+    <a href="index.html"        class="nav-link"><span class="ic">📌</span>Tổng quan</a>
+    <a href="requirements.html" class="nav-link"><span class="ic">📋</span>Yêu cầu</a>
+    <a href="usecases.html"     class="nav-link"><span class="ic">👥</span>Use Case</a>
+    <a href="diagrams.html"     class="nav-link active"><span class="ic">🗂️</span>Sơ đồ UML</a>
+    <a href="testing.html"      class="nav-link"><span class="ic">🧪</span>Kiểm thử</a>
+  </nav>
+</header>
+
+<main id="main">
+  <!-- Sub-nav for diagram types -->
+  <div id="diag-subnav">
+    <a href="#uc-diag">🗂️ Use Case</a>
+    <a href="#seq-diag">🔄 Sequence</a>
+    <a href="#act-diag">🔵 Activity</a>
+    <a href="#state-diag">🔁 Trạng thái</a>
+    <a href="#class-diag">🧱 Class</a>
+    <a href="#erd">🗄️ ERD</a>
+    <a href="#arch">🏛️ Kiến trúc</a>
+  </div>
+</main>
+
+<div id="lb" onclick="closeLb()"><img id="lb-img" src="" alt=""></div>
+
+<script src="sections/diagrams.js"></script>
+<script>
+  document.getElementById('main').innerHTML =
+    document.getElementById('main').innerHTML + window.SECTION_DIAGRAMS;
+</script>
+<script src="app.js"></script>
+
+</body>
+</html>

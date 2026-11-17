@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>ClinicCare — Kiểm thử</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header id="topnav">
+  <div id="nav-brand"><strong>🏥 ClinicCare</strong></div>
+  <nav id="nav-scroll">
+    <a href="index.html"        class="nav-link"><span class="ic">📌</span>Tổng quan</a>
+    <a href="requirements.html" class="nav-link"><span class="ic">📋</span>Yêu cầu</a>
+    <a href="usecases.html"     class="nav-link"><span class="ic">👥</span>Use Case</a>
+    <a href="diagrams.html"     class="nav-link"><span class="ic">🗂️</span>Sơ đồ UML</a>
+    <a href="testing.html"      class="nav-link active"><span class="ic">🧪</span>Kiểm thử</a>
+  </nav>
+</header>
+
+<main id="main"></main>
+
+<div id="lb" onclick="closeLb()"><img id="lb-img" src="" alt=""></div>
+
+<script src="sections/testing.js"></script>
+<script>document.getElementById('main').innerHTML = window.SECTION_TESTING;</script>
+<script src="app.js"></script>
+
+</body>
+</html>
