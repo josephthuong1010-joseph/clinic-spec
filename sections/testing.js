@@ -2,17 +2,15 @@
 
 window.SECTION_TESTING = `
 <section class="section" id="pcl">
-  <div class="sh"><span class="sh-ic">🧪</span><div class="sh-txt"><h2>Bảng PCL — Kiểm thử theo chuẩn N/B/A</h2><p>29 test case · N=Normal · B=Boundary · A=Abnormal · suite backend 49 test, BUILD SUCCESS 17/11/2026</p></div></div>
+  <div class="sh"><span class="sh-ic">🧪</span><div class="sh-txt"><h2>Bảng PCL — Kiểm thử theo chuẩn N/B/A</h2><p>29 test case · N=Normal · B=Boundary · A=Abnormal · suite backend 65 test, BUILD SUCCESS 19/11/2026</p></div></div>
 
   <div class="sum-bar" style="margin-bottom:16px">
-    <div class="sum-item"><div class="n" style="color:var(--ok)">26</div><div class="l">Đạt ✓</div></div>
-    <div class="sum-item"><div class="n" style="color:var(--err)">3</div><div class="l">Lỗi ✗</div></div>
-    <div class="sum-item"><div class="n">49</div><div class="l">Backend tests</div></div>
+    <div class="sum-item"><div class="n" style="color:var(--ok)">29</div><div class="l">Đạt ✓</div></div>
+    <div class="sum-item"><div class="n" style="color:var(--err)">0</div><div class="l">Lỗi ✗</div></div>
+    <div class="sum-item"><div class="n">65</div><div class="l">Backend tests</div></div>
     <div class="sum-item"><div class="n">41</div><div class="l">Frontend Vitest</div></div>
     <div class="sum-item"><div class="n">2</div><div class="l">Playwright</div></div>
   </div>
-
-  <div class="alert alert-warn">⚠ BE-01, BE-02, BE-03 là lỗi bảo mật/audit tồn đọng — được ghi trung thực, không che giấu. Chi tiết tại §5.4 báo cáo.</div>
 
   <div class="tbl-wrap">
     <table>
@@ -31,7 +29,7 @@ window.SECTION_TESTING = `
         <tr><td>TC-B03</td><td>FR-10 Hủy lịch — trạng thái chuyển tiếp</td><td><span class="pl-b">B</span></td><td>Lịch PENDING (chờ xác nhận)</td><td>Hủy hoặc từ chối theo chính sách trạng thái</td><td>SchedulingIntegrationTest</td><td class="res-ok">✓</td></tr>
         <tr><td>TC-A06</td><td>FR-10 Hủy lịch — đã hủy rồi</td><td><span class="pl-a">A</span></td><td>Lịch đã CANCELLED</td><td>409 INVALID_STATE</td><td>SchedulingIntegrationTest</td><td class="res-ok">✓</td></tr>
         <tr><td>TC-N04</td><td>FR-19 Check-in — trong cửa sổ</td><td><span class="pl-n">N</span></td><td>Lịch CONFIRMED; trong cửa sổ [T−15, T+15) phút</td><td>1 phiếu WAITING · audit CHECKIN</td><td>SchedulingIntegrationTest</td><td class="res-ok">✓</td></tr>
-        <tr><td>TC-B04</td><td>FR-19 Check-in — đúng mốc mở</td><td><span class="pl-b">B</span></td><td>Check-in tại biên mở T−15 phút</td><td>Phiếu tạo ở biên mở; ngoài biên bị từ chối</td><td>Chưa có test biên riêng</td><td>Chưa xác minh</td></tr>
+        <tr><td>TC-B04</td><td>FR-19 Check-in — đúng mốc mở</td><td><span class="pl-b">B</span></td><td>Check-in tại biên mở T−15 phút</td><td>Phiếu tạo ở biên mở; ngoài biên bị từ chối</td><td>checkInHasExactTimeBoundariesAndRoleChecks</td><td class="res-ok">✓</td></tr>
         <tr><td>TC-A07</td><td>FR-19 Check-in — ngoài cửa sổ</td><td><span class="pl-a">A</span></td><td>Check-in trước/sau cửa sổ cho phép</td><td>409 · phiếu không tạo</td><td>SchedulingIntegrationTest</td><td class="res-ok">✓</td></tr>
         <tr><td>TC-N05</td><td>FR-13 Hồ sơ — tạo DRAFT</td><td><span class="pl-n">N</span></td><td>Bác sĩ đang điều trị tạo bệnh án</td><td>DRAFT lưu; có thể sửa</td><td>SchedulingIntegrationTest</td><td class="res-ok">✓</td></tr>
         <tr><td>TC-B05</td><td>FR-13 Hồ sơ — chốt FINAL</td><td><span class="pl-b">B</span></td><td>Chuyển DRAFT → FINAL</td><td>FINAL bất biến; amendment tạo version mới</td><td>SchedulingIntegrationTest</td><td class="res-ok">✓</td></tr>
@@ -43,15 +41,15 @@ window.SECTION_TESTING = `
         <tr><td>TC-N07</td><td>NFR-02 Tranh chấp — đặt đơn</td><td><span class="pl-n">N</span></td><td>1 request; slot trống</td><td>1 CONFIRMED</td><td>SchedulingIntegrationTest</td><td class="res-ok">✓</td></tr>
         <tr><td>TC-B07</td><td>NFR-02 Tranh chấp — 2 đồng thời</td><td><span class="pl-b">B</span></td><td>2 request đồng thời cùng slot</td><td>1 CONFIRMED · 1 SLOT_CONFLICT</td><td>SchedulingIntegrationTest</td><td class="res-ok">✓</td></tr>
         <tr><td>TC-A11</td><td>NFR-02 Tranh chấp — 100 đồng thời</td><td><span class="pl-a">A</span></td><td>100 request cùng slot, cùng thời điểm</td><td>1 CONFIRMED · 99 SLOT_CONFLICT</td><td>SchedulingIntegrationTest</td><td class="res-ok">✓</td></tr>
-        <tr><td>TC-N08</td><td>NFR-03 Phân quyền — đúng vai trò</td><td><span class="pl-n">N</span></td><td>Bác sĩ đọc bệnh án bệnh nhân đang điều trị</td><td>200 · dữ liệu hợp lệ</td><td>Probe 16/11</td><td class="res-ok">✓</td></tr>
-        <tr style="background:rgba(239,68,68,.06)"><td>TC-B08</td><td>NFR-03 Phân quyền — lễ tân đọc availability</td><td><span class="pl-b">B</span></td><td>Lễ tân gọi GET availability (cần cho nghiệp vụ)</td><td>200 theo ma trận; <strong>thực tế 403</strong></td><td>Probe 16/11</td><td class="res-err">✗ BE-02</td></tr>
-        <tr><td>TC-A12</td><td>NFR-03 Phân quyền — bệnh nhân đọc chéo</td><td><span class="pl-a">A</span></td><td>Bệnh nhân A đọc hồ sơ bệnh nhân B</td><td>403 FORBIDDEN · không lộ dữ liệu</td><td>Probe 16/11</td><td class="res-ok">✓</td></tr>
-        <tr style="background:rgba(239,68,68,.06)"><td>TC-A13</td><td>NFR-03 AUDITOR scope vượt quyền</td><td><span class="pl-a">A</span></td><td>AUDITOR gọi GET doctors/specialties/slots</td><td>403; <strong>thực tế 200</strong></td><td>Probe 16/11</td><td class="res-err">✗ BE-03</td></tr>
-        <tr style="background:rgba(239,68,68,.06)"><td>TC-A14</td><td>NFR-05 Audit fail-closed — DENIED</td><td><span class="pl-a">A</span></td><td>Yêu cầu bị từ chối → phải sinh audit DENIED</td><td>Audit ghi nguyên tử; không lộ dữ liệu</td><td>Probe 16/11</td><td class="res-err">✗ BE-01</td></tr>
+        <tr><td>TC-N08</td><td>NFR-03 Phân quyền — đúng vai trò</td><td><span class="pl-n">N</span></td><td>Bác sĩ đọc bệnh án bệnh nhân đang điều trị</td><td>200 · dữ liệu hợp lệ</td><td>SchedulingIntegrationTest</td><td class="res-ok">✓</td></tr>
+        <tr><td>TC-B08</td><td>NFR-03 Phân quyền — lễ tân đọc availability</td><td><span class="pl-b">B</span></td><td>Lễ tân gọi GET availability (cần cho nghiệp vụ)</td><td>200 · không được phép thêm/xóa</td><td>receptionCanReadDoctorSchedulesButCannotChangeThem</td><td class="res-ok">✓</td></tr>
+        <tr><td>TC-A12</td><td>NFR-03 Phân quyền — bệnh nhân đọc chéo</td><td><span class="pl-a">A</span></td><td>Bệnh nhân A đọc hồ sơ bệnh nhân B</td><td>403 FORBIDDEN · không lộ dữ liệu</td><td>SchedulingIntegrationTest</td><td class="res-ok">✓</td></tr>
+        <tr><td>TC-A13</td><td>NFR-03 AUDITOR scope vượt quyền</td><td><span class="pl-a">A</span></td><td>AUDITOR gọi GET doctors/specialties/slots</td><td>403 FORBIDDEN</td><td>catalogReadsRequireAnOperationalRole</td><td class="res-ok">✓</td></tr>
+        <tr><td>TC-A14</td><td>NFR-05 Audit fail-closed — DENIED</td><td><span class="pl-a">A</span></td><td>Yêu cầu bị từ chối → phải sinh audit DENIED</td><td>Audit ghi nguyên tử trước phản hồi; không lộ dữ liệu</td><td>deniedTelehealthJoinPersistsOnlyAudit</td><td class="res-ok">✓</td></tr>
       </tbody>
     </table>
   </div>
-  <p style="font-size:12px;color:var(--txt3);margin-top:12px"><strong style="color:var(--txt2)">Tóm tắt:</strong> 29 test case — <strong style="color:var(--ok)">26 đạt</strong>, <strong style="color:var(--err)">3 lỗi</strong>. BE-04 (queue rỗng 404 thay 204) là backlog hợp đồng, chưa có TC riêng.</p>
+  <p style="font-size:12px;color:var(--txt3);margin-top:12px"><strong style="color:var(--txt2)">Tóm tắt:</strong> 29 test case — <strong style="color:var(--ok)">29 đạt</strong>, 0 lỗi. Toàn bộ backend 65 test đạt trên MySQL 8.4 thật qua Testcontainers.</p>
 </section>
 
 <section class="section" id="trace">
@@ -61,15 +59,15 @@ window.SECTION_TESTING = `
       <thead><tr><th>FR</th><th>UC</th><th>Test Case PCL</th><th>NFR liên quan</th><th>Tình trạng</th></tr></thead>
       <tbody>
         <tr><td><strong>FR-01</strong> Xác thực OIDC</td><td>UC-01</td><td>TC-N06, TC-B06, TC-A09, TC-A10</td><td>NFR-04 Bảo mật</td><td><span class="badge bstat-ok">✓ Có bằng chứng</span></td></tr>
-        <tr><td><strong>FR-02</strong> Phân quyền</td><td>UC-02</td><td>TC-N08, TC-A12, TC-A13</td><td>NFR-03</td><td><span class="badge bstat-err">BE-03 còn lỗi</span></td></tr>
-        <tr><td><strong>FR-07</strong> Tra cứu slot</td><td>UC-07</td><td>TC-B08</td><td>NFR-03</td><td><span class="badge bstat-err">BE-02 còn lỗi</span></td></tr>
+        <tr><td><strong>FR-02</strong> Phân quyền</td><td>UC-02</td><td>TC-N08, TC-A12, TC-A13</td><td>NFR-03</td><td><span class="badge bstat-ok">✓ Đầy đủ</span></td></tr>
+        <tr><td><strong>FR-07</strong> Tra cứu slot</td><td>UC-07</td><td>TC-B08</td><td>NFR-03</td><td><span class="badge bstat-ok">✓ Đầy đủ</span></td></tr>
         <tr><td><strong>FR-08</strong> Đặt lịch</td><td>UC-08</td><td>TC-N01, TC-B01, TC-A01, TC-A02</td><td>NFR-02</td><td><span class="badge bstat-ok">✓ Đầy đủ</span></td></tr>
         <tr><td><strong>FR-09</strong> Đổi lịch</td><td>UC-09</td><td>TC-N02, TC-B02, TC-A03..A05</td><td>NFR-02</td><td><span class="badge bstat-ok">✓ Đầy đủ</span></td></tr>
         <tr><td><strong>FR-10</strong> Hủy lịch</td><td>UC-10</td><td>TC-N03, TC-B03, TC-A06</td><td>—</td><td><span class="badge bstat-ok">✓ Đầy đủ</span></td></tr>
         <tr><td><strong>FR-13</strong> Hồ sơ khám</td><td>UC-13</td><td>TC-N05, TC-B05, TC-A08</td><td>NFR-05</td><td><span class="badge bstat-ok">✓ Đầy đủ</span></td></tr>
-        <tr><td><strong>FR-17</strong> Ghi audit</td><td>UC-17</td><td>TC-A14</td><td>NFR-05</td><td><span class="badge bstat-err">BE-01 còn lỗi</span></td></tr>
+        <tr><td><strong>FR-17</strong> Ghi audit</td><td>UC-17</td><td>TC-A14</td><td>NFR-05</td><td><span class="badge bstat-ok">✓ Đầy đủ</span></td></tr>
         <tr><td><strong>FR-19</strong> Check-in</td><td>UC-19</td><td>TC-N04, TC-B04, TC-A07</td><td>—</td><td><span class="badge bstat-ok">✓ Đầy đủ</span></td></tr>
-        <tr><td><strong>FR-20</strong> Hàng đợi</td><td>UC-20</td><td>TC-A11 (100 concurrent)</td><td>NFR-02</td><td><span class="badge bstat-warn">BE-04 backlog (204 vs 404)</span></td></tr>
+        <tr><td><strong>FR-20</strong> Hàng đợi</td><td>UC-20</td><td>TC-A11, TC-N07, TC-B07</td><td>NFR-02</td><td><span class="badge bstat-ok">✓ Đầy đủ</span></td></tr>
         <tr><td><strong>FR-23</strong> Token từ xa</td><td>UC-23</td><td>—</td><td>NFR-04</td><td><span class="badge bstat-warn">Giới hạn media xuyên NAT</span></td></tr>
       </tbody>
     </table>

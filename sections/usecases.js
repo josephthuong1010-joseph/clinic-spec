@@ -436,11 +436,11 @@ window.SECTION_USECASES = `
           <div class="uc-field"><label>Tác nhân</label><p><span class="actor">Bệnh nhân</span> (nhận), <span class="actor">Lễ tân</span> (nhận), Hệ thống OutboxWorker (gửi)</p></div>
           <div class="uc-field"><label>Tiền điều kiện</label><p>Lịch hẹn CONFIRMED; outbox_job PENDING trong DB</p></div>
           <div class="uc-field"><label>Kích hoạt</label><p>Scheduler job kích hoạt OutboxWorker tại thời điểm định trước</p></div>
-          <div class="uc-field"><label>Hậu điều kiện</label><p>Email / push notification đã gửi; outbox_job SENT; lỗi gửi không ảnh hưởng lịch gốc</p></div>
+          <div class="uc-field"><label>Hậu điều kiện</label><p>Email đã gửi; outbox_job SENT; lỗi gửi không ảnh hưởng lịch gốc</p></div>
           <div class="uc-field full"><label>Luồng chính</label><ul>
             <li>1. SELECT outbox_job WHERE type=REMINDER AND status=PENDING FOR UPDATE SKIP LOCKED</li>
             <li>2. Kiểm tra lịch hẹn còn CONFIRMED (chưa hủy)</li>
-            <li>3. Gọi NotificationService gửi email / push</li>
+            <li>3. Gọi NotificationService gửi email</li>
             <li>4. UPDATE outbox_job = SENT</li>
           </ul></div>
           <div class="uc-field full"><label>Luồng ngoại lệ</label><ul>
