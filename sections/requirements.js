@@ -315,16 +315,16 @@ sequenceDiagram
           <td colspan="5"><div class="fr-dcard">
             <p class="fr-desc-full"><span class="kw-ears">KHI</span> bệnh nhân gửi yêu cầu đặt lịch với slot hợp lệ, thông tin hợp lệ và idempotency key lần đầu, hệ thống <span class="kw-shall">PHẢI</span> (1) kiểm tra slot còn trống trong giao dịch, (2) tạo lịch hẹn CONFIRMED, (3) ghi sự kiện audit CREATED và đưa thông báo xác nhận vào hàng đợi — tất cả trong một giao dịch nguyên tử. Yêu cầu phát lại với cùng key và payload <span class="kw-shall">PHẢI</span> trả về 200 từ cache.</p>
             <div class="fr-diag-row">
-              <div class="fr-diag-thumb" onclick="lb('../../docs/design/sequence-diagrams/book-appointment.png')">
-                <img src="../../docs/design/sequence-diagrams/book-appointment.png" onerror="this.style.height='50px'">
+              <div class="fr-diag-thumb" onclick="lb('assets/design/sequence-diagrams/book-appointment.png')">
+                <img src="assets/design/sequence-diagrams/book-appointment.png" onerror="this.style.height='50px'">
                 <span>Sequence: Đặt lịch hẹn</span>
               </div>
-              <div class="fr-diag-thumb" onclick="lb('../../docs/design/activity-diagrams/booking.png')">
-                <img src="../../docs/design/activity-diagrams/booking.png" onerror="this.style.height='50px'">
+              <div class="fr-diag-thumb" onclick="lb('assets/design/activity-diagrams/booking.png')">
+                <img src="assets/design/activity-diagrams/booking.png" onerror="this.style.height='50px'">
                 <span>Activity: Quy trình đặt lịch</span>
               </div>
-              <div class="fr-diag-thumb" onclick="lb('../../docs/design/state-diagrams/appointment.png')">
-                <img src="../../docs/design/state-diagrams/appointment.png" onerror="this.style.height='50px'">
+              <div class="fr-diag-thumb" onclick="lb('assets/design/state-diagrams/appointment.png')">
+                <img src="assets/design/state-diagrams/appointment.png" onerror="this.style.height='50px'">
                 <span>Trạng thái: Lịch hẹn</span>
               </div>
             </div>
@@ -383,12 +383,12 @@ sequenceDiagram
           <td colspan="5"><div class="fr-dcard">
             <p class="fr-desc-full"><span class="kw-ears">NẾU</span> lịch hẹn ở trạng thái CONFIRMED <strong>VÀ</strong> còn ít nhất 2 giờ trước giờ bắt đầu, hệ thống <span class="kw-shall">PHẢI</span> cho phép đổi sang slot mới: kiểm tra slot mới trong giao dịch, cập nhật version+1, ghi audit RESCHEDULE. <span class="kw-ears">NẾU</span> thất bại bất kỳ điều kiện nào, hệ thống <span class="kw-shall">PHẢI</span> rollback và giữ nguyên lịch cũ.</p>
             <div class="fr-diag-row">
-              <div class="fr-diag-thumb" onclick="lb('../../docs/design/state-diagrams/appointment.png')">
-                <img src="../../docs/design/state-diagrams/appointment.png" onerror="this.style.height='50px'">
+              <div class="fr-diag-thumb" onclick="lb('assets/design/state-diagrams/appointment.png')">
+                <img src="assets/design/state-diagrams/appointment.png" onerror="this.style.height='50px'">
                 <span>Trạng thái: Lịch hẹn</span>
               </div>
-              <div class="fr-diag-thumb" onclick="lb('../../docs/design/activity-diagrams/booking.png')">
-                <img src="../../docs/design/activity-diagrams/booking.png" onerror="this.style.height='50px'">
+              <div class="fr-diag-thumb" onclick="lb('assets/design/activity-diagrams/booking.png')">
+                <img src="assets/design/activity-diagrams/booking.png" onerror="this.style.height='50px'">
                 <span>Activity: Quy trình đặt lịch</span>
               </div>
             </div>
@@ -446,12 +446,12 @@ sequenceDiagram
           <td colspan="5"><div class="fr-dcard">
             <p class="fr-desc-full"><span class="kw-ears">NẾU</span> lịch hẹn ở trạng thái CONFIRMED, hệ thống <span class="kw-shall">PHẢI</span> hủy lịch (chuyển sang CANCELLED) và đưa thông báo xác nhận hủy vào hàng đợi outbox trong cùng giao dịch. Job thông báo <span class="kw-shall">PHẢI</span> kiểm tra lại trạng thái và version trước khi gửi để loại bỏ job cũ.</p>
             <div class="fr-diag-row">
-              <div class="fr-diag-thumb" onclick="lb('../../docs/design/sequence-diagrams/cancel-appointment.png')">
-                <img src="../../docs/design/sequence-diagrams/cancel-appointment.png" onerror="this.style.height='50px'">
+              <div class="fr-diag-thumb" onclick="lb('assets/design/sequence-diagrams/cancel-appointment.png')">
+                <img src="assets/design/sequence-diagrams/cancel-appointment.png" onerror="this.style.height='50px'">
                 <span>Sequence: Hủy lịch hẹn</span>
               </div>
-              <div class="fr-diag-thumb" onclick="lb('../../docs/design/state-diagrams/appointment.png')">
-                <img src="../../docs/design/state-diagrams/appointment.png" onerror="this.style.height='50px'">
+              <div class="fr-diag-thumb" onclick="lb('assets/design/state-diagrams/appointment.png')">
+                <img src="assets/design/state-diagrams/appointment.png" onerror="this.style.height='50px'">
                 <span>Trạng thái: Lịch hẹn</span>
               </div>
             </div>
@@ -553,12 +553,12 @@ sequenceDiagram
           <td colspan="5"><div class="fr-dcard">
             <p class="fr-desc-full"><span class="kw-ears">KHI</span> bác sĩ có quan hệ điều trị hoặc bệnh nhân là chủ sở hữu hồ sơ truy cập lịch sử lâm sàng, hệ thống <span class="kw-shall">PHẢI</span> kiểm tra quyền theo vai trò và quan hệ tài nguyên, ghi nhật ký kiểm toán trong cùng giao dịch, rồi mới trả danh sách bản được phép xem (bác sĩ: FINAL + DRAFT của mình; bệnh nhân: chỉ FINAL + ISSUED). <span class="kw-ears">NẾU</span> ghi nhật ký kiểm toán thất bại, hệ thống <span class="kw-shall">PHẢI</span> rollback và không trả dữ liệu (fail-closed).</p>
             <div class="fr-diag-row">
-              <div class="fr-diag-thumb" onclick="lb('../../docs/design/sequence-diagrams/medical-record.png')">
-                <img src="../../docs/design/sequence-diagrams/medical-record.png" onerror="this.style.height='50px'">
+              <div class="fr-diag-thumb" onclick="lb('assets/design/sequence-diagrams/medical-record.png')">
+                <img src="assets/design/sequence-diagrams/medical-record.png" onerror="this.style.height='50px'">
                 <span>Sequence: Lịch sử hồ sơ lâm sàng</span>
               </div>
-              <div class="fr-diag-thumb" onclick="lb('../../docs/design/state-diagrams/medical-record.png')">
-                <img src="../../docs/design/state-diagrams/medical-record.png" onerror="this.style.height='50px'">
+              <div class="fr-diag-thumb" onclick="lb('assets/design/state-diagrams/medical-record.png')">
+                <img src="assets/design/state-diagrams/medical-record.png" onerror="this.style.height='50px'">
                 <span>Trạng thái: Hồ sơ khám</span>
               </div>
             </div>
@@ -607,12 +607,12 @@ sequenceDiagram
           <td colspan="5"><div class="fr-dcard">
             <p class="fr-desc-full"><span class="kw-ears">KHI</span> bác sĩ hoàn tất hồ sơ khám, hệ thống <span class="kw-shall">PHẢI</span> đánh dấu hồ sơ là FINAL và bất biến (không cho phép sửa trực tiếp). <span class="kw-ears">NẾU</span> cần bổ sung, hệ thống <span class="kw-shall">PHẢI</span> tạo bản ghi mới với số phiên bản mới, lý do bổ sung và tham chiếu đến bản FINAL trước.</p>
             <div class="fr-diag-row">
-              <div class="fr-diag-thumb" onclick="lb('../../docs/design/sequence-diagrams/medical-record.png')">
-                <img src="../../docs/design/sequence-diagrams/medical-record.png" onerror="this.style.height='50px'">
+              <div class="fr-diag-thumb" onclick="lb('assets/design/sequence-diagrams/medical-record.png')">
+                <img src="assets/design/sequence-diagrams/medical-record.png" onerror="this.style.height='50px'">
                 <span>Sequence: Hồ sơ khám chi tiết</span>
               </div>
-              <div class="fr-diag-thumb" onclick="lb('../../docs/design/state-diagrams/medical-record.png')">
-                <img src="../../docs/design/state-diagrams/medical-record.png" onerror="this.style.height='50px'">
+              <div class="fr-diag-thumb" onclick="lb('assets/design/state-diagrams/medical-record.png')">
+                <img src="assets/design/state-diagrams/medical-record.png" onerror="this.style.height='50px'">
                 <span>Trạng thái: Hồ sơ khám</span>
               </div>
             </div>
@@ -664,8 +664,8 @@ sequenceDiagram
           <td colspan="5"><div class="fr-dcard">
             <p class="fr-desc-full"><span class="kw-ears">KHI</span> bác sĩ kê đơn thuốc và xác nhận, hệ thống <span class="kw-shall">PHẢI</span> khóa đơn thuốc ở trạng thái ISSUED là bất biến. Mọi thay đổi sau đó <span class="kw-shall">PHẢI</span> được thực hiện bằng cách tạo đơn thuốc mới, không ghi đè trực tiếp lên đơn ISSUED.</p>
             <div class="fr-diag-row">
-              <div class="fr-diag-thumb" onclick="lb('../../docs/design/sequence-diagrams/prescription.png')">
-                <img src="../../docs/design/sequence-diagrams/prescription.png" onerror="this.style.height='50px'">
+              <div class="fr-diag-thumb" onclick="lb('assets/design/sequence-diagrams/prescription.png')">
+                <img src="assets/design/sequence-diagrams/prescription.png" onerror="this.style.height='50px'">
                 <span>Sequence: Kê đơn thuốc</span>
               </div>
             </div>
@@ -758,8 +758,8 @@ sequenceDiagram
           <td colspan="5"><div class="fr-dcard">
             <p class="fr-desc-full"><span class="kw-ears">KHI</span> trạng thái lịch hẹn thay đổi (tạo mới, đổi lịch hoặc hủy), hệ thống <span class="kw-shall">PHẢI</span> đưa một job thông báo vào hàng đợi outbox trong cùng giao dịch. Job thông báo <span class="kw-shall">PHẢI</span> độc lập với giao dịch chính — lỗi gửi thông báo không được rollback lịch (theo BR-07).</p>
             <div class="fr-diag-row">
-              <div class="fr-diag-thumb" onclick="lb('../../docs/design/sequence-diagrams/notifications.png')">
-                <img src="../../docs/design/sequence-diagrams/notifications.png" onerror="this.style.height='50px'">
+              <div class="fr-diag-thumb" onclick="lb('assets/design/sequence-diagrams/notifications.png')">
+                <img src="assets/design/sequence-diagrams/notifications.png" onerror="this.style.height='50px'">
                 <span>Sequence: Thông báo &amp; Outbox</span>
               </div>
             </div>
@@ -889,12 +889,12 @@ sequenceDiagram
           <td colspan="5"><div class="fr-dcard">
             <p class="fr-desc-full"><span class="kw-ears">KHI</span> lễ tân thực hiện check-in cho bệnh nhân có lịch CONFIRMED, hệ thống <span class="kw-shall">PHẢI</span> (1) kiểm tra thời điểm nằm trong cửa sổ cho phép ([T−15 phút, T+15 phút) quanh giờ hẹn), (2) tạo đúng MỘT phiếu hàng đợi WAITING — tất cả trong giao dịch nguyên tử. Yêu cầu check-in thứ hai cho cùng lịch <span class="kw-shall">PHẢI</span> bị từ chối.</p>
             <div class="fr-diag-row">
-              <div class="fr-diag-thumb" onclick="lb('../../docs/design/sequence-diagrams/checkin-and-queue.png')">
-                <img src="../../docs/design/sequence-diagrams/checkin-and-queue.png" onerror="this.style.height='50px'">
+              <div class="fr-diag-thumb" onclick="lb('assets/design/sequence-diagrams/checkin-and-queue.png')">
+                <img src="assets/design/sequence-diagrams/checkin-and-queue.png" onerror="this.style.height='50px'">
                 <span>Sequence: Check-in &amp; Hàng đợi</span>
               </div>
-              <div class="fr-diag-thumb" onclick="lb('../../docs/design/state-diagrams/queue-ticket.png')">
-                <img src="../../docs/design/state-diagrams/queue-ticket.png" onerror="this.style.height='50px'">
+              <div class="fr-diag-thumb" onclick="lb('assets/design/state-diagrams/queue-ticket.png')">
+                <img src="assets/design/state-diagrams/queue-ticket.png" onerror="this.style.height='50px'">
                 <span>Trạng thái: Phiếu chờ</span>
               </div>
             </div>
@@ -945,12 +945,12 @@ sequenceDiagram
           <td colspan="5"><div class="fr-dcard">
             <p class="fr-desc-full"><span class="kw-ears">KHI</span> bác sĩ gọi bệnh nhân tiếp theo, hệ thống <span class="kw-shall">PHẢI</span> lấy phiếu WAITING đầu tiên theo thứ tự FIFO trong hàng đợi của bác sĩ trong ngày và chuyển sang IN_SERVICE. <span class="kw-ears">NẾU</span> hàng đợi rỗng, hệ thống <span class="kw-shall">PHẢI</span> trả về 204 No Content.</p>
             <div class="fr-diag-row">
-              <div class="fr-diag-thumb" onclick="lb('../../docs/design/sequence-diagrams/checkin-and-queue.png')">
-                <img src="../../docs/design/sequence-diagrams/checkin-and-queue.png" onerror="this.style.height='50px'">
+              <div class="fr-diag-thumb" onclick="lb('assets/design/sequence-diagrams/checkin-and-queue.png')">
+                <img src="assets/design/sequence-diagrams/checkin-and-queue.png" onerror="this.style.height='50px'">
                 <span>Sequence: Check-in &amp; Hàng đợi</span>
               </div>
-              <div class="fr-diag-thumb" onclick="lb('../../docs/design/state-diagrams/queue-ticket.png')">
-                <img src="../../docs/design/state-diagrams/queue-ticket.png" onerror="this.style.height='50px'">
+              <div class="fr-diag-thumb" onclick="lb('assets/design/state-diagrams/queue-ticket.png')">
+                <img src="assets/design/state-diagrams/queue-ticket.png" onerror="this.style.height='50px'">
                 <span>Trạng thái: Phiếu chờ</span>
               </div>
             </div>
@@ -998,12 +998,12 @@ sequenceDiagram
           <td colspan="5"><div class="fr-dcard">
             <p class="fr-desc-full"><span class="kw-ears">KHI</span> bác sĩ hoặc lễ tân đánh dấu bỏ lượt cho phiếu đang đầu hàng, hệ thống <span class="kw-shall">PHẢI</span> di chuyển phiếu đó xuống cuối hàng đợi với trạng thái SKIPPED. Hệ thống <span class="kw-shall">KHÔNG ĐƯỢC</span> tạo thêm phiếu mới.</p>
             <div class="fr-diag-row">
-              <div class="fr-diag-thumb" onclick="lb('../../docs/design/sequence-diagrams/skip-ticket.png')">
-                <img src="../../docs/design/sequence-diagrams/skip-ticket.png" onerror="this.style.height='50px'">
+              <div class="fr-diag-thumb" onclick="lb('assets/design/sequence-diagrams/skip-ticket.png')">
+                <img src="assets/design/sequence-diagrams/skip-ticket.png" onerror="this.style.height='50px'">
                 <span>Sequence: Bỏ lượt</span>
               </div>
-              <div class="fr-diag-thumb" onclick="lb('../../docs/design/state-diagrams/queue-ticket.png')">
-                <img src="../../docs/design/state-diagrams/queue-ticket.png" onerror="this.style.height='50px'">
+              <div class="fr-diag-thumb" onclick="lb('assets/design/state-diagrams/queue-ticket.png')">
+                <img src="assets/design/state-diagrams/queue-ticket.png" onerror="this.style.height='50px'">
                 <span>Trạng thái: Phiếu chờ</span>
               </div>
             </div>
@@ -1050,12 +1050,12 @@ sequenceDiagram
           <td colspan="5"><div class="fr-dcard">
             <p class="fr-desc-full"><span class="kw-ears">KHI</span> encounter kết thúc (bác sĩ hoàn tất buổi khám), hệ thống <span class="kw-shall">PHẢI</span> đồng thời hoàn tất phiếu hàng đợi (COMPLETED) và đồng bộ trạng thái lịch hẹn tương ứng sang COMPLETED trong một giao dịch.</p>
             <div class="fr-diag-row">
-              <div class="fr-diag-thumb" onclick="lb('../../docs/design/sequence-diagrams/consultation-progress.png')">
-                <img src="../../docs/design/sequence-diagrams/consultation-progress.png" onerror="this.style.height='50px'">
+              <div class="fr-diag-thumb" onclick="lb('assets/design/sequence-diagrams/consultation-progress.png')">
+                <img src="assets/design/sequence-diagrams/consultation-progress.png" onerror="this.style.height='50px'">
                 <span>Sequence: Tiến trình buổi khám</span>
               </div>
-              <div class="fr-diag-thumb" onclick="lb('../../docs/design/state-diagrams/appointment.png')">
-                <img src="../../docs/design/state-diagrams/appointment.png" onerror="this.style.height='50px'">
+              <div class="fr-diag-thumb" onclick="lb('assets/design/state-diagrams/appointment.png')">
+                <img src="assets/design/state-diagrams/appointment.png" onerror="this.style.height='50px'">
                 <span>Trạng thái: Lịch hẹn</span>
               </div>
             </div>
@@ -1104,16 +1104,16 @@ sequenceDiagram
           <td colspan="5"><div class="fr-dcard">
             <p class="fr-desc-full"><span class="kw-ears">KHI</span> bệnh nhân yêu cầu vào phòng chờ ảo cho lịch khám từ xa, hệ thống <span class="kw-shall">PHẢI</span> (1) xác thực sự đồng ý của bệnh nhân, (2) xác minh phiên khám hợp lệ, (3) phát hành room token có thời hạn ngắn gắn với người tham gia và phòng cụ thể.</p>
             <div class="fr-diag-row">
-              <div class="fr-diag-thumb" onclick="lb('../../docs/design/sequence-diagrams/telehealth.png')">
-                <img src="../../docs/design/sequence-diagrams/telehealth.png" onerror="this.style.height='50px'">
+              <div class="fr-diag-thumb" onclick="lb('assets/design/sequence-diagrams/telehealth.png')">
+                <img src="assets/design/sequence-diagrams/telehealth.png" onerror="this.style.height='50px'">
                 <span>Sequence: Phiên khám từ xa</span>
               </div>
-              <div class="fr-diag-thumb" onclick="lb('../../docs/design/activity-diagrams/telehealth-consultation.png')">
-                <img src="../../docs/design/activity-diagrams/telehealth-consultation.png" onerror="this.style.height='50px'">
+              <div class="fr-diag-thumb" onclick="lb('assets/design/activity-diagrams/telehealth-consultation.png')">
+                <img src="assets/design/activity-diagrams/telehealth-consultation.png" onerror="this.style.height='50px'">
                 <span>Activity: Quy trình khám từ xa</span>
               </div>
-              <div class="fr-diag-thumb" onclick="lb('../../docs/design/state-diagrams/telehealth.png')">
-                <img src="../../docs/design/state-diagrams/telehealth.png" onerror="this.style.height='50px'">
+              <div class="fr-diag-thumb" onclick="lb('assets/design/state-diagrams/telehealth.png')">
+                <img src="assets/design/state-diagrams/telehealth.png" onerror="this.style.height='50px'">
                 <span>Trạng thái: Phiên từ xa</span>
               </div>
             </div>
@@ -1162,12 +1162,12 @@ sequenceDiagram
           <td colspan="5"><div class="fr-dcard">
             <p class="fr-desc-full"><span class="kw-ears">KHI</span> phiên khám từ xa đang hoạt động và bác sĩ bắt đầu cuộc gọi, hệ thống <span class="kw-shall">PHẢI</span> kích hoạt signaling WebRTC qua kênh được bảo mật. <span class="kw-ears">KHI</span> phiên kết thúc, hệ thống <span class="kw-shall">PHẢI</span> chặn cấp room token mới cho phiên đó; việc ngắt kết nối P2P đã thiết lập không được cưỡng chế.</p>
             <div class="fr-diag-row">
-              <div class="fr-diag-thumb" onclick="lb('../../docs/design/sequence-diagrams/telehealth.png')">
-                <img src="../../docs/design/sequence-diagrams/telehealth.png" onerror="this.style.height='50px'">
+              <div class="fr-diag-thumb" onclick="lb('assets/design/sequence-diagrams/telehealth.png')">
+                <img src="assets/design/sequence-diagrams/telehealth.png" onerror="this.style.height='50px'">
                 <span>Sequence: Phiên khám từ xa</span>
               </div>
-              <div class="fr-diag-thumb" onclick="lb('../../docs/design/state-diagrams/telehealth.png')">
-                <img src="../../docs/design/state-diagrams/telehealth.png" onerror="this.style.height='50px'">
+              <div class="fr-diag-thumb" onclick="lb('assets/design/state-diagrams/telehealth.png')">
+                <img src="assets/design/state-diagrams/telehealth.png" onerror="this.style.height='50px'">
                 <span>Trạng thái: Phiên từ xa</span>
               </div>
             </div>
