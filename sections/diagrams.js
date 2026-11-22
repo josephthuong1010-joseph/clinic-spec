@@ -1,11 +1,11 @@
-/* sections/diagrams.js — 34 sơ đồ OMG UML 2.5, Kruchten 4+1 & ERD (đồng bộ 100% SE-project-main@9546bc6, 22/11/2026) */
+/* sections/diagrams.js — 38 sơ đồ OMG UML 2.5, Kruchten 4+1 & ERD (đồng bộ 100% SE-project-main@d0f7189, 22/11/2026) */
 /* Toàn bộ ảnh PNG phản chiếu trực tiếp từ SE-project-main/docs/design/ ở 150 DPI */
 
 window.SECTION_DIAGRAMS = `
 <section class="section" id="uc-diag">
   <div class="alert alert-info" style="margin-bottom:18px">
     <span>📐</span>
-    <div><strong>Đồng bộ thiết kế 100% (<code>main@9546bc6</code>):</strong> Đầy đủ <strong>34 sơ đồ</strong> theo chuẩn <strong>OMG UML 2.5</strong>, mô hình kiến trúc <strong>Kruchten 4+1 Views</strong> và <strong>IE / Crow's Foot ERD</strong>, đối chiếu khớp hoàn toàn với <strong>27 Use Case</strong>, <strong>24 bảng MySQL 8.4 (<code>V1..V11</code>)</strong>, hệ thống signaling P2P WebRTC + <code>coturn</code> và hạ tầng triển khai Azure VM.</div>
+    <div><strong>Đồng bộ thiết kế 100% (<code>main@d0f7189</code>):</strong> Đầy đủ <strong>38 sơ đồ</strong> theo chuẩn <strong>OMG UML 2.5</strong>, mô hình kiến trúc <strong>Kruchten 4+1 Views</strong> và <strong>IE / Crow's Foot ERD</strong>, bao phủ toàn bộ <strong>9 phân hệ M01–M09</strong> (gồm các sơ đồ chuyên sâu <code>M02</code>, <code>M03</code>, <code>M07</code> và <code>CI/CD Auto-Rollback</code>), <strong>27 Use Case</strong>, <strong>24 bảng MySQL 8.4 (<code>V1..V11</code>)</strong> và hạ tầng triển khai Azure VM.</div>
   </div>
 
   <div class="sh"><span class="sh-ic">🗂️</span><div class="sh-txt"><h2>Sơ đồ Use Case (5 sơ đồ)</h2><p>OMG UML 2.5 · Tổng quan 27 UC và 4 bản tách nhóm theo phân hệ <code>M01–M09</code> · Nhấn vào ảnh để phóng to</p></div></div>
@@ -40,7 +40,7 @@ window.SECTION_DIAGRAMS = `
 </section>
 
 <section class="section" id="seq-diag">
-  <div class="sh"><span class="sh-ic">🔄</span><div class="sh-txt"><h2>Sơ đồ Sequence (13 sơ đồ)</h2><p>Luồng thông điệp theo thời gian thực · bao phủ đầy đủ nghiệp vụ lõi, OTP liên hệ, blind index <code>K_hmac</code>, báo chậm &amp; <code>NO_SHOW</code></p></div></div>
+  <div class="sh"><span class="sh-ic">🔄</span><div class="sh-txt"><h2>Sơ đồ Sequence (16 sơ đồ)</h2><p>Luồng thông điệp theo thời gian thực · bao phủ đầy đủ M01–M09, gồm cơ chế khóa M02, tối ưu slot M03 NFR-01, Audit Fail-Closed M07, OTP &amp; <code>NO_SHOW</code></p></div></div>
   <div class="img-grid">
     <div class="img-card" onclick="lb('assets/design/sequence-diagrams/auth-otp-contact.png')">
       <img src="assets/design/sequence-diagrams/auth-otp-contact.png" alt="UC-01 OIDC PKCE, Google &amp; OTP đổi email" onerror="this.style.height='100px';this.alt='Không tìm thấy ảnh'">
@@ -49,6 +49,14 @@ window.SECTION_DIAGRAMS = `
     <div class="img-card" onclick="lb('assets/design/sequence-diagrams/patient-account-admin.png')">
       <img src="assets/design/sequence-diagrams/patient-account-admin.png" alt="UC-27 Tra cứu blind index HMAC và Khóa/Mở tài khoản" onerror="this.style.height='100px';this.alt='Không tìm thấy ảnh'">
       <div class="ic-label">UC-27 Tra cứu HMAC &amp; Khóa/Mở tài khoản BN</div>
+    </div>
+    <div class="img-card" onclick="lb('assets/design/sequence-diagrams/staff-and-catalog.png')">
+      <img src="assets/design/sequence-diagrams/staff-and-catalog.png" alt="M02 Cấp nhân sự Keycloak+MySQL và Ngừng nhận lịch bác sĩ" onerror="this.style.height='100px';this.alt='Không tìm thấy ảnh'">
+      <div class="ic-label">M02 Cấp nhân sự &amp; Ngừng nhận lịch an toàn (<code>RG-08/09</code>)</div>
+    </div>
+    <div class="img-card" onclick="lb('assets/design/sequence-diagrams/schedule-and-slots.png')">
+      <img src="assets/design/sequence-diagrams/schedule-and-slots.png" alt="M03 Giờ mở cửa, Ngày lễ, Lịch nghỉ và Tìm slot tối ưu NFR-01" onerror="this.style.height='100px';this.alt='Không tìm thấy ảnh'">
+      <div class="ic-label">M03 Giờ phòng khám, Ngày lễ &amp; Tìm slot NFR-01 (<code>7,81 ms</code>)</div>
     </div>
     <div class="img-card" onclick="lb('assets/design/sequence-diagrams/book-appointment.png')">
       <img src="assets/design/sequence-diagrams/book-appointment.png" alt="UC-08 Đặt lịch hẹn" onerror="this.style.height='100px';this.alt='Không tìm thấy ảnh'">
@@ -90,6 +98,10 @@ window.SECTION_DIAGRAMS = `
       <img src="assets/design/sequence-diagrams/notifications.png" alt="UC-15/16 Thông báo qua notification_job" onerror="this.style.height='100px';this.alt='Không tìm thấy ảnh'">
       <div class="ic-label">UC-15/16 Thông báo bất đồng bộ (<code>notification_job</code>)</div>
     </div>
+    <div class="img-card" onclick="lb('assets/design/sequence-diagrams/audit-fail-closed.png')">
+      <img src="assets/design/sequence-diagrams/audit-fail-closed.png" alt="M07 Ghi Audit Fail-Closed, DENIED độc lập và Trigger bất biến" onerror="this.style.height='100px';this.alt='Không tìm thấy ảnh'">
+      <div class="ic-label">M07 Audit Fail-Closed (<code>MANDATORY</code>), <code>DENIED</code> &amp; Trigger</div>
+    </div>
     <div class="img-card" onclick="lb('assets/design/sequence-diagrams/telehealth.png')">
       <img src="assets/design/sequence-diagrams/telehealth.png" alt="UC-22/23/24 Phiên khám từ xa WebRTC" onerror="this.style.height='100px';this.alt='Không tìm thấy ảnh'">
       <div class="ic-label">UC-22/23/24 Phiên từ xa WebRTC + <code>coturn</code></div>
@@ -98,7 +110,7 @@ window.SECTION_DIAGRAMS = `
 </section>
 
 <section class="section" id="act-diag">
-  <div class="sh"><span class="sh-ic">🔵</span><div class="sh-txt"><h2>Sơ đồ Activity (4 sơ đồ)</h2><p>Luồng công việc có swimlane phân tách trách nhiệm Người dùng / Hệ thống / Dữ liệu</p></div></div>
+  <div class="sh"><span class="sh-ic">🔵</span><div class="sh-txt"><h2>Sơ đồ Activity (5 sơ đồ)</h2><p>Luồng công việc có swimlane phân tách trách nhiệm Người dùng / Hệ thống / Dữ liệu &amp; CI/CD Rollback</p></div></div>
   <div class="img-grid">
     <div class="img-card" onclick="lb('assets/design/activity-diagrams/account-security-otp.png')">
       <img src="assets/design/activity-diagrams/account-security-otp.png" alt="BP-01 Đăng nhập PKCE, Google, Quên MK &amp; OTP" onerror="this.style.height='100px';this.alt='Không tìm thấy ảnh'">
@@ -115,6 +127,10 @@ window.SECTION_DIAGRAMS = `
     <div class="img-card" onclick="lb('assets/design/activity-diagrams/telehealth-consultation.png')">
       <img src="assets/design/activity-diagrams/telehealth-consultation.png" alt="BP-04 Quy trình khám từ xa WebRTC" onerror="this.style.height='100px';this.alt='Không tìm thấy ảnh'">
       <div class="ic-label">BP-04 Quy trình khám từ xa WebRTC P2P + <code>coturn</code> 3478</div>
+    </div>
+    <div class="img-card" onclick="lb('assets/design/activity-diagrams/cicd-azure-rollback.png')">
+      <img src="assets/design/activity-diagrams/cicd-azure-rollback.png" alt="NFR-16 Quy trình CI/CD Azure VM, Tự động Rollback và Smoke Test" onerror="this.style.height='100px';this.alt='Không tìm thấy ảnh'">
+      <div class="ic-label">NFR-16 CI/CD Azure VM, Tự động Rollback &amp; Post-Deploy Smoke (6/6)</div>
     </div>
   </div>
 </section>

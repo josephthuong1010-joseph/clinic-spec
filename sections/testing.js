@@ -1,4 +1,4 @@
-/* sections/testing.js — Bảng PCL N/B/A, Agent Catalog, Benchmark NFR-01 & Ma trận truy vết (main@9546bc6, 22/11/2026) */
+/* sections/testing.js — Bảng PCL N/B/A, Agent Catalog, Benchmark NFR-01 & Ma trận truy vết (main@d0f7189, 22/11/2026) */
 
 window.SECTION_TESTING = `
 <section class="section" id="pcl">
@@ -93,7 +93,7 @@ window.SECTION_TESTING = `
 </section>
 
 <section class="section" id="trace">
-  <div class="sh"><span class="sh-ic">🔗</span><div class="sh-txt"><h2>Ma trận truy vết tổng hợp (27 FR &rarr; UC &rarr; NFR &rarr; Bằng chứng)</h2><p>Đối chiếu <code>docs/requirements/traceability-matrix.md</code> tại <code>main@9546bc6</code> · Xem chi tiết tra cứu tại trang <a href="requirements.html#review-matrix">Yêu cầu</a></p></div></div>
+  <div class="sh"><span class="sh-ic">🔗</span><div class="sh-txt"><h2>Ma trận truy vết tổng hợp (27 FR &rarr; UC &rarr; NFR &rarr; Bằng chứng)</h2><p>Đối chiếu <code>docs/requirements/traceability-matrix.md</code> tại <code>main@d0f7189</code> · Xem chi tiết tra cứu tại trang <a href="requirements.html#review-matrix">Yêu cầu</a></p></div></div>
   <div class="tbl-wrap">
     <table>
       <thead><tr><th>FR</th><th>UC</th><th>Thao tác API chính</th><th>NFR liên quan</th><th>Tình trạng &amp; Bằng chứng</th></tr></thead>

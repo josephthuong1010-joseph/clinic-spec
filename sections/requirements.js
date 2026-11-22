@@ -1,8 +1,8 @@
-/* sections/requirements.js — Đồng bộ đầy đủ 27 FR (EARS), 16 NFR + Bằng chứng, 19 BR, Công thức lượng hóa & Ma trận rà soát (SE-project-main@9546bc6, 22/11/2026) */
+/* sections/requirements.js — Đồng bộ đầy đủ 27 FR (EARS), 16 NFR + Bằng chứng, 19 BR, Công thức lượng hóa & Ma trận rà soát (SE-project-main@d0f7189, 22/11/2026) */
 
 window.SECTION_REQUIREMENTS = `
 <section class="section" id="req-summary">
-  <div class="sh"><span class="sh-ic">📌</span><div class="sh-txt"><h2>Tổng hợp Đặc tả Yêu cầu &amp; Bằng chứng Nghiệm thu</h2><p>Đối chiếu đồng bộ 1:1 với kho mã nguồn <code>SE-project-main</code> (nhánh <code>main@9546bc6</code> · 22/11/2026)</p></div></div>
+  <div class="sh"><span class="sh-ic">📌</span><div class="sh-txt"><h2>Tổng hợp Đặc tả Yêu cầu &amp; Bằng chứng Nghiệm thu</h2><p>Đối chiếu đồng bộ 1:1 với kho mã nguồn <code>SE-project-main</code> (nhánh <code>main@d0f7189</code> · 22/11/2026)</p></div></div>
 
   <div class="alert alert-info" style="margin-bottom:14px">
     <span>📏</span>
@@ -153,6 +153,7 @@ sequenceDiagram
           </div>
           <div class="fr-diag-row">
             <div class="fr-diag-thumb" onclick="lb('assets/design/class-diagram/class-diagram.png')"><img src="assets/design/class-diagram/class-diagram.png" alt=""><span>Class Diagram: Catalog &amp; Entities</span></div>
+            <div class="fr-diag-thumb" onclick="lb('assets/design/sequence-diagrams/staff-and-catalog.png')"><img src="assets/design/sequence-diagrams/staff-and-catalog.png" alt=""><span>Sequence M02: Cấp nhân sự Keycloak</span></div>
           </div>
         </div></td></tr>
 
@@ -170,6 +171,9 @@ sequenceDiagram
             <div class="ev-card"><div class="ev-label">Quy tắc &amp; Tiêu chí</div><div class="ev-val">BR-05 · UC-04 · AC-04 · NFR-02</div></div>
             <div class="ev-card"><div class="ev-label">Ca kiểm thử</div><div class="ev-val"><code>TC-04</code>, <code>RG-08</code>, <code>RG-09</code>, <code>AGENT-TC-020</code></div></div>
             <div class="ev-card"><div class="ev-label">Bằng chứng đạt</div><div class="ev-val"><code>doctorDeactivationChecksBookingsCommittedAfterItsInitialRead</code> (<code>RG-08</code>), <code>doctorActivationChecksStaffRolesCommittedAfterItsInitialRead</code> (<code>RG-09</code>), <code>BusinessRulesUnitTest</code>.</div></div>
+          </div>
+          <div class="fr-diag-row">
+            <div class="fr-diag-thumb" onclick="lb('assets/design/sequence-diagrams/staff-and-catalog.png')"><img src="assets/design/sequence-diagrams/staff-and-catalog.png" alt=""><span>Sequence M02: Ngừng nhận lịch RG-08/09</span></div>
           </div>
         </div></td></tr>
 
@@ -191,6 +195,7 @@ sequenceDiagram
           </div>
           <div class="fr-diag-row">
             <div class="fr-diag-thumb" onclick="lb('assets/design/database/erd.png')"><img src="assets/design/database/erd.png" alt=""><span>ERD: Lịch làm việc &amp; Slot</span></div>
+            <div class="fr-diag-thumb" onclick="lb('assets/design/sequence-diagrams/schedule-and-slots.png')"><img src="assets/design/sequence-diagrams/schedule-and-slots.png" alt=""><span>Sequence M03: Giờ mở cửa &amp; Ngày lễ</span></div>
           </div>
         </div></td></tr>
 
@@ -208,6 +213,9 @@ sequenceDiagram
             <div class="ev-card"><div class="ev-label">Quy tắc &amp; Tiêu chí</div><div class="ev-val">BR-02, BR-05 · UC-06 · AC-06 · <code>TC-06/08-F</code></div></div>
             <div class="ev-card"><div class="ev-label">Ca kiểm thử</div><div class="ev-val"><code>TC-06</code>, <code>RG-07</code></div></div>
             <div class="ev-card"><div class="ev-label">Bằng chứng đạt</div><div class="ev-val"><code>timeOffChecksBookingsCommittedAfterItsInitialRead</code> (<code>RG-07</code>), <code>schedule-delete.test.ts</code> (4/4).</div></div>
+          </div>
+          <div class="fr-diag-row">
+            <div class="fr-diag-thumb" onclick="lb('assets/design/sequence-diagrams/schedule-and-slots.png')"><img src="assets/design/sequence-diagrams/schedule-and-slots.png" alt=""><span>Sequence M03: Lịch nghỉ RG-07</span></div>
           </div>
         </div></td></tr>
 
@@ -241,6 +249,9 @@ sequenceDiagram
   SVC-&gt;&gt;SVC: Lọc giao nhau O(N) trong bộ nhớ (giới hạn 500)
   SVC--&gt;&gt;U: 200 Danh sách slot trống
           </div></div>
+          <div class="fr-diag-row">
+            <div class="fr-diag-thumb" onclick="lb('assets/design/sequence-diagrams/schedule-and-slots.png')"><img src="assets/design/sequence-diagrams/schedule-and-slots.png" alt=""><span>Sequence M03: Tối ưu NFR-01 (7,81 ms)</span></div>
+          </div>
         </div></td></tr>
 
         <!-- M04 -->
@@ -463,6 +474,9 @@ sequenceDiagram
     SVC--&gt;&gt;A: Trả kết quả + header X-Request-Id
   end
           </div></div>
+          <div class="fr-diag-row">
+            <div class="fr-diag-thumb" onclick="lb('assets/design/sequence-diagrams/audit-fail-closed.png')"><img src="assets/design/sequence-diagrams/audit-fail-closed.png" alt=""><span>Sequence M07: Audit Fail-Closed &amp; DENIED (RG-01)</span></div>
+          </div>
         </div></td></tr>
 
         <tr class="fr-row" data-id="FR-18" data-module="M07" onclick="toggleFR('FR-18')">
@@ -479,6 +493,9 @@ sequenceDiagram
             <div class="ev-card"><div class="ev-label">Quy tắc &amp; Tiêu chí</div><div class="ev-val">BR-01, BR-12, BR-13 · UC-18 · AC-18 · NFR-05</div></div>
             <div class="ev-card"><div class="ev-label">Ca kiểm thử</div><div class="ev-val"><code>TC-18</code>, <code>RG-03</code></div></div>
             <div class="ev-card"><div class="ev-label">Bằng chứng đạt</div><div class="ev-val"><code>SchedulingIntegrationTest</code> (xác minh quyền đọc audit, lọc phân trang, chặn UPDATE/DELETE và cô lập <code>AUDITOR</code> <code>RG-03</code>).</div></div>
+          </div>
+          <div class="fr-diag-row">
+            <div class="fr-diag-thumb" onclick="lb('assets/design/sequence-diagrams/audit-fail-closed.png')"><img src="assets/design/sequence-diagrams/audit-fail-closed.png" alt=""><span>Sequence M07: Tra cứu Audit &amp; Trigger bất biến</span></div>
           </div>
         </div></td></tr>
 
@@ -904,6 +921,10 @@ sequenceDiagram
         </tr>
         <tr class="fr-detail" id="detail-NFR-16"><td colspan="5"><div class="fr-dcard">
           <p class="fr-desc-full">Mỗi bản đẩy lên <code>main</code> chạy song song <code>frontend</code> + <code>backend</code> + <code>api-contract</code> rồi mới deploy. Trên Azure VM, <code>scripts/deploy-azure-demo.sh</code> tối ưu theo phạm vi (<code>docs-only</code> / <code>frontend-only</code> / <code>full</code>), tự <code>git reset --hard prev_sha</code> và dựng lại bản cũ nếu health check lỗi, rồi chạy <code>post-deploy-smoke</code> xác nhận 6 chốt HTTPS/header/OIDC/TURN trong ~9 giây.</p>
+          <div class="fr-diag-row">
+            <div class="fr-diag-thumb" onclick="lb('assets/design/activity-diagrams/cicd-azure-rollback.png')"><img src="assets/design/activity-diagrams/cicd-azure-rollback.png" alt=""><span>Activity NFR-16: CI/CD Azure VM &amp; Tự động Rollback</span></div>
+            <div class="fr-diag-thumb" onclick="lb('assets/design/architecture/deployment-azure.png')"><img src="assets/design/architecture/deployment-azure.png" alt=""><span>Kiến trúc Azure VM Demo</span></div>
+          </div>
         </div></td></tr>
 
       </tbody>

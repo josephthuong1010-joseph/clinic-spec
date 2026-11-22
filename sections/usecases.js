@@ -1,10 +1,10 @@
-/* sections/usecases.js — 27 Use Case (chuẩn Alistair Cockburn + OMG UML 2.5 · đồng bộ main@9546bc6, 22/11/2026) */
+/* sections/usecases.js — 27 Use Case (chuẩn Alistair Cockburn + OMG UML 2.5 · đồng bộ main@d0f7189, 22/11/2026) */
 
 window.SECTION_USECASES = `
 <section class="section" id="uc-list">
   <div class="sh"><span class="sh-ic">👥</span><div class="sh-txt">
     <h2>Danh sách 27 Use Case</h2>
-    <p>UC-01..UC-27 (<code>main@9546bc6</code>) · nhấn vào hàng để mở đặc tả đầy đủ · Sơ đồ UML tương ứng xem tại <a href="diagrams.html#uc-diag">Sơ đồ UML</a> &amp; <a href="requirements.html">Yêu cầu</a></p>
+    <p>UC-01..UC-27 (<code>main@d0f7189</code>) · nhấn vào hàng để mở đặc tả đầy đủ · Sơ đồ UML tương ứng xem tại <a href="diagrams.html#uc-diag">Sơ đồ UML</a> &amp; <a href="requirements.html">Yêu cầu</a></p>
   </div></div>
   <div class="alert alert-info" style="margin-bottom:12px">
     <span>📏</span>
