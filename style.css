@@ -119,7 +119,12 @@ tr:hover td{background:rgba(0,0,0,.025)}
 .img-card{background:var(--card);border:1px solid var(--border);border-radius:4px;overflow:hidden;cursor:zoom-in}
 .img-card:hover{border-color:var(--accent);transition:.15s}
 .img-card img{width:100%;display:block;background:var(--sb2);min-height:160px;object-fit:contain}
-.img-card .ic-label{padding:8px 12px;font-size:11.5px;color:var(--txt2);border-top:1px solid var(--border)}
+.img-card .ic-label{padding:8px 12px;font-size:11.5px;color:var(--txt2);border-top:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;gap:8px}
+.img-card .ic-label-text{flex:1;min-width:0}
+.ic-copy{flex-shrink:0;border:1px solid var(--border);background:var(--sb2);color:var(--txt2);padding:3px 8px;border-radius:4px;font-size:11px;font-weight:600;cursor:pointer;white-space:nowrap;transition:all .12s}
+.ic-copy:hover{border-color:var(--accent);color:var(--accent);background:#fff}
+.ic-copy.copied{background:var(--ok);border-color:var(--ok);color:#fff}
+.img-card.diag-target,.fr-row.diag-target td{outline:2px solid var(--accent);outline-offset:-2px;background:rgba(26,107,74,.08)!important}
 
 /* ── MERMAID ── */
 .mermaid-wrap{background:var(--card);border:1px solid var(--border);border-radius:4px;padding:20px;overflow-x:auto}
@@ -131,10 +136,26 @@ tr:hover td{background:rgba(0,0,0,.025)}
 .res-ok{color:var(--ok);font-weight:700}
 .res-err{color:var(--err);font-weight:700}
 
-/* ── LIGHTBOX (giữ dark vì là overlay) ── */
-#lb{display:none;position:fixed;inset:0;background:rgba(0,0,0,.88);z-index:999;cursor:zoom-out;overflow:auto}
-#lb.open{display:flex;align-items:flex-start;justify-content:center;padding:24px}
-#lb img{max-width:min(96vw,1400px);width:auto;height:auto;object-fit:contain;border-radius:8px;box-shadow:0 0 60px rgba(0,0,0,.8);cursor:default;flex-shrink:0}
+/* ── LIGHTBOX (giữ dark vì là overlay, hỗ trợ Zoom / Pan / Copy link) ── */
+#lb{display:none;position:fixed;inset:0;background:rgba(10,12,18,.92);z-index:999;flex-direction:column;user-select:none}
+#lb.open{display:flex}
+.lb-bar{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 16px;background:rgba(18,22,31,.96);border-bottom:1px solid rgba(255,255,255,.12);color:#f1f5f9;flex-shrink:0;flex-wrap:wrap}
+.lb-title{font-size:13px;font-weight:600;color:#f8fafc;display:flex;align-items:center;gap:8px;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:45vw}
+.lb-idx{font-size:11px;font-weight:700;padding:2px 7px;border-radius:4px;background:rgba(255,255,255,.12);color:#cbd5e1;flex-shrink:0}
+.lb-tools{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.lb-btn{border:1px solid rgba(255,255,255,.2);background:rgba(255,255,255,.08);color:#f8fafc;padding:5px 10px;border-radius:5px;font-size:12px;font-weight:600;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;gap:5px;transition:background .12s,border-color .12s}
+.lb-btn:hover{background:rgba(255,255,255,.18);border-color:rgba(255,255,255,.4)}
+.lb-btn:disabled{opacity:.35;cursor:not-allowed}
+.lb-btn.copied{background:#16a34a;border-color:#16a34a;color:#fff}
+.lb-btn-close{background:rgba(220,38,38,.25);border-color:rgba(220,38,38,.55)}
+.lb-btn-close:hover{background:rgba(220,38,38,.5)}
+.lb-zoom-val{font-size:11.5px;color:#cbd5e1;min-width:44px;text-align:center;font-variant-numeric:tabular-nums}
+.lb-stage{flex:1;position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center;cursor:grab;padding:16px}
+.lb-stage.dragging{cursor:grabbing}
+#lb img{max-width:94vw;max-height:calc(100vh - 86px);width:auto;height:auto;object-fit:contain;border-radius:6px;box-shadow:0 12px 48px rgba(0,0,0,.75);background:#ffffff;transform-origin:center center;transition:transform .08s ease-out;pointer-events:none}
+.lb-stage.dragging #lb-img{transition:none}
+.lb-hint{position:absolute;bottom:12px;left:50%;transform:translateX(-50%);background:rgba(15,23,42,.78);color:#cbd5e1;font-size:11px;padding:4px 12px;border-radius:999px;pointer-events:none;white-space:nowrap}
+@media (max-width:700px){.lb-title{max-width:100%}.lb-hint{display:none}}
 
 /* ── SUMMARY BAR ── */
 .sum-bar{display:flex;gap:16px;flex-wrap:wrap;margin-bottom:20px}
