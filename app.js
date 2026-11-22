@@ -610,11 +610,11 @@ function _appendCellCopyBtn(cell, urlGetter, title) {
 }
 
 function _enhanceReferenceItems() {
-  // 1. Business Rules (#br -> BR-01..BR-19)
-  document.querySelectorAll('#br tbody tr.plain-row').forEach(tr => {
+  // 1. Business Rules (#br -> BR-01..BR-19) & Screens (#screens -> SCR-01..SCR-23, DLG-01..DLG-06)
+  document.querySelectorAll('#br tbody tr.plain-row, #screens tbody tr.plain-row').forEach(tr => {
     const firstTd = tr.querySelector('td');
     const code = firstTd ? firstTd.textContent.trim() : '';
-    if (!/^BR-\d{2}$/i.test(code)) return;
+    if (!/^(?:BR-\d{2}|SCR-\d{2}[A-Z]?|DLG-\d{2})$/i.test(code)) return;
     if (!document.getElementById(code)) tr.id = code;
     const tds = tr.querySelectorAll('td');
     const lastTd = tds[tds.length - 1];
