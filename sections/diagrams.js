@@ -1,11 +1,11 @@
-/* sections/diagrams.js — 38 sơ đồ OMG UML 2.5, Kruchten 4+1 & ERD (đồng bộ 100% SE-project-main@d0f7189, 22/11/2026) */
+/* sections/diagrams.js — 38 sơ đồ OMG UML 2.5, Kruchten 4+1 & ERD (đồng bộ 100% SE-project-main@327a553, 22/11/2026) */
 /* Toàn bộ ảnh PNG phản chiếu trực tiếp từ SE-project-main/docs/design/ ở 150 DPI */
 
 window.SECTION_DIAGRAMS = `
 <section class="section" id="uc-diag">
   <div class="alert alert-info" style="margin-bottom:18px">
     <span>📐</span>
-    <div><strong>Đồng bộ thiết kế 100% (<code>main@d0f7189</code>):</strong> Đầy đủ <strong>38 sơ đồ</strong> theo chuẩn <strong>OMG UML 2.5</strong>, mô hình kiến trúc <strong>Kruchten 4+1 Views</strong> và <strong>IE / Crow's Foot ERD</strong>, bao phủ toàn bộ <strong>9 phân hệ M01–M09</strong> (gồm các sơ đồ chuyên sâu <code>M02</code>, <code>M03</code>, <code>M07</code> và <code>CI/CD Auto-Rollback</code>), <strong>27 Use Case</strong>, <strong>24 bảng MySQL 8.4 (<code>V1..V11</code>)</strong> và hạ tầng triển khai Azure VM.</div>
+    <div><strong>Đồng bộ thiết kế 100% (<code>main@327a553</code>):</strong> Đầy đủ <strong>38 sơ đồ</strong> theo chuẩn <strong>OMG UML 2.5</strong>, mô hình kiến trúc <strong>Kruchten 4+1 Views</strong> và <strong>IE / Crow's Foot ERD</strong>, bao phủ toàn bộ <strong>9 phân hệ M01–M09</strong>, <strong>27 Use Case</strong>, <strong>24 bảng MySQL 8.4 (<code>V1..V11</code>)</strong> và hạ tầng Azure VM. Các sơ đồ nhiều đường nối (Use Case, Class, ERD, Kiến trúc/Triển khai) đã được <strong>phân màu theo Tác nhân / Miền / Tuyến giao thức kèm bảng chú giải Legend</strong> chuẩn OMG UML 2.5; nhấn nút <code>🔗 Copy link</code> trên từng sơ đồ để mở trực tiếp.</div>
   </div>
 
   <div class="sh"><span class="sh-ic">🗂️</span><div class="sh-txt"><h2>Sơ đồ Use Case (5 sơ đồ)</h2><p>OMG UML 2.5 · Tổng quan 27 UC và 4 bản tách nhóm theo phân hệ <code>M01–M09</code> · Nhấn vào ảnh để phóng to</p></div></div>

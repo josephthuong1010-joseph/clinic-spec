@@ -1,8 +1,8 @@
-/* sections/requirements.js — Đồng bộ đầy đủ 27 FR (EARS), 16 NFR + Bằng chứng, 19 BR, Công thức lượng hóa & Ma trận rà soát (SE-project-main@d0f7189, 22/11/2026) */
+/* sections/requirements.js — Đồng bộ đầy đủ 27 FR (EARS), 16 NFR + Bằng chứng, 19 BR, Công thức lượng hóa & Ma trận rà soát (SE-project-main@327a553, 22/11/2026) */
 
 window.SECTION_REQUIREMENTS = `
 <section class="section" id="req-summary">
-  <div class="sh"><span class="sh-ic">📌</span><div class="sh-txt"><h2>Tổng hợp Đặc tả Yêu cầu &amp; Bằng chứng Nghiệm thu</h2><p>Đối chiếu đồng bộ 1:1 với kho mã nguồn <code>SE-project-main</code> (nhánh <code>main@d0f7189</code> · 22/11/2026)</p></div></div>
+  <div class="sh"><span class="sh-ic">📌</span><div class="sh-txt"><h2>Tổng hợp Đặc tả Yêu cầu &amp; Bằng chứng Nghiệm thu</h2><p>Đối chiếu đồng bộ 1:1 với kho mã nguồn <code>SE-project-main</code> (nhánh <code>main@327a553</code> · 22/11/2026)</p></div></div>
 
   <div class="alert alert-info" style="margin-bottom:14px">
     <span>📏</span>

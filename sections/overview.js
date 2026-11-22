@@ -1,8 +1,8 @@
-/* sections/overview.js — Tổng quan hệ thống, Chuẩn áp dụng & Phân hệ M01-M09 (đồng bộ SE-project-main@d0f7189, 22/11/2026) */
+/* sections/overview.js — Tổng quan hệ thống, Chuẩn áp dụng & Phân hệ M01-M09 (đồng bộ SE-project-main@327a553, 22/11/2026) */
 
 window.SECTION_OVERVIEW = `
 <section class="section" id="overview">
-  <div class="sh"><span class="sh-ic">📌</span><div class="sh-txt"><h2>Tổng quan hệ thống</h2><p>ClinicCare — hệ thống quản lý phòng khám ngoại trú tích hợp khám từ xa WebRTC (đồng bộ mã nguồn <code>main@d0f7189</code> · 22/11/2026)</p></div></div>
+  <div class="sh"><span class="sh-ic">📌</span><div class="sh-txt"><h2>Tổng quan hệ thống</h2><p>ClinicCare — hệ thống quản lý phòng khám ngoại trú tích hợp khám từ xa WebRTC (đồng bộ mã nguồn <code>main@327a553</code> · 22/11/2026)</p></div></div>
 
   <div class="sum-bar">
     <div class="sum-item"><div class="n">9</div><div class="l">Phân hệ (M01–M09)</div></div>
@@ -20,7 +20,7 @@ window.SECTION_OVERVIEW = `
     <div class="ov-card"><h4>Xác thực &amp; IdP</h4><p>Keycloak 26.4 (OIDC Authorization Code + PKCE S256) · Google OAuth2 · Quên mật khẩu SMTP · Khóa tạm 5 lần sai · OTP email 6 chữ số</p></div>
     <div class="ov-card"><h4>Hạ tầng &amp; Vận hành</h4><p>Azure VM HTTPS (Caddy 2 + Nginx 1.28 rate-limit OTP 10r/m + coturn TURN 3478) · CI 5 job + rollback tự động + <code>post-deploy-smoke</code></p></div>
     <div class="ov-card"><h4>Kiểm thử tự động</h4><p>86 test Backend (Testcontainers MySQL + <code>jacoco:check</code> &ge;60%) · 79 Vitest (22 file) · 17 Playwright · Python unittest · k6 50 VU</p></div>
-    <div class="ov-card"><h4>Phiên bản đối chiếu</h4><p>Nhánh <code>main@d0f7189</code> · 22/11/2026 · Demo HTTPS: <code>cliniccare-demo.duckdns.org</code> &amp; <code>cliniccare-auth.duckdns.org</code></p></div>
+    <div class="ov-card"><h4>Phiên bản đối chiếu</h4><p>Nhánh <code>main@327a553</code> · 22/11/2026 · Demo HTTPS: <code>cliniccare-demo.duckdns.org</code> &amp; <code>cliniccare-auth.duckdns.org</code></p></div>
   </div>
 
   <div class="stack-grid">
