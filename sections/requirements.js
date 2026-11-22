@@ -1,8 +1,13 @@
-/* sections/requirements.js — Đồng bộ đầy đủ 27 FR (EARS), 16 NFR + Bằng chứng, 19 BR, Công thức lượng hóa & Ma trận rà soát (SE-project-main@484098c, 22/11/2026) */
+/* sections/requirements.js — Đồng bộ đầy đủ 27 FR (EARS), 16 NFR + Bằng chứng, 19 BR, Công thức lượng hóa & Ma trận rà soát (SE-project-main@9546bc6, 22/11/2026) */
 
 window.SECTION_REQUIREMENTS = `
 <section class="section" id="req-summary">
-  <div class="sh"><span class="sh-ic">📌</span><div class="sh-txt"><h2>Tổng hợp Đặc tả Yêu cầu &amp; Bằng chứng Nghiệm thu</h2><p>Đối chiếu đồng bộ 1:1 với kho mã nguồn <code>SE-project-main</code> (nhánh <code>main@484098c</code> · 22/11/2026)</p></div></div>
+  <div class="sh"><span class="sh-ic">📌</span><div class="sh-txt"><h2>Tổng hợp Đặc tả Yêu cầu &amp; Bằng chứng Nghiệm thu</h2><p>Đối chiếu đồng bộ 1:1 với kho mã nguồn <code>SE-project-main</code> (nhánh <code>main@9546bc6</code> · 22/11/2026)</p></div></div>
+
+  <div class="alert alert-info" style="margin-bottom:14px">
+    <span>📏</span>
+    <div><strong>Chuẩn đặc tả áp dụng:</strong> Yêu cầu chức năng theo cú pháp <strong>EARS</strong> (tham chiếu <strong>ISO/IEC/IEEE 29148</strong>); Tiêu chí chấp nhận theo <strong>BDD / Gherkin</strong> (<code>Given–When–Then</code>); Phi chức năng theo <strong>ISO/IEC 25010:2023</strong>; Hợp đồng API theo <strong>OpenAPI 3.1.0</strong> &amp; <strong>RFC 9457</strong>. Chi tiết toàn bộ bảng chuẩn xem tại <a href="index.html#standards">Tổng quan</a>.</div>
+  </div>
 
   <div class="sum-bar">
     <div class="sum-item"><div class="n">27 / 27</div><div class="l">FR đã triển khai</div></div>
@@ -88,6 +93,10 @@ sequenceDiagram
   U-&gt;&gt;FE: Nhập OTP 6 chữ số &rarr; PUT /api/me/contact
   API-&gt;&gt;DB: Xác thực OTP một lần &amp; cập nhật email_encrypted/email_hash
           </div></div>
+          <div class="fr-diag-row">
+            <div class="fr-diag-thumb" onclick="lb('assets/design/sequence-diagrams/auth-otp-contact.png')"><img src="assets/design/sequence-diagrams/auth-otp-contact.png" alt=""><span>Sequence: PKCE/Google &amp; OTP</span></div>
+            <div class="fr-diag-thumb" onclick="lb('assets/design/activity-diagrams/account-security-otp.png')"><img src="assets/design/activity-diagrams/account-security-otp.png" alt=""><span>Activity: Bảo mật TK &amp; OTP</span></div>
+          </div>
         </div></td></tr>
 
         <tr class="fr-row" data-id="FR-02" data-module="M01" onclick="toggleFR('FR-02')">
@@ -607,6 +616,9 @@ sequenceDiagram
             <div class="ev-card"><div class="ev-label">Ca kiểm thử</div><div class="ev-val"><code>TC-25</code>, <code>AGENT-TC-020</code></div></div>
             <div class="ev-card"><div class="ev-label">Bằng chứng đạt</div><div class="ev-val"><code>SchedulingIntegrationTest</code> + <code>BusinessRulesUnitTest</code> (<code>appointmentDelayPolicyCoversConfirmedCheckedInAndDayBoundaries</code>).</div></div>
           </div>
+          <div class="fr-diag-row">
+            <div class="fr-diag-thumb" onclick="lb('assets/design/sequence-diagrams/delay-and-noshow.png')"><img src="assets/design/sequence-diagrams/delay-and-noshow.png" alt=""><span>Sequence: Báo chậm giờ</span></div>
+          </div>
         </div></td></tr>
 
         <tr class="fr-row" data-id="FR-26" data-module="M04 M06" onclick="toggleFR('FR-26')">
@@ -617,12 +629,16 @@ sequenceDiagram
           <td>UC-26 · <span class="badge bstat-ok">Đạt</span></td>
         </tr>
         <tr class="fr-detail" id="detail-FR-26"><td colspan="5"><div class="fr-dcard">
-          <p class="fr-desc-full"><span class="kw-ears">KHI</span> người phụ trách (Lễ tân cho trực tiếp, Bác sĩ cho từ xa) ghi nhận vắng hẹn cho lịch <code>CONFIRMED</code> từ mốc <code>start + 900 s</code>, hệ thống <span class="kw-shall">PHẢI</span> lưu mã lý do (<code>PATIENT_ABSENT</code>, <code>COULD_NOT_CONTACT</code>, <code>TECHNICAL_ISSUE</code>, <code>OTHER</code>), hủy phiên từ xa <code>CREATED/WAITING</code> nếu có, chỉ xếp email mời đặt lại khi được chọn (không lộ lý do) và từ chối nếu đã check-in.</p>
+          <p class="fr-desc-full"><span class="kw-ears">KHI</span> người phụ trách (Lễ tân cho trực tiếp, Bác sĩ cho từ xa) ghi nhận vắng hẹn cho lịch <code>CONFIRMED</code> từ mốc <code>start + 900 s</code>, hệ thống <span class="kw-shall">PHẢI</span> lưu mã lý do (<code>PATIENT_ABSENT</code>, <code>COULD_NOT_CONTACT</code>, <code>TECHNICAL_ISSUE</code>, <code>OTHER</code>), hủy phiên từ xa <code>CREATED/WAITING</code> nếu có, chỉ xếp email mời đặt lại (<code>NO_SHOW_REBOOKING</code>) khi được chọn (không lộ lý do) và từ chối nếu đã check-in.</p>
           <div class="ev-grid">
             <div class="ev-card"><div class="ev-label">API &amp; Thành phần</div><div class="ev-val"><code>POST /appointments/{id}/progress</code> (<code>targetStatus: "NO_SHOW"</code>) · <code>WorkflowService.java</code>, <code>NoShowReason.java</code></div></div>
             <div class="ev-card"><div class="ev-label">Quy tắc &amp; Tiêu chí</div><div class="ev-val">BR-08, BR-12, BR-18 · UC-26 · AC-26</div></div>
             <div class="ev-card"><div class="ev-label">Ca kiểm thử</div><div class="ev-val"><code>TC-26</code>, <code>TC-22-D</code></div></div>
             <div class="ev-card"><div class="ev-label">Bằng chứng đạt</div><div class="ev-val"><code>SchedulingIntegrationTest</code> (xác minh quyền theo mode, mốc +15p, chặn sau check-in và tùy chọn email mời).</div></div>
+          </div>
+          <div class="fr-diag-row">
+            <div class="fr-diag-thumb" onclick="lb('assets/design/sequence-diagrams/delay-and-noshow.png')"><img src="assets/design/sequence-diagrams/delay-and-noshow.png" alt=""><span>Sequence: Vắng hẹn NO_SHOW</span></div>
+            <div class="fr-diag-thumb" onclick="lb('assets/design/state-diagrams/appointment.png')"><img src="assets/design/state-diagrams/appointment.png" alt=""><span>State: Vòng đời Lịch hẹn</span></div>
           </div>
         </div></td></tr>
 
@@ -640,6 +656,9 @@ sequenceDiagram
             <div class="ev-card"><div class="ev-label">Quy tắc &amp; Tiêu chí</div><div class="ev-val">BR-13, BR-19 · UC-27 · AC-27 · NFR-03, NFR-04, NFR-05</div></div>
             <div class="ev-card"><div class="ev-label">Ca kiểm thử</div><div class="ev-val"><code>TC-27</code>, <code>TC-27-B</code>, <code>AGENT-TC-015</code></div></div>
             <div class="ev-card"><div class="ev-label">Bằng chứng đạt</div><div class="ev-val"><code>PatientAccountIntegrationTest</code> (MySQL 8.4 CI <code>#43</code>: kiểm chứng đủ 400/403/404/409/200, khóa/mở khóa và audit), <code>patient-accounts.test.tsx</code> (2/2 PASS).</div></div>
+          </div>
+          <div class="fr-diag-row">
+            <div class="fr-diag-thumb" onclick="lb('assets/design/sequence-diagrams/patient-account-admin.png')"><img src="assets/design/sequence-diagrams/patient-account-admin.png" alt=""><span>Sequence: Tra cứu HMAC &amp; Khóa TK</span></div>
           </div>
           <div class="mermaid-wrap"><div class="mermaid">
 sequenceDiagram

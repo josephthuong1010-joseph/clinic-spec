@@ -1,7 +1,11 @@
-/* sections/testing.js — Bảng PCL N/B/A, Agent Catalog, Benchmark NFR-01 & Ma trận truy vết (main@484098c, 22/11/2026) */
+/* sections/testing.js — Bảng PCL N/B/A, Agent Catalog, Benchmark NFR-01 & Ma trận truy vết (main@9546bc6, 22/11/2026) */
 
 window.SECTION_TESTING = `
 <section class="section" id="pcl">
+  <div class="alert alert-info" style="margin-bottom:16px">
+    <span>📏</span>
+    <div><strong>Chuẩn &amp; Kỹ thuật kiểm thử áp dụng:</strong> Phân cấp &amp; truy vết theo <strong>ISO/IEC/IEEE 29119</strong>; phân loại ca theo chuẩn <strong>PCL (<code>N / B / A</code>)</strong>; cấu trúc unit test <strong>Arrange–Act–Assert (AAA)</strong>; tiêu chí NFR tham chiếu <strong>ISO/IEC 25010:2023</strong>, <strong>OWASP ASVS 5.0 / WSTG</strong> và quét tự động <strong>WCAG 2.2 AA</strong> (<code>axe-core</code>).</div>
+  </div>
   <div class="sh"><span class="sh-ic">🧪</span><div class="sh-txt"><h2>Bảng PCL — Kiểm thử theo chuẩn N/B/A</h2><p>30 ca PCL (<code>N</code>=Normal · <code>B</code>=Boundary · <code>A</code>=Abnormal) · CI <code>#43</code> (<code>7c13276</code>) đạt 86/86 test Backend + cổng <code>jacoco:check</code> &ge;60% + 79/79 Vitest</p></div></div>
 
   <div class="sum-bar" style="margin-bottom:16px">
@@ -89,7 +93,7 @@ window.SECTION_TESTING = `
 </section>
 
 <section class="section" id="trace">
-  <div class="sh"><span class="sh-ic">🔗</span><div class="sh-txt"><h2>Ma trận truy vết tổng hợp (27 FR &rarr; UC &rarr; NFR &rarr; Bằng chứng)</h2><p>Đối chiếu <code>docs/requirements/traceability-matrix.md</code> tại <code>main@484098c</code> · Xem chi tiết tra cứu tại trang <a href="requirements.html#review-matrix">Yêu cầu</a></p></div></div>
+  <div class="sh"><span class="sh-ic">🔗</span><div class="sh-txt"><h2>Ma trận truy vết tổng hợp (27 FR &rarr; UC &rarr; NFR &rarr; Bằng chứng)</h2><p>Đối chiếu <code>docs/requirements/traceability-matrix.md</code> tại <code>main@9546bc6</code> · Xem chi tiết tra cứu tại trang <a href="requirements.html#review-matrix">Yêu cầu</a></p></div></div>
   <div class="tbl-wrap">
     <table>
       <thead><tr><th>FR</th><th>UC</th><th>Thao tác API chính</th><th>NFR liên quan</th><th>Tình trạng &amp; Bằng chứng</th></tr></thead>

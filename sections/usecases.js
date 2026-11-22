@@ -1,11 +1,15 @@
-/* sections/usecases.js — 27 Use Case (đồng bộ docs/analysis/use-cases.md & mã nguồn main@484098c) */
+/* sections/usecases.js — 27 Use Case (chuẩn Alistair Cockburn + OMG UML 2.5 · đồng bộ main@9546bc6, 22/11/2026) */
 
 window.SECTION_USECASES = `
 <section class="section" id="uc-list">
   <div class="sh"><span class="sh-ic">👥</span><div class="sh-txt">
     <h2>Danh sách 27 Use Case</h2>
-    <p>UC-01..UC-27 · nhấn vào hàng để mở đặc tả tiền điều kiện, luồng chính, luồng thay thế và ngoại lệ · Sơ đồ tương ứng xem tại <a href="requirements.html">Yêu cầu</a></p>
+    <p>UC-01..UC-27 (<code>main@9546bc6</code>) · nhấn vào hàng để mở đặc tả đầy đủ · Sơ đồ UML tương ứng xem tại <a href="diagrams.html#uc-diag">Sơ đồ UML</a> &amp; <a href="requirements.html">Yêu cầu</a></p>
   </div></div>
+  <div class="alert alert-info" style="margin-bottom:12px">
+    <span>📏</span>
+    <div><strong>Chuẩn đặc tả Use Case:</strong> Trình bày theo mẫu <strong>Fully Dressed Use Case của Alistair Cockburn</strong> (gồm các trường chuẩn: <em>Tác nhân, Tiền điều kiện, Kích hoạt, Hậu điều kiện, Luồng chính, Luồng thay thế, Luồng ngoại lệ</em>) kết hợp mô hình hóa <strong>OMG UML 2.5</strong>.</div>
+  </div>
   <div class="alert alert-info" style="margin-bottom:16px">
     <span>ℹ️</span>
     <div><strong>Ghi chú thiết kế:</strong> Ghi nhận sự kiện kiểm toán (<code>UC-17</code>) là hành vi nội bộ nguyên tử trong giao dịch/fail-closed — khác với thao tác tra cứu nhật ký của Kiểm toán viên (<code>UC-18</code>). <code>UC-02</code> là tiền điều kiện bắt buộc cho mọi API được bảo vệ. Xem đơn thuốc thuộc phạm vi truy cập lịch sử <code>UC-12</code>.</div>
@@ -138,15 +142,15 @@ window.SECTION_USECASES = `
 
         <tr class="fr-row" data-id="UC-06" data-module="M03" onclick="toggleFR('UC-06')">
           <td><strong>UC-06</strong><span class="fr-arr" id="arr-UC-06">▸</span></td>
-          <td>Quản lý lịch nghỉ</td>
-          <td><span class="actor">Bác sĩ</span></td>
+          <td>Quản lý lịch nghỉ, giờ phòng khám &amp; ngày nghỉ lễ</td>
+          <td><span class="actor">Bác sĩ · Quản trị</span></td>
           <td><span class="badge bm3">M03</span></td>
-          <td>Có lịch hẹn hiệu lực trong khoảng nghỉ → 409; tuyệt đối không tự hủy lịch của bệnh nhân</td>
+          <td>Có lịch hẹn hiệu lực trong khoảng nghỉ → 409; ngày nghỉ lễ ưu tiên trên giờ hằng tuần; không tự hủy lịch</td>
         </tr>
         <tr class="fr-detail" id="detail-UC-06"><td colspan="5"><div class="fr-dcard"><div class="uc-body">
-          <div class="uc-field"><label>Tác nhân</label><p><span class="actor">Bác sĩ</span></p></div>
+          <div class="uc-field"><label>Tác nhân</label><p><span class="actor">Bác sĩ</span> (lịch nghỉ cá nhân), <span class="actor">Quản trị viên</span> (giờ phòng khám &amp; ngày lễ)</p></div>
           <div class="uc-field"><label>Tiền điều kiện</label><p>Khoảng nghỉ trong tương lai, nằm trong giờ hoạt động hiệu lực và không trùng lịch hẹn</p></div>
-          <div class="uc-field"><label>Kích hoạt</label><p><code>POST /api/doctors/{id}/time-off</code></p></div>
+          <div class="uc-field"><label>Kích hoạt</label><p><code>POST /api/doctors/{id}/time-off</code> hoặc <code>PUT /api/clinic/hours</code>, <code>POST /api/clinic/holidays</code></p></div>
           <div class="uc-field"><label>Hậu điều kiện</label><p>Lưu <code>time_off</code>; các slot giao với khoảng nghỉ bị loại khỏi <code>GET /api/slots</code></p></div>
           <div class="uc-field full"><label>Luồng chính</label><ul>
             <li>1. Khóa <code>Doctor</code>; kiểm tra khoảng hợp lệ.</li>
