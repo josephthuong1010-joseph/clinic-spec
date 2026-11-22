@@ -1,685 +1,642 @@
-/* sections/usecases.js — 24 UC expandable, tên & nội dung khớp use-case diagram */
-/*
-  Ánh xạ từ diagram (tiếng Anh) → tiếng Việt chuẩn:
-  Danh tính & danh mục   : UC-01..06  (M01-M02-M03)
-  Đặt lịch & hàng đợi   : UC-07..11, 19..21  (M03-M04-M08)
-  Chăm sóc lâm sàng      : UC-12..14  (M05)
-  Thông báo & kiểm toán  : UC-15..18  (M06-M07)
-  Y tế từ xa             : UC-22..24  (M09)
-  Ghi chú từ diagram:
-    Audit là hành vi nội bộ, không phải hành động của Kiểm toán viên (trừ UC-18).
-    UC-02 phân quyền tài nguyên là điều kiện tiên quyết trên mọi mục tiêu được bảo vệ.
-    Xem đơn thuốc của bệnh nhân thuộc quyền truy cập lịch sử UC-12.
-  Thay đổi so với phiên bản trước (đã đọc diagram):
-    UC-02: "Phân quyền" → "Quản lý vai trò / Kiểm soát truy cập"
-    UC-04: "Ngừng nhận lịch" → "Vô hiệu hóa bác sĩ"
-    UC-05: "Lịch làm việc" → "Quản lý lịch làm việc"
-    UC-06: "Lịch nghỉ" → "Quản lý lịch nghỉ"
-    UC-07: "Tra cứu slot khả dụng" → "Tìm slot khả dụng"
-    UC-11: "Xem lịch hẹn" → "Tiến trình lịch hẹn" + spec về state progression
-    UC-12: "Lượt khám (Encounter)" → "Xem lịch sử được phép" + spec về reading history
-    UC-13: "Hồ sơ khám" → "Ghi / Chốt / Bổ sung hồ sơ"
-    UC-14: "Đơn thuốc" → "Kê đơn thuốc"
-    UC-15: "Lịch sử hồ sơ" → "Nhận nhắc lịch hẹn" + spec về OutboxWorker reminder
-    UC-16: "Thông báo" → "Giám sát lỗi gửi thông báo" + spec về monitoring failures
-    UC-17: "Ghi audit" → "Ghi sự kiện kiểm toán"
-    UC-18: "Tra cứu audit" → "Tra cứu lịch sử kiểm toán"
-    UC-19: "Check-in" → "Check-in bệnh nhân"
-    UC-20: "Gọi lượt" → "Gọi bệnh nhân tiếp theo"
-    UC-21: "Bỏ lượt" → "Trả phiếu về cuối hàng đợi" (Return ticket to queue)
-    UC-22: "Hoàn tất lượt" → "Chuẩn bị phiên khám từ xa" (Prepare remote session) + new spec
-    UC-23: "Tham gia phiên từ xa" → "Tham gia / Bắt đầu phiên từ xa"
-    UC-24: "Kết thúc phiên từ xa" → "Nối lại / Kết thúc phiên từ xa" + reconnect flow added
-  Actor name changes (English → Vietnamese):
-    Administrator → Quản trị viên
-    Patient → Bệnh nhân
-    Doctor → Bác sĩ
-    Receptionist → Lễ tân
-    Auditor → Kiểm toán viên
-    Identity provider / IdP → Nhà cung cấp danh tính
-    Video provider → Nhà cung cấp video
-*/
+/* sections/usecases.js — 27 Use Case (đồng bộ docs/analysis/use-cases.md & mã nguồn main@484098c) */
 
 window.SECTION_USECASES = `
 <section class="section" id="uc-list">
   <div class="sh"><span class="sh-ic">👥</span><div class="sh-txt">
-    <h2>Danh sách 24 Use Case</h2>
-    <p>Nhấn vào hàng để mở đặc tả chi tiết · Sơ đồ sequence xem tại trang <a href="requirements.html">Yêu cầu</a></p>
+    <h2>Danh sách 27 Use Case</h2>
+    <p>UC-01..UC-27 · nhấn vào hàng để mở đặc tả tiền điều kiện, luồng chính, luồng thay thế và ngoại lệ · Sơ đồ tương ứng xem tại <a href="requirements.html">Yêu cầu</a></p>
   </div></div>
   <div class="alert alert-info" style="margin-bottom:16px">
     <span>ℹ️</span>
-    <div><strong>Ghi chú thiết kế:</strong> Audit là hành vi nội bộ — không phải hành động của Kiểm toán viên. UC-02 (phân quyền) là tiền điều kiện ngầm định cho mọi UC có dữ liệu được bảo vệ. Xem đơn thuốc thuộc phạm vi UC-12.</div>
+    <div><strong>Ghi chú thiết kế:</strong> Ghi nhận sự kiện kiểm toán (<code>UC-17</code>) là hành vi nội bộ nguyên tử trong giao dịch/fail-closed — khác với thao tác tra cứu nhật ký của Kiểm toán viên (<code>UC-18</code>). <code>UC-02</code> là tiền điều kiện bắt buộc cho mọi API được bảo vệ. Xem đơn thuốc thuộc phạm vi truy cập lịch sử <code>UC-12</code>.</div>
   </div>
   <div class="tbl-wrap">
     <table>
-      <thead><tr><th>UC</th><th>Tên ca sử dụng</th><th>Tác nhân chính</th><th>Mô-đun</th><th>Điểm chú ý khi bảo vệ</th></tr></thead>
+      <thead><tr><th>UC</th><th>Tên ca sử dụng</th><th>Tác nhân chính</th><th>Mô-đun</th><th>Điểm nhấn nghiệp vụ &amp; bảo mật</th></tr></thead>
       <tbody>
 
-        <!-- M01 Danh tính -->
-        <tr class="fr-row" onclick="toggleFR('UC-01')">
+        <!-- M01 Danh tính & Tài khoản -->
+        <tr class="fr-row" data-id="UC-01" data-module="M01" onclick="toggleFR('UC-01')">
           <td><strong>UC-01</strong><span class="fr-arr" id="arr-UC-01">▸</span></td>
-          <td>Đăng nhập</td>
-          <td><span class="actor">Người dùng</span> · <span class="actor">Nhà cung cấp danh tính</span></td>
+          <td>Đăng nhập, Google OAuth2, Quên mật khẩu &amp; OTP liên hệ</td>
+          <td><span class="actor">Người dùng</span> · <span class="actor">IdP</span></td>
           <td><span class="badge bm1">M01</span></td>
-          <td>IdP lỗi → không tạo phiên; tài khoản bị khóa → 403</td>
+          <td>PKCE S256 · Google OAuth2 tự cấp <code>PATIENT</code> · khóa tạm 5 lần sai · đổi email xác thực OTP 6 số</td>
         </tr>
         <tr class="fr-detail" id="detail-UC-01"><td colspan="5"><div class="fr-dcard"><div class="uc-body">
-          <div class="uc-field"><label>Tác nhân</label><p>Người dùng (mọi vai trò) · Nhà cung cấp danh tính (Keycloak)</p></div>
-          <div class="uc-field"><label>Tiền điều kiện</label><p>Có tài khoản Keycloak hợp lệ; IdP đang hoạt động</p></div>
-          <div class="uc-field"><label>Kích hoạt</label><p>Người dùng nhấn "Đăng nhập"</p></div>
-          <div class="uc-field"><label>Hậu điều kiện</label><p>JWT access + refresh token hợp lệ; chuyển hướng về dashboard theo vai trò</p></div>
-          <div class="uc-field full"><label>Luồng chính</label><ul>
-            <li>1. Frontend chuyển hướng đến Keycloak với PKCE</li>
-            <li>2. Người dùng nhập thông tin xác thực</li>
-            <li>3. Keycloak xác thực, trả authorization code</li>
-            <li>4. Backend đổi code lấy JWT access + refresh token</li>
-            <li>5. Lưu token; chuyển hướng về dashboard theo vai trò</li>
+          <div class="uc-field"><label>Tác nhân</label><p>Người dùng (mọi vai trò) · Keycloak 26.4 / Google OAuth2</p></div>
+          <div class="uc-field"><label>Tiền điều kiện</label><p>Tài khoản tồn tại và <code>active=true</code> (hoặc đăng nhập Google lần đầu hợp lệ)</p></div>
+          <div class="uc-field"><label>Kích hoạt</label><p>Nhấn Đăng nhập, Tiếp tục với Google, Quên mật khẩu hoặc Cập nhật liên hệ</p></div>
+          <div class="uc-field"><label>Hậu điều kiện</label><p>JWT access token lưu trong bộ nhớ client; tự chuyển về trang chủ vai trò mới nếu URL trước đó trái quyền</p></div>
+          <div class="uc-field full"><label>Luồng chính &amp; Thay thế</label><ul>
+            <li>1. Frontend chuyển hướng Keycloak (Authorization Code + PKCE S256); người dùng đăng nhập mật khẩu (&ge;8 ký tự) hoặc chọn <strong>Tiếp tục với Google</strong>.</li>
+            <li>2. Lần đầu đăng nhập: Backend tạo tài khoản <code>UUIDv3(issuer|subject)</code>, tự cấp vai trò <code>PATIENT</code>, mã hóa AES-256-GCM email/SĐT + băm chỉ mục mù HMAC-SHA256.</li>
+            <li>3. <strong>Quên mật khẩu:</strong> hiển thị thông báo trung tính; gửi liên kết đặt lại qua SMTP nếu tồn tại và mở khóa tạm ngay khi hoàn tất.</li>
+            <li>4. <strong>Cập nhật liên hệ (<code>PUT /api/me/contact</code>):</strong> đổi sang email mới bắt buộc xác thực OTP 6 chữ số (<code>POST /api/me/contact/otp</code>, TTL 300s, cooldown 30s, tối đa 5/giờ/email đích, tối đa 5 lần sai); sửa chỉ SĐT không cần OTP.</li>
           </ul></div>
           <div class="uc-field full"><label>Luồng ngoại lệ</label><ul>
-            <li><span class="exc">E1</span> IdP lỗi / không phản hồi → 503; không tạo phiên</li>
-            <li><span class="exc">E2</span> Sai mật khẩu → 401 từ Keycloak</li>
-            <li><span class="exc">E3</span> Tài khoản bị khóa → 403</li>
-            <li><span class="exc">E4</span> JWT hết hạn → tự refresh; nếu refresh cũng hết → đăng nhập lại</li>
+            <li><span class="exc">E1</span> Sai mật khẩu 5 lần trong 15 phút → Keycloak tạm khóa 60–900 giây; mở khóa khẩn cấp qua Quên mật khẩu</li>
+            <li><span class="exc">E2</span> Tài khoản bị quản trị khóa → Backend từ chối 403 ngay cả khi JWT còn hạn</li>
+            <li><span class="exc">E3</span> Sai/hết hạn OTP hoặc vượt giới hạn gửi → 400 / 429 (kèm Nginx rate-limit <code>10r/m</code> theo IP)</li>
           </ul></div>
         </div></div></td></tr>
 
-        <tr class="fr-row" onclick="toggleFR('UC-02')">
+        <tr class="fr-row" data-id="UC-02" data-module="M01" onclick="toggleFR('UC-02')">
           <td><strong>UC-02</strong><span class="fr-arr" id="arr-UC-02">▸</span></td>
           <td>Quản lý vai trò / Kiểm soát truy cập</td>
-          <td><span class="actor">Người dùng</span></td>
+          <td><span class="actor">Người dùng</span> · <span class="actor">Quản trị</span></td>
           <td><span class="badge bm1">M01</span></td>
-          <td>Tiền điều kiện ngầm định cho mọi UC bảo vệ; IDOR → 403</td>
+          <td>Tiền điều kiện bắt buộc cho mọi UC bảo vệ; role + resource ownership; <code>Guard</code> điều hướng sau đăng nhập</td>
         </tr>
         <tr class="fr-detail" id="detail-UC-02"><td colspan="5"><div class="fr-dcard"><div class="uc-body">
-          <div class="uc-field"><label>Tác nhân</label><p>Người dùng đã đăng nhập (mọi vai trò)</p></div>
-          <div class="uc-field"><label>Tiền điều kiện</label><p>JWT hợp lệ còn thời hạn</p></div>
-          <div class="uc-field"><label>Kích hoạt</label><p>Truy cập endpoint yêu cầu kiểm tra quyền</p></div>
-          <div class="uc-field"><label>Hậu điều kiện</label><p>Cho phép tiếp tục hoặc 403; audit ghi DENIED nếu bị từ chối</p></div>
+          <div class="uc-field"><label>Tác nhân</label><p>Người dùng đã xác thực · Quản trị viên (cấp/thu hồi vai trò nhân sự)</p></div>
+          <div class="uc-field"><label>Tiền điều kiện</label><p>JWT hợp lệ (chữ ký RSA, <code>aud=clinic-api</code>, chưa hết hạn)</p></div>
+          <div class="uc-field"><label>Kích hoạt</label><p>Gọi endpoint được bảo vệ hoặc <code>Guard.tsx</code> kiểm tra tuyến đường</p></div>
+          <div class="uc-field"><label>Hậu điều kiện</label><p>Cho phép thực thi hoặc trả 403 + audit <code>DENIED</code> không chứa PHI</p></div>
           <div class="uc-field full"><label>Luồng chính</label><ul>
-            <li>1. Giải mã và xác thực JWT (chữ ký + hạn sử dụng)</li>
-            <li>2. Kiểm tra vai trò: PATIENT / DOCTOR / RECEPTIONIST / AUDITOR / ADMIN</li>
-            <li>3. Kiểm tra quan hệ sở hữu tài nguyên (ownership)</li>
-            <li>4. Cho phép hoặc từ chối; ghi nhật ký audit</li>
+            <li>1. Giải mã JWT và tra quyền thực tế trong bảng <code>user_role</code> của CSDL (không tin JWT role claim).</li>
+            <li>2. Kiểm tra vai trò và quan hệ sở hữu/điều trị với tài nguyên đích.</li>
+            <li>3. Ở frontend, nếu vừa đổi tài khoản khi đăng nhập (<code>fromSignin=true</code>) mà tuyến cũ vượt quyền → tự chuyển về trang chủ vai trò mới.</li>
           </ul></div>
           <div class="uc-field full"><label>Luồng ngoại lệ</label><ul>
-            <li><span class="exc">E1</span> Vai trò không phù hợp → 403 FORBIDDEN; audit DENIED</li>
-            <li><span class="exc">E2</span> IDOR — cố đọc tài nguyên của người khác → 403</li>
-            <li><span class="exc">E3</span> JWT hết hạn → 401 UNAUTHORIZED</li>
-            <li><span class="exc">E4 (BE-01)</span> Truy cập DENIED không sinh audit_event — <strong>lỗi chưa sửa</strong></li>
+            <li><span class="exc">E1</span> Truy cập trái quyền trực tiếp / IDOR → 403 (hoặc 404 ẩn sự tồn tại), ghi audit <code>DENIED</code> nguyên tử</li>
+            <li><span class="exc">E2</span> JWT hết hạn hoặc sai chữ ký → 401 UNAUTHORIZED</li>
           </ul></div>
         </div></div></td></tr>
 
         <!-- M02 Danh mục -->
-        <tr class="fr-row" onclick="toggleFR('UC-03')">
+        <tr class="fr-row" data-id="UC-03" data-module="M02" onclick="toggleFR('UC-03')">
           <td><strong>UC-03</strong><span class="fr-arr" id="arr-UC-03">▸</span></td>
           <td>Quản lý bác sĩ và chuyên khoa</td>
           <td><span class="actor">Quản trị viên</span></td>
           <td><span class="badge bm2">M02</span></td>
-          <td>Chuyên khoa không tồn tại → từ chối; không lưu tham chiếu sai</td>
+          <td>Chuyên khoa không tồn tại/ngừng hoạt động → từ chối 404; không lưu tham chiếu sai</td>
         </tr>
         <tr class="fr-detail" id="detail-UC-03"><td colspan="5"><div class="fr-dcard"><div class="uc-body">
           <div class="uc-field"><label>Tác nhân</label><p><span class="actor">Quản trị viên</span></p></div>
-          <div class="uc-field"><label>Tiền điều kiện</label><p>Quản trị viên đã đăng nhập; chuyên khoa đích tồn tại</p></div>
-          <div class="uc-field"><label>Kích hoạt</label><p>Quản trị viên thêm hoặc sửa bác sĩ / chuyên khoa</p></div>
-          <div class="uc-field"><label>Hậu điều kiện</label><p>Danh mục cập nhật trong DB; bác sĩ có thể nhận lịch hẹn</p></div>
+          <div class="uc-field"><label>Tiền điều kiện</label><p>Quản trị đã đăng nhập; tài khoản nhân sự &amp; chuyên khoa đích đang hoạt động</p></div>
+          <div class="uc-field"><label>Kích hoạt</label><p>Quản trị thêm/cập nhật chuyên khoa, cấp nhân sự <code>POST /api/staff/provision</code> hoặc lưu hồ sơ bác sĩ</p></div>
+          <div class="uc-field"><label>Hậu điều kiện</label><p>Danh mục cập nhật trong DB kèm audit <code>SPECIALTY_*</code> / <code>DOCTOR_*</code></p></div>
           <div class="uc-field full"><label>Luồng chính</label><ul>
-            <li>1. POST/PUT /doctors hoặc /specialties</li>
-            <li>2. Kiểm tra FK chuyên khoa tồn tại</li>
-            <li>3. INSERT hoặc UPDATE bản ghi</li>
-            <li>4. Trả 201/200</li>
+            <li>1. <code>POST/PUT /api/specialties</code> hoặc <code>/api/doctors</code>.</li>
+            <li>2. Kiểm tra chuyên khoa tồn tại (<code>active=TRUE</code>) và nhân sự hợp lệ.</li>
+            <li>3. Lưu dữ liệu + liên kết <code>doctor_specialty</code> + ghi audit.</li>
           </ul></div>
           <div class="uc-field full"><label>Luồng ngoại lệ</label><ul>
-            <li><span class="exc">E1</span> Chuyên khoa không tồn tại → 404</li>
-            <li><span class="exc">E2</span> Trùng tên / mã → 409</li>
-            <li><span class="exc">E3</span> Thiếu quyền ADMIN → 403</li>
+            <li><span class="exc">E1</span> Chuyên khoa không tồn tại/ngừng hoạt động → 404</li>
+            <li><span class="exc">E2</span> Kích hoạt bác sĩ khi user chưa có vai trò <code>DOCTOR</code> → 409 (<code>RG-09</code>)</li>
+            <li><span class="exc">E3</span> Thiếu quyền <code>ADMINISTRATOR</code> → 403</li>
           </ul></div>
         </div></div></td></tr>
 
-        <tr class="fr-row" onclick="toggleFR('UC-04')">
+        <tr class="fr-row" data-id="UC-04" data-module="M02" onclick="toggleFR('UC-04')">
           <td><strong>UC-04</strong><span class="fr-arr" id="arr-UC-04">▸</span></td>
-          <td>Vô hiệu hóa bác sĩ</td>
+          <td>Ngừng nhận lịch / Vô hiệu hóa bác sĩ</td>
           <td><span class="actor">Quản trị viên</span></td>
           <td><span class="badge bm2">M02</span></td>
-          <td>Còn lịch tương lai → trả xung đột, giữ nguyên trạng thái, không tự hủy</td>
+          <td>Còn lịch tương lai (<code>CONFIRMED</code>/<code>CHECKED_IN</code>/<code>IN_PROGRESS</code>) → 409; giữ nguyên lịch sử</td>
         </tr>
         <tr class="fr-detail" id="detail-UC-04"><td colspan="5"><div class="fr-dcard"><div class="uc-body">
           <div class="uc-field"><label>Tác nhân</label><p><span class="actor">Quản trị viên</span></p></div>
-          <div class="uc-field"><label>Tiền điều kiện</label><p>Bác sĩ đang hoạt động (is_active = true)</p></div>
-          <div class="uc-field"><label>Kích hoạt</label><p>Quản trị viên vô hiệu hóa bác sĩ</p></div>
-          <div class="uc-field"><label>Hậu điều kiện</label><p>Bác sĩ không nhận lịch mới; lịch hẹn tương lai giữ nguyên</p></div>
+          <div class="uc-field"><label>Tiền điều kiện</label><p>Bác sĩ đang <code>active=true</code> và không còn lịch tương lai hiệu lực</p></div>
+          <div class="uc-field"><label>Kích hoạt</label><p><code>PUT /api/doctors/{id}</code> với <code>active=false</code></p></div>
+          <div class="uc-field"><label>Hậu điều kiện</label><p>Bác sĩ ẩn khỏi tìm kiếm slot mới; mọi hồ sơ khám cũ giữ nguyên</p></div>
           <div class="uc-field full"><label>Luồng chính</label><ul>
-            <li>1. PUT /doctors/{id}/deactivate</li>
-            <li>2. Kiểm tra lịch hẹn CONFIRMED/PENDING trong tương lai</li>
-            <li>3. Nếu không có xung đột → UPDATE is_active = false</li>
-            <li>4. Trả 200</li>
+            <li>1. Khóa bản ghi <code>user_account</code> và <code>doctor</code> (<code>FOR UPDATE</code>).</li>
+            <li>2. Kiểm tra lịch hẹn tương lai còn hiệu lực (<code>FOR SHARE</code>).</li>
+            <li>3. Nếu trống → cập nhật <code>doctor.active = FALSE</code> và ghi audit <code>DOCTOR_UPDATED</code>.</li>
           </ul></div>
           <div class="uc-field full"><label>Luồng ngoại lệ</label><ul>
-            <li><span class="exc">E1</span> Còn lịch tương lai → 409 với danh sách; hệ thống không tự hủy lịch</li>
-            <li><span class="exc">E2</span> Bác sĩ không tồn tại → 404</li>
-            <li><span class="exc">E3</span> Thiếu quyền ADMIN → 403</li>
+            <li><span class="exc">E1</span> Còn lịch tương lai → 409 "Doctor has active appointments" (<code>RG-08</code>)</li>
+            <li><span class="exc">E2</span> Không tồn tại → 404; thiếu quyền → 403</li>
           </ul></div>
         </div></div></td></tr>
 
         <!-- M03 Lịch làm việc -->
-        <tr class="fr-row" onclick="toggleFR('UC-05')">
+        <tr class="fr-row" data-id="UC-05" data-module="M03" onclick="toggleFR('UC-05')">
           <td><strong>UC-05</strong><span class="fr-arr" id="arr-UC-05">▸</span></td>
-          <td>Quản lý lịch làm việc</td>
-          <td><span class="actor">Bác sĩ</span></td>
+          <td>Quản lý giờ phòng khám, ngày lễ &amp; lịch làm việc</td>
+          <td><span class="actor">Bác sĩ · Quản trị</span></td>
           <td><span class="badge bm3">M03</span></td>
-          <td>end ≤ start hoặc slotDuration ≤ 0 → từ chối; trùng khung giờ → 409</td>
+          <td>Tuân thủ giờ hoạt động/ngày lễ <code>H_eff(D)</code>; sinh slot chia hết không chồng lấp (mặc định 20 phút)</td>
         </tr>
         <tr class="fr-detail" id="detail-UC-05"><td colspan="5"><div class="fr-dcard"><div class="uc-body">
-          <div class="uc-field"><label>Tác nhân</label><p><span class="actor">Bác sĩ</span></p></div>
-          <div class="uc-field"><label>Tiền điều kiện</label><p>Bác sĩ đã đăng nhập; is_active = true</p></div>
-          <div class="uc-field"><label>Kích hoạt</label><p>Bác sĩ tạo hoặc sửa khung giờ làm việc</p></div>
-          <div class="uc-field"><label>Hậu điều kiện</label><p>WorkingSlot trong DB; slot con AVAILABLE để bệnh nhân đặt lịch</p></div>
+          <div class="uc-field"><label>Tác nhân</label><p><span class="actor">Bác sĩ</span> (ca làm việc), <span class="actor">Quản trị viên</span> (giờ tuần &amp; ngày lễ)</p></div>
+          <div class="uc-field"><label>Tiền điều kiện</label><p>Bác sĩ đang <code>active=true</code>; ca mới nằm trong tương lai và nằm gọn trong giờ mở cửa hiệu lực</p></div>
+          <div class="uc-field"><label>Kích hoạt</label><p><code>POST /api/doctors/{id}/availability</code> hoặc cập nhật <code>/api/clinic/hours</code>, <code>/api/clinic/holidays</code></p></div>
+          <div class="uc-field"><label>Hậu điều kiện</label><p>Lưu ca làm việc và sinh <code>N = (end - start) / (60 * slotMinutes)</code> slot con không chồng lấp</p></div>
           <div class="uc-field full"><label>Luồng chính</label><ul>
-            <li>1. POST /working-slots với start, end, slotDuration</li>
-            <li>2. Kiểm tra: end &gt; start, slotDuration &gt; 0, không giao nhau</li>
-            <li>3. INSERT working_slot + tự động tạo appointment_slot con</li>
-            <li>4. Trả 201</li>
+            <li>1. Kiểm tra <code>start &lt; end</code>, chính xác theo phút, <code>end-start</code> chia hết cho <code>slotMinutes</code>, nằm trong <code>H_eff(D)</code>.</li>
+            <li>2. Khóa <code>Doctor</code>, kiểm tra không chồng lấp với ca làm việc hiện có (<code>FOR SHARE</code>).</li>
+            <li>3. Chèn <code>availability</code> + vòng lặp chèn từng bản ghi <code>slot</code> + audit.</li>
           </ul></div>
           <div class="uc-field full"><label>Luồng ngoại lệ</label><ul>
-            <li><span class="exc">E1</span> end ≤ start → 422 INVALID_TIME_RANGE</li>
-            <li><span class="exc">E2</span> slotDuration ≤ 0 → 422 INVALID_DURATION</li>
-            <li><span class="exc">E3</span> Trùng khung giờ → 409 SLOT_CONFLICT</li>
+            <li><span class="exc">E1</span> Ngoài giờ hoạt động/ngày lễ hoặc sai thời lượng → 422</li>
+            <li><span class="exc">E2</span> Trùng ca làm việc hiện có (hoặc lễ trùng/xung đột ca) → 409 (<code>RG-06</code>)</li>
           </ul></div>
         </div></div></td></tr>
 
-        <tr class="fr-row" onclick="toggleFR('UC-06')">
+        <tr class="fr-row" data-id="UC-06" data-module="M03" onclick="toggleFR('UC-06')">
           <td><strong>UC-06</strong><span class="fr-arr" id="arr-UC-06">▸</span></td>
           <td>Quản lý lịch nghỉ</td>
           <td><span class="actor">Bác sĩ</span></td>
           <td><span class="badge bm3">M03</span></td>
-          <td>Có lịch CONFIRMED trong khoảng → 409; không tự hủy lịch bệnh nhân</td>
+          <td>Có lịch hẹn hiệu lực trong khoảng nghỉ → 409; tuyệt đối không tự hủy lịch của bệnh nhân</td>
         </tr>
         <tr class="fr-detail" id="detail-UC-06"><td colspan="5"><div class="fr-dcard"><div class="uc-body">
           <div class="uc-field"><label>Tác nhân</label><p><span class="actor">Bác sĩ</span></p></div>
-          <div class="uc-field"><label>Tiền điều kiện</label><p>Bác sĩ đã đăng nhập</p></div>
-          <div class="uc-field"><label>Kích hoạt</label><p>Bác sĩ đánh dấu khoảng thời gian nghỉ</p></div>
-          <div class="uc-field"><label>Hậu điều kiện</label><p>Các slot trong khoảng UNAVAILABLE; bệnh nhân bị ảnh hưởng được thông báo</p></div>
+          <div class="uc-field"><label>Tiền điều kiện</label><p>Khoảng nghỉ trong tương lai, nằm trong giờ hoạt động hiệu lực và không trùng lịch hẹn</p></div>
+          <div class="uc-field"><label>Kích hoạt</label><p><code>POST /api/doctors/{id}/time-off</code></p></div>
+          <div class="uc-field"><label>Hậu điều kiện</label><p>Lưu <code>time_off</code>; các slot giao với khoảng nghỉ bị loại khỏi <code>GET /api/slots</code></p></div>
           <div class="uc-field full"><label>Luồng chính</label><ul>
-            <li>1. POST /leave-requests với from, to</li>
-            <li>2. Kiểm tra lịch hẹn CONFIRMED trong khoảng ngày</li>
-            <li>3. INSERT leave_request; đánh dấu UNAVAILABLE các slot liên quan</li>
-            <li>4. Enqueue notification_job cho bệnh nhân bị ảnh hưởng</li>
-            <li>5. Trả 201</li>
+            <li>1. Khóa <code>Doctor</code>; kiểm tra khoảng hợp lệ.</li>
+            <li>2. Kiểm tra lịch hẹn hiệu lực giao với <code>[start, end)</code> (<code>FOR SHARE</code>).</li>
+            <li>3. Chèn <code>time_off</code> + audit <code>TIME_OFF_CREATED</code>.</li>
           </ul></div>
           <div class="uc-field full"><label>Luồng ngoại lệ</label><ul>
-            <li><span class="exc">E1</span> Có lịch CONFIRMED trong khoảng → 409 với danh sách; không tự hủy</li>
-            <li><span class="exc">E2</span> from ≥ to → 422 INVALID_DATE_RANGE</li>
+            <li><span class="exc">E1</span> Có lịch hẹn trong khoảng → 409 (<code>RG-07</code>)</li>
+            <li><span class="exc">E2</span> <code>start &ge; end</code> hoặc quá khứ → 422</li>
           </ul></div>
         </div></div></td></tr>
 
-        <tr class="fr-row" onclick="toggleFR('UC-07')">
+        <tr class="fr-row" data-id="UC-07" data-module="M03" onclick="toggleFR('UC-07')">
           <td><strong>UC-07</strong><span class="fr-arr" id="arr-UC-07">▸</span></td>
           <td>Tìm slot khả dụng</td>
-          <td><span class="actor">Bệnh nhân · Lễ tân</span></td>
+          <td><span class="actor">Bệnh nhân · Bác sĩ · Lễ tân · Quản trị</span></td>
           <td><span class="badge bm3">M03</span></td>
-          <td>BE-02: Lễ tân nhận 403 — lỗi chưa sửa</td>
+          <td>Đã sửa BE-02/03: mọi vai trò vận hành đọc được (<code>AUDITOR</code> thuần bị chặn 403); tối ưu NFR-01 <code>p95 = 7,81 ms</code></td>
         </tr>
         <tr class="fr-detail" id="detail-UC-07"><td colspan="5"><div class="fr-dcard"><div class="uc-body">
-          <div class="uc-field"><label>Tác nhân</label><p><span class="actor">Bệnh nhân</span>, <span class="actor">Lễ tân</span></p></div>
-          <div class="uc-field"><label>Tiền điều kiện</label><p>Đã đăng nhập</p></div>
-          <div class="uc-field"><label>Kích hoạt</label><p>Người dùng tra cứu slot trống của bác sĩ theo ngày / chuyên khoa</p></div>
-          <div class="uc-field"><label>Hậu điều kiện</label><p>Danh sách slot AVAILABLE trong tương lai</p></div>
+          <div class="uc-field"><label>Tác nhân</label><p>Vai trò vận hành: <span class="actor">Bệnh nhân</span>, <span class="actor">Bác sĩ</span>, <span class="actor">Lễ tân</span>, <span class="actor">Quản trị viên</span></p></div>
+          <div class="uc-field"><label>Tiền điều kiện</label><p>Đã đăng nhập bằng vai trò vận hành (<code>requireSchedulingCatalogRead</code>)</p></div>
+          <div class="uc-field"><label>Kích hoạt</label><p><code>GET /api/slots?date=YYYY-MM-DD&amp;doctorId=&amp;specialtyId=&amp;mode=</code></p></div>
+          <div class="uc-field"><label>Hậu điều kiện</label><p>Danh sách slot còn trống (tối đa 500 bản ghi) loại trừ <code>time_off</code> và lịch hẹn hiệu lực</p></div>
           <div class="uc-field full"><label>Luồng chính</label><ul>
-            <li>1. GET /slots?doctorId=&amp;date=</li>
-            <li>2. Kiểm tra vai trò</li>
-            <li>3. JOIN working_slot với appointment để loại slot đã được đặt</li>
-            <li>4. Trả danh sách AVAILABLE</li>
+            <li>1. Kiểm tra vai trò vận hành; ngày quá khứ trả rỗng ngay không cần quét DB.</li>
+            <li>2. Truy vấn ứng viên slot trong ngày theo chỉ mục <code>ix_slot_start_at</code>.</li>
+            <li>3. Tải phẳng danh sách <code>time_off</code> và <code>appointment</code> hiệu lực qua chỉ mục phủ cửa sổ (<code>V11</code>) rồi lọc trùng <code>O(N)</code>.</li>
           </ul></div>
           <div class="uc-field full"><label>Luồng ngoại lệ</label><ul>
-            <li><span class="exc">E1 (BE-02)</span> Lễ tân nhận 403 — <strong>lỗi chưa sửa</strong></li>
-            <li><span class="exc">E2</span> Không có slot → [] với 200</li>
+            <li><span class="exc">E1</span> <code>AUDITOR</code> thuần gọi endpoint → 403 FORBIDDEN (<code>RG-03</code>)</li>
+            <li><span class="exc">E2</span> Không có slot phù hợp → <code>[]</code> kèm 200 OK</li>
           </ul></div>
         </div></div></td></tr>
 
         <!-- M04 Đặt lịch hẹn -->
-        <tr class="fr-row" onclick="toggleFR('UC-08')">
+        <tr class="fr-row" data-id="UC-08" data-module="M04" onclick="toggleFR('UC-08')">
           <td><strong>UC-08</strong><span class="fr-arr" id="arr-UC-08">▸</span></td>
           <td>Đặt lịch hẹn ⭐</td>
           <td><span class="actor">Bệnh nhân</span></td>
           <td><span class="badge bm4">M04</span></td>
-          <td>SELECT FOR UPDATE chống tranh chấp slot; idempotency; audit + thông báo sau commit</td>
+          <td>Khóa <code>Doctor &rarr; Patient</code> chống trùng; <code>Idempotency-Key</code> 24h; k6 100 req tranh chấp đúng 1/99</td>
         </tr>
         <tr class="fr-detail" id="detail-UC-08"><td colspan="5"><div class="fr-dcard"><div class="uc-body">
           <div class="uc-field"><label>Tác nhân</label><p><span class="actor">Bệnh nhân</span></p></div>
-          <div class="uc-field"><label>Tiền điều kiện</label><p>Bệnh nhân đã đăng nhập; slot còn trống và trong tương lai</p></div>
-          <div class="uc-field"><label>Kích hoạt</label><p>Bệnh nhân chọn slot và xác nhận đặt lịch</p></div>
-          <div class="uc-field"><label>Hậu điều kiện</label><p>Lịch hẹn CONFIRMED; audit CREATED; notification_job enqueued</p></div>
+          <div class="uc-field"><label>Tiền điều kiện</label><p>Đã đăng nhập <code>PATIENT</code>; slot thuộc tương lai và còn khả dụng</p></div>
+          <div class="uc-field"><label>Kích hoạt</label><p><code>POST /api/appointments</code> với <code>{slotId}</code> và header <code>Idempotency-Key</code></p></div>
+          <div class="uc-field"><label>Hậu điều kiện</label><p>Tạo lịch <code>CONFIRMED</code>, ghi audit <code>APPOINTMENT_BOOKED</code> và xếp <code>notification_job</code> xác nhận (+ nhắc trước 30p nếu đủ hạn)</p></div>
           <div class="uc-field full"><label>Luồng chính</label><ul>
-            <li>1. Bệnh nhân chọn chuyên khoa → bác sĩ → slot</li>
-            <li>2. Xác thực JWT; kiểm tra Idempotency-Key</li>
-            <li>3. BEGIN TRANSACTION · SELECT slot FOR UPDATE</li>
-            <li>4. Kiểm tra xung đột và tính khả dụng của slot</li>
-            <li>5. INSERT appointment (CONFIRMED) + audit + notification_job</li>
-            <li>6. COMMIT · cache idempotency 24h</li>
-            <li>7. OutboxWorker gửi email xác nhận sau commit</li>
+            <li>1. Kiểm tra replay Idempotency (<code>actorId + BOOK + key</code>).</li>
+            <li>2. Khóa <code>Doctor</code> trước rồi <code>Patient</code> (<code>FOR UPDATE</code>); kiểm tra bác sĩ &amp; bệnh nhân đều rảnh trên 2 truy vấn chỉ mục tách riêng (<code>V10</code>/<code>V11</code>).</li>
+            <li>3. Chèn <code>appointment (CONFIRMED)</code> + <code>audit_event</code> + <code>notification_job</code> trong cùng giao dịch <code>READ COMMITTED</code>.</li>
           </ul></div>
           <div class="uc-field full"><label>Luồng ngoại lệ</label><ul>
-            <li><span class="exc">E1</span> Slot đã bị đặt → 409 SLOT_CONFLICT</li>
-            <li><span class="exc">E2</span> Idempotency-Key đã dùng → 200 từ cache</li>
-            <li><span class="exc">E3</span> JWT hết hạn → 401</li>
-            <li><span class="exc">E4</span> Lỗi ghi audit → ROLLBACK (fail-closed)</li>
+            <li><span class="exc">E1</span> Slot trùng bác sĩ/bệnh nhân hoặc nằm trong lịch nghỉ → 409</li>
+            <li><span class="exc">E2</span> Phát lại cùng <code>Idempotency-Key</code> + cùng payload → 200 trả kết quả cũ; khác payload → 409</li>
+            <li><span class="exc">E3</span> Mất mạng UI → giữ lựa chọn và retry dùng cùng key (<code>booking-offline.test.tsx</code>)</li>
           </ul></div>
         </div></div></td></tr>
 
-        <tr class="fr-row" onclick="toggleFR('UC-09')">
+        <tr class="fr-row" data-id="UC-09" data-module="M04" onclick="toggleFR('UC-09')">
           <td><strong>UC-09</strong><span class="fr-arr" id="arr-UC-09">▸</span></td>
           <td>Đổi lịch hẹn ⭐</td>
           <td><span class="actor">Bệnh nhân</span></td>
           <td><span class="badge bm4">M04</span></td>
-          <td>Cửa sổ 2h; version check; lock ordering tránh deadlock; rollback giữ lịch cũ</td>
+          <td>Cửa sổ &ge;2h; kiểm tra <code>version</code>; lock ordering tăng dần Doctor ID; thất bại giữ lịch cũ</td>
         </tr>
         <tr class="fr-detail" id="detail-UC-09"><td colspan="5"><div class="fr-dcard"><div class="uc-body">
           <div class="uc-field"><label>Tác nhân</label><p><span class="actor">Bệnh nhân</span></p></div>
-          <div class="uc-field"><label>Tiền điều kiện</label><p>Lịch CONFIRMED; chủ sở hữu; còn ≥2h trước giờ hẹn</p></div>
-          <div class="uc-field"><label>Kích hoạt</label><p>Bệnh nhân chọn lịch cũ + slot mới và xác nhận đổi</p></div>
-          <div class="uc-field"><label>Hậu điều kiện</label><p>Slot cập nhật; version+1; audit RESCHEDULE; email xác nhận</p></div>
+          <div class="uc-field"><label>Tiền điều kiện</label><p>Lịch <code>CONFIRMED</code> thuộc bệnh nhân và <code>now &le; start - 7200s</code></p></div>
+          <div class="uc-field"><label>Kích hoạt</label><p><code>POST /api/appointments/{id}/reschedule</code> kèm <code>{slotId, version}</code> và <code>Idempotency-Key</code></p></div>
+          <div class="uc-field"><label>Hậu điều kiện</label><p>Cập nhật slot mới, tăng <code>version+1</code>, audit <code>APPOINTMENT_RESCHEDULED</code>, xếp thông báo</p></div>
           <div class="uc-field full"><label>Luồng chính</label><ul>
-            <li>1. PATCH /appointments/{id} với Idempotency-Key và version</li>
-            <li>2. BEGIN TRANSACTION · SELECT FOR UPDATE · kiểm tra ownership</li>
-            <li>3. Kiểm tra CONFIRMED và cửa sổ 2h</li>
-            <li>4. Lock ordering: Doctor-ID → Patient-ID (tránh deadlock)</li>
-            <li>5. SELECT slot mới FOR UPDATE; kiểm tra xung đột</li>
-            <li>6. UPDATE appointment + INSERT audit + notification_job</li>
-            <li>7. COMMIT · cache idempotency</li>
+            <li>1. Kiểm tra Idempotency; lấy lịch &amp; slot mới.</li>
+            <li>2. Khóa tập bác sĩ theo <code>TreeSet</code> tăng dần rồi khóa <code>Patient</code> (tránh deadlock).</li>
+            <li>3. Kiểm tra <code>CONFIRMED</code>, <code>version</code>, hạn &ge;2h và tính khả dụng slot mới (bỏ qua chính lịch đang đổi).</li>
+            <li>4. Cập nhật lịch, tăng <code>version</code>, ghi audit và outbox cùng giao dịch.</li>
           </ul></div>
           <div class="uc-field full"><label>Luồng ngoại lệ</label><ul>
-            <li><span class="exc">E1</span> Không phải chủ sở hữu → 403</li>
-            <li><span class="exc">E2</span> Trạng thái ≠ CONFIRMED → 409 INVALID_STATE</li>
-            <li><span class="exc">E3</span> Còn &lt;2h → 409 CHANGE_WINDOW_EXPIRED</li>
-            <li><span class="exc">E4</span> Slot mới đã bị đặt → 409 SLOT_CONFLICT</li>
-            <li><span class="exc">E5</span> Version không khớp → 409 VERSION_CONFLICT</li>
-            <li><span class="exc">E6</span> Lỗi gửi email sau COMMIT → <strong>không rollback</strong> lịch</li>
+            <li><span class="exc">E1</span> Sai <code>version</code>, quá mốc 2h, hoặc slot mới trùng → 409 và giữ nguyên lịch cũ</li>
+            <li><span class="exc">E2</span> Lỗi gửi SMTP sau commit → không rollback lịch</li>
           </ul></div>
         </div></div></td></tr>
 
-        <tr class="fr-row" onclick="toggleFR('UC-10')">
+        <tr class="fr-row" data-id="UC-10" data-module="M04" onclick="toggleFR('UC-10')">
           <td><strong>UC-10</strong><span class="fr-arr" id="arr-UC-10">▸</span></td>
           <td>Hủy lịch hẹn</td>
           <td><span class="actor">Bệnh nhân</span></td>
           <td><span class="badge bm4">M04</span></td>
-          <td>Chỉ CONFIRMED; job nhắc lịch cũ bị vô hiệu khi hủy</td>
+          <td>Chỉ <code>CONFIRMED</code> &amp; &ge;2h; lý do bắt buộc; job nhắc phiên bản cũ tự bỏ qua</td>
         </tr>
         <tr class="fr-detail" id="detail-UC-10"><td colspan="5"><div class="fr-dcard"><div class="uc-body">
           <div class="uc-field"><label>Tác nhân</label><p><span class="actor">Bệnh nhân</span></p></div>
-          <div class="uc-field"><label>Tiền điều kiện</label><p>Lịch CONFIRMED; chủ sở hữu; còn ≥2h trước giờ hẹn</p></div>
-          <div class="uc-field"><label>Kích hoạt</label><p>Bệnh nhân nhấn "Hủy lịch"</p></div>
-          <div class="uc-field"><label>Hậu điều kiện</label><p>Lịch CANCELLED; slot giải phóng; audit CANCEL; job nhắc lịch vô hiệu</p></div>
+          <div class="uc-field"><label>Tiền điều kiện</label><p>Lịch <code>CONFIRMED</code> thuộc bệnh nhân và còn &ge;2h</p></div>
+          <div class="uc-field"><label>Kích hoạt</label><p><code>POST /api/appointments/{id}/cancel</code> với <code>{reason, version}</code> + <code>Idempotency-Key</code></p></div>
+          <div class="uc-field"><label>Hậu điều kiện</label><p>Lịch <code>CANCELLED</code>, <code>version+1</code>, giải phóng slot và xếp thông báo hủy</p></div>
           <div class="uc-field full"><label>Luồng chính</label><ul>
-            <li>1. DELETE /appointments/{id}</li>
-            <li>2. BEGIN TRANSACTION · SELECT FOR UPDATE · kiểm tra ownership</li>
-            <li>3. Kiểm tra CONFIRMED và cửa sổ 2h</li>
-            <li>4. UPDATE CANCELLED + INSERT audit(CANCEL) + notification_job(CANCELLED)</li>
-            <li>5. COMMIT; slot trở về AVAILABLE</li>
+            <li>1. Kiểm tra lý do hợp lệ (1–1000 ký tự) và Idempotency.</li>
+            <li>2. Khóa <code>Doctor</code> &rarr; <code>Patient</code>; kiểm tra trạng thái, <code>version</code>, hạn &ge;2h.</li>
+            <li>3. Cập nhật <code>CANCELLED</code>, lưu lý do, tăng <code>version</code>, ghi audit và outbox.</li>
           </ul></div>
           <div class="uc-field full"><label>Luồng ngoại lệ</label><ul>
-            <li><span class="exc">E1</span> Trạng thái ≠ CONFIRMED → 409 INVALID_STATE</li>
-            <li><span class="exc">E2</span> &lt;2h → 409 CHANGE_WINDOW_EXPIRED</li>
-            <li><span class="exc">E3</span> Không phải chủ sở hữu → 403</li>
+            <li><span class="exc">E1</span> Trạng thái &ne; <code>CONFIRMED</code> hoặc còn &lt;2h → 409</li>
+            <li><span class="exc">E2</span> Thiếu lý do → 422</li>
           </ul></div>
         </div></div></td></tr>
 
-        <tr class="fr-row" onclick="toggleFR('UC-11')">
+        <tr class="fr-row" data-id="UC-11" data-module="M04" onclick="toggleFR('UC-11')">
           <td><strong>UC-11</strong><span class="fr-arr" id="arr-UC-11">▸</span></td>
           <td>Tiến trình lịch hẹn</td>
-          <td><span class="actor">Bác sĩ · Bệnh nhân</span></td>
+          <td><span class="actor">Bác sĩ · Lễ tân · Bệnh nhân</span></td>
           <td><span class="badge bm4">M04</span></td>
-          <td>Chỉ actor liên quan mới xem; trạng thái chuyển nguyên tử cùng Encounter</td>
+          <td>Đồng bộ nguyên tử Appointment + Encounter + QueueTicket / TelehealthSession</td>
         </tr>
         <tr class="fr-detail" id="detail-UC-11"><td colspan="5"><div class="fr-dcard"><div class="uc-body">
-          <div class="uc-field"><label>Tác nhân</label><p><span class="actor">Bác sĩ</span>, <span class="actor">Bệnh nhân</span></p></div>
-          <div class="uc-field"><label>Tiền điều kiện</label><p>Lịch hẹn tồn tại; đã đăng nhập</p></div>
-          <div class="uc-field"><label>Kích hoạt</label><p>Xem trạng thái tiến trình, hoặc bác sĩ bắt đầu / kết thúc ca khám</p></div>
-          <div class="uc-field"><label>Hậu điều kiện</label><p>Trạng thái phản ánh đúng thực tế: CONFIRMED → CHECKED_IN → IN_PROGRESS → COMPLETED</p></div>
+          <div class="uc-field"><label>Tác nhân</label><p><span class="actor">Bác sĩ</span>, <span class="actor">Lễ tân</span>, <span class="actor">Bệnh nhân</span> (xem)</p></div>
+          <div class="uc-field"><label>Tiền điều kiện</label><p>Lịch hẹn tồn tại và người thao tác có quan hệ hợp lệ</p></div>
+          <div class="uc-field"><label>Kích hoạt</label><p><code>GET /api/appointments/{id}</code> hoặc <code>POST /api/appointments/{id}/progress</code></p></div>
+          <div class="uc-field"><label>Hậu điều kiện</label><p>Chuyển trạng thái hợp lệ: <code>CHECKED_IN &rarr; IN_PROGRESS &rarr; COMPLETED</code> (hoặc <code>NO_SHOW</code> qua UC-26)</p></div>
           <div class="uc-field full"><label>Luồng chính</label><ul>
-            <li>1. GET /appointments/{id} → trả trạng thái hiện tại</li>
-            <li>2. Bác sĩ bắt đầu khám → BEGIN TX · INSERT Encounter(ACTIVE) + UPDATE appointment(IN_PROGRESS) + UPDATE queue_ticket(IN_SERVICE) · COMMIT</li>
-            <li>3. Bác sĩ kết thúc khám → BEGIN TX · UPDATE Encounter(COMPLETED) + appointment(COMPLETED) + queue_ticket(DONE) · COMMIT</li>
-            <li>4. Enqueue notification_job sau mỗi chuyển trạng thái quan trọng</li>
+            <li>1. Bắt đầu khám trực tiếp: yêu cầu lịch <code>CHECKED_IN</code> + phiếu <code>CALLED</code> → tạo <code>Encounter</code>, chuyển lịch <code>IN_PROGRESS</code> và phiếu <code>IN_SERVICE</code>.</li>
+            <li>2. Kết thúc khám: yêu cầu hồ sơ đã <code>FINAL</code> (và phiên từ xa <code>ENDED</code> nếu là <code>REMOTE</code>) → chuyển Encounter, lịch <code>COMPLETED</code> và phiếu <code>DONE</code>.</li>
           </ul></div>
           <div class="uc-field full"><label>Luồng ngoại lệ</label><ul>
-            <li><span class="exc">E1</span> Trạng thái không hợp lệ cho thao tác → 409 INVALID_STATE</li>
-            <li><span class="exc">E2</span> Không có quyền xem (không phải actor liên quan) → 403</li>
-            <li><span class="exc">E3</span> Lỗi ghi audit → ROLLBACK (fail-closed)</li>
+            <li><span class="exc">E1</span> Chưa chốt hồ sơ <code>FINAL</code> hoặc chưa <code>endSession</code> từ xa → 409</li>
+            <li><span class="exc">E2</span> Cố chuyển ngược từ trạng thái kết thúc → 409</li>
           </ul></div>
         </div></div></td></tr>
 
         <!-- M05 Chăm sóc lâm sàng -->
-        <tr class="fr-row" onclick="toggleFR('UC-12')">
+        <tr class="fr-row" data-id="UC-12" data-module="M05" onclick="toggleFR('UC-12')">
           <td><strong>UC-12</strong><span class="fr-arr" id="arr-UC-12">▸</span></td>
           <td>Xem lịch sử được phép ⭐</td>
           <td><span class="actor">Bác sĩ · Bệnh nhân</span></td>
           <td><span class="badge bm5">M05</span></td>
-          <td>RBAC + ownership; bệnh nhân chỉ thấy FINAL + ISSUED của chính mình; đơn thuốc thuộc UC-12</td>
+          <td>Ghi audit <code>READ</code> fail-closed trước khi trả bệnh án/đơn thuốc; bệnh nhân chỉ thấy FINAL + ISSUED</td>
         </tr>
         <tr class="fr-detail" id="detail-UC-12"><td colspan="5"><div class="fr-dcard"><div class="uc-body">
-          <div class="uc-field"><label>Tác nhân</label><p><span class="actor">Bác sĩ</span>, <span class="actor">Bệnh nhân</span></p></div>
-          <div class="uc-field"><label>Tiền điều kiện</label><p>Đã đăng nhập; với bệnh nhân: phải là hồ sơ của chính mình</p></div>
-          <div class="uc-field"><label>Kích hoạt</label><p>Xem lịch sử hồ sơ khám, đơn thuốc, kết quả xét nghiệm</p></div>
-          <div class="uc-field"><label>Hậu điều kiện</label><p>Danh sách theo quyền: Bác sĩ xem FINAL + DRAFT của mình; Bệnh nhân chỉ xem FINAL + ISSUED</p></div>
+          <div class="uc-field"><label>Tác nhân</label><p><span class="actor">Bác sĩ</span> (có quan hệ điều trị), <span class="actor">Bệnh nhân</span> (chủ sở hữu)</p></div>
+          <div class="uc-field"><label>Tiền điều kiện</label><p>Đã xác thực; có quan hệ sở hữu hoặc lịch phân công hợp lệ</p></div>
+          <div class="uc-field"><label>Kích hoạt</label><p><code>GET /api/patients/{id}/records</code>, <code>/patients/{id}/prescriptions</code>, <code>/encounters/{id}/record</code></p></div>
+          <div class="uc-field"><label>Hậu điều kiện</label><p>Trả dữ liệu được phép kèm nhật ký kiểm toán truy cập</p></div>
           <div class="uc-field full"><label>Luồng chính</label><ul>
-            <li>1. GET /medical-records?patientId= hoặc GET /prescriptions?patientId=</li>
-            <li>2. Trích xuất patientId / doctorId từ JWT claim</li>
-            <li>3. Bác sĩ: FINAL + DRAFT của mình; Bệnh nhân: chỉ FINAL + ISSUED</li>
-            <li>4. Trả danh sách có phân trang · ghi audit READ</li>
+            <li>1. Kiểm tra vai trò &amp; quan hệ điều trị (<code>CONFIRMED</code>/<code>CHECKED_IN</code>/<code>IN_PROGRESS</code> hoặc khám <code>COMPLETED</code> của chính bác sĩ).</li>
+            <li>2. Ghi <code>audit_event</code> trong cùng giao dịch trước khi trả dữ liệu (lỗi audit → hoàn tác).</li>
+            <li>3. Bệnh nhân chỉ xem bản <code>FINAL</code> &amp; đơn <code>ISSUED</code> của mình; bác sĩ phụ trách đọc được cả <code>DRAFT</code> của lần khám.</li>
           </ul></div>
           <div class="uc-field full"><label>Luồng ngoại lệ</label><ul>
-            <li><span class="exc">E1</span> Bệnh nhân cố xem DRAFT → 403 FORBIDDEN</li>
-            <li><span class="exc">E2</span> Truy cập hồ sơ của người khác → 403 (IDOR)</li>
-            <li><span class="exc">E3</span> Không có hồ sơ → [] với 200</li>
+            <li><span class="exc">E1</span> Không có quan hệ điều trị hoặc đọc chéo hồ sơ người khác → 403 / 404</li>
+            <li><span class="exc">E2</span> Lỗi ghi audit → 503 không trả bệnh án</li>
           </ul></div>
         </div></div></td></tr>
 
-        <tr class="fr-row" onclick="toggleFR('UC-13')">
+        <tr class="fr-row" data-id="UC-13" data-module="M05" onclick="toggleFR('UC-13')">
           <td><strong>UC-13</strong><span class="fr-arr" id="arr-UC-13">▸</span></td>
           <td>Ghi / Chốt / Bổ sung hồ sơ ⭐</td>
           <td><span class="actor">Bác sĩ</span></td>
           <td><span class="badge bm5">M05</span></td>
-          <td>DRAFT → FINAL bất biến; amendment tạo version mới; audit fail-closed</td>
+          <td><code>DRAFT &rarr; FINAL</code> bất biến; khóa lạc quan <code>version</code>; bổ sung tạo bản FINAL mới có lý do</td>
         </tr>
         <tr class="fr-detail" id="detail-UC-13"><td colspan="5"><div class="fr-dcard"><div class="uc-body">
           <div class="uc-field"><label>Tác nhân</label><p><span class="actor">Bác sĩ</span></p></div>
-          <div class="uc-field"><label>Tiền điều kiện</label><p>Bác sĩ có Encounter đang ACTIVE với bệnh nhân được phân công</p></div>
-          <div class="uc-field"><label>Kích hoạt</label><p>Bác sĩ lưu hoặc hoàn tất hồ sơ khám</p></div>
-          <div class="uc-field"><label>Hậu điều kiện</label><p>DRAFT lưu với version; hoặc FINAL bất biến; amendment tạo DRAFT v=N+1</p></div>
+          <div class="uc-field"><label>Tiền điều kiện</label><p>Bác sĩ phụ trách Encounter; nội dung &le; 100.000 ký tự</p></div>
+          <div class="uc-field"><label>Kích hoạt</label><p><code>PUT /api/encounters/{id}/record</code> hoặc <code>POST /api/records/{id}/amendments</code></p></div>
+          <div class="uc-field"><label>Hậu điều kiện</label><p>Nội dung mã hóa AES-256-GCM được lưu kèm phiên bản, tác giả và audit</p></div>
           <div class="uc-field full"><label>Luồng chính</label><ul>
-            <li>1. Bác sĩ nhập thông tin vào DRAFT (có thể sửa nhiều lần)</li>
-            <li>2. Mỗi lần lưu: kiểm tra version + quyền + ghi audit</li>
-            <li>3. Bác sĩ chốt → PUT finalize → FINAL (bất biến)</li>
-            <li>4. Bổ sung: POST /amendments → DRAFT mới v=N+1, refId → FINAL gốc</li>
+            <li>1. Lưu nháp (<code>DRAFT</code>) hoặc chốt hoàn tất (<code>FINAL</code>) với kiểm tra khớp <code>version</code> &amp; khóa Encounter.</li>
+            <li>2. Chốt <code>FINAL</code> khóa cứng bản ghi; sau đó muốn sửa phải gọi <code>amendments</code> với lý do hợp lệ để tạo bản <code>FINAL</code> mới trỏ tới bản gốc.</li>
           </ul></div>
           <div class="uc-field full"><label>Luồng ngoại lệ</label><ul>
-            <li><span class="exc">E1</span> Ghi đè trực tiếp FINAL → 409 RECORD_IMMUTABLE</li>
-            <li><span class="exc">E2</span> Bác sĩ không có quan hệ điều trị → 403</li>
-            <li><span class="exc">E3</span> Version không khớp → 409 VERSION_CONFLICT</li>
-            <li><span class="exc">E4</span> Lỗi audit → ROLLBACK (fail-closed)</li>
+            <li><span class="exc">E1</span> Sai <code>version</code> hoặc cố sửa trực tiếp bản <code>FINAL</code> → 409</li>
+            <li><span class="exc">E2</span> Chưa phải bác sĩ phụ trách → 403</li>
           </ul></div>
         </div></div></td></tr>
 
-        <tr class="fr-row" onclick="toggleFR('UC-14')">
+        <tr class="fr-row" data-id="UC-14" data-module="M05" onclick="toggleFR('UC-14')">
           <td><strong>UC-14</strong><span class="fr-arr" id="arr-UC-14">▸</span></td>
-          <td>Kê đơn thuốc</td>
+          <td>Kê và phát hành đơn thuốc</td>
           <td><span class="actor">Bác sĩ</span></td>
           <td><span class="badge bm5">M05</span></td>
-          <td>ISSUED bất biến; chỉ phát hành khi ≥1 dòng thuốc đầy đủ</td>
+          <td><code>ISSUED</code> bất biến; phát hành yêu cầu &ge;1 dòng đủ 5 trường thuốc; sửa nháp bằng PUT</td>
         </tr>
         <tr class="fr-detail" id="detail-UC-14"><td colspan="5"><div class="fr-dcard"><div class="uc-body">
           <div class="uc-field"><label>Tác nhân</label><p><span class="actor">Bác sĩ</span></p></div>
-          <div class="uc-field"><label>Tiền điều kiện</label><p>Encounter đang ACTIVE; bác sĩ là chủ Encounter</p></div>
-          <div class="uc-field"><label>Kích hoạt</label><p>Bác sĩ kê đơn thuốc cho bệnh nhân</p></div>
-          <div class="uc-field"><label>Hậu điều kiện</label><p>Prescription ISSUED (bất biến); audit PRESCRIPTION_ISSUED</p></div>
+          <div class="uc-field"><label>Tiền điều kiện</label><p>Bác sĩ phụ trách Encounter đang mở</p></div>
+          <div class="uc-field"><label>Kích hoạt</label><p><code>POST /api/encounters/{id}/prescriptions</code>, <code>PUT /api/prescriptions/{id}</code>, <code>POST /api/prescriptions/{id}/issue</code></p></div>
+          <div class="uc-field"><label>Hậu điều kiện</label><p>Đơn <code>ISSUED</code> kèm người lập, thời điểm và audit; bệnh nhân xem được qua lịch sử</p></div>
           <div class="uc-field full"><label>Luồng chính</label><ul>
-            <li>1. POST /prescriptions với medications[]</li>
-            <li>2. Kiểm tra Encounter ownership</li>
-            <li>3. Kiểm tra ≥1 dòng thuốc đầy đủ (tên, liều, số ngày)</li>
-            <li>4. INSERT prescription (ISSUED) + audit · COMMIT</li>
+            <li>1. Tạo bản nháp hoặc cập nhật bản nháp hiện có bằng <code>PUT</code>.</li>
+            <li>2. Phát hành kiểm tra &ge;1 dòng thuốc đủ <code>medicineName</code>, <code>doseText</code>, <code>route</code>, <code>frequency</code>, <code>durationText</code> (&le;1000 ký tự).</li>
+            <li>3. Chuyển sang <code>ISSUED</code> bất biến + audit cùng giao dịch.</li>
           </ul></div>
           <div class="uc-field full"><label>Luồng ngoại lệ</label><ul>
-            <li><span class="exc">E1</span> 0 dòng thuốc → 422 EMPTY_PRESCRIPTION</li>
-            <li><span class="exc">E2</span> Encounter không thuộc bác sĩ → 403</li>
-            <li><span class="exc">E3</span> Muốn sửa ISSUED → phải tạo đơn thay thế mới</li>
+            <li><span class="exc">E1</span> Phát hành đơn rỗng hoặc thiếu trường bắt buộc → 422; giữ nguyên <code>DRAFT</code></li>
+            <li><span class="exc">E2</span> Sửa đơn đã <code>ISSUED</code> → 409; phải tạo đơn mới</li>
           </ul></div>
         </div></div></td></tr>
 
         <!-- M06 Thông báo -->
-        <tr class="fr-row" onclick="toggleFR('UC-15')">
+        <tr class="fr-row" data-id="UC-15" data-module="M06" onclick="toggleFR('UC-15')">
           <td><strong>UC-15</strong><span class="fr-arr" id="arr-UC-15">▸</span></td>
-          <td>Nhận nhắc lịch hẹn</td>
-          <td><span class="actor">Bệnh nhân · Lễ tân</span></td>
+          <td>Nhận xác nhận &amp; nhắc lịch hẹn</td>
+          <td><span class="actor">Bệnh nhân · Hệ thống · Email</span></td>
           <td><span class="badge bm6">M06</span></td>
-          <td>Gửi sau commit; job recheck trạng thái lịch trước khi gửi; lỗi gửi không rollback lịch</td>
+          <td>Nhắc trước 30 phút (<code>1800 s</code>); kiểm tra lại <code>CONFIRMED</code> &amp; version trước gửi; nội dung tối thiểu</td>
         </tr>
         <tr class="fr-detail" id="detail-UC-15"><td colspan="5"><div class="fr-dcard"><div class="uc-body">
-          <div class="uc-field"><label>Tác nhân</label><p><span class="actor">Bệnh nhân</span> (nhận), <span class="actor">Lễ tân</span> (nhận), Hệ thống OutboxWorker (gửi)</p></div>
-          <div class="uc-field"><label>Tiền điều kiện</label><p>Lịch hẹn CONFIRMED; outbox_job PENDING trong DB</p></div>
-          <div class="uc-field"><label>Kích hoạt</label><p>Scheduler job kích hoạt OutboxWorker tại thời điểm định trước</p></div>
-          <div class="uc-field"><label>Hậu điều kiện</label><p>Email đã gửi; outbox_job SENT; lỗi gửi không ảnh hưởng lịch gốc</p></div>
+          <div class="uc-field"><label>Tác nhân</label><p><span class="actor">Bệnh nhân</span> (người nhận), Dịch vụ Email SMTP / Mailpit</p></div>
+          <div class="uc-field"><label>Tiền điều kiện</label><p><code>notification_job</code> ở trạng thái <code>PENDING</code> và lịch còn <code>CONFIRMED</code> khớp <code>appointment_version</code></p></div>
+          <div class="uc-field"><label>Kích hoạt</label><p><code>NotificationWorker</code> quét các job đến hạn với cơ chế giữ lease <code>60 s</code></p></div>
+          <div class="uc-field"><label>Hậu điều kiện</label><p>Email đã gửi (<code>SENT</code>) không chứa chẩn đoán/đơn thuốc/token; job lỗi thời chuyển <code>SKIPPED</code></p></div>
           <div class="uc-field full"><label>Luồng chính</label><ul>
-            <li>1. SELECT outbox_job WHERE type=REMINDER AND status=PENDING FOR UPDATE SKIP LOCKED</li>
-            <li>2. Kiểm tra lịch hẹn còn CONFIRMED (chưa hủy)</li>
-            <li>3. Gọi NotificationService gửi email</li>
-            <li>4. UPDATE outbox_job = SENT</li>
+            <li>1. Khi đặt/đổi/hủy, xếp job xác nhận và job nhắc tại <code>start - 1800s</code> (nếu chưa qua mốc).</li>
+            <li>2. Worker khóa hàng với lease 60s; đối chiếu lại trạng thái <code>CONFIRMED</code> và version.</li>
+            <li>3. Giải mã email bệnh nhân, gửi qua SMTP (Brevo / Mailpit) và cập nhật <code>SENT</code>.</li>
           </ul></div>
           <div class="uc-field full"><label>Luồng ngoại lệ</label><ul>
-            <li><span class="exc">E1</span> Lịch đã CANCELLED → bỏ qua job (không gửi)</li>
-            <li><span class="exc">E2</span> NotificationService timeout → retry với exponential backoff</li>
-            <li><span class="exc">E3</span> Sau 3 lần thử → đánh FAILED; không rollback lịch hẹn</li>
+            <li><span class="exc">E1</span> Lịch đã hủy hoặc đổi version → đánh dấu <code>SKIPPED</code>, không gửi nhầm</li>
+            <li><span class="exc">E2</span> Chưa cấu hình email → bỏ qua an toàn theo NFR-12</li>
           </ul></div>
         </div></div></td></tr>
 
-        <tr class="fr-row" onclick="toggleFR('UC-16')">
+        <tr class="fr-row" data-id="UC-16" data-module="M06" onclick="toggleFR('UC-16')">
           <td><strong>UC-16</strong><span class="fr-arr" id="arr-UC-16">▸</span></td>
-          <td>Giám sát lỗi gửi thông báo</td>
-          <td><span class="actor">Hệ thống · Quản trị viên</span></td>
+          <td>Thử lại &amp; Giám sát lỗi gửi thông báo</td>
+          <td><span class="actor">Hệ thống · Lễ tân · Quản trị</span></td>
           <td><span class="badge bm6">M06</span></td>
-          <td>outbox_job FAILED sau max retry; cần cảnh báo / xử lý thủ công</td>
+          <td>Backoff <code>[60, 300, 900] s</code> tối đa 3 lần; lỗi SMTP không rollback lịch hẹn</td>
         </tr>
         <tr class="fr-detail" id="detail-UC-16"><td colspan="5"><div class="fr-dcard"><div class="uc-body">
-          <div class="uc-field"><label>Tác nhân</label><p>Hệ thống (Scheduler), <span class="actor">Quản trị viên</span></p></div>
-          <div class="uc-field"><label>Tiền điều kiện</label><p>Có outbox_job với status = FAILED trong DB</p></div>
-          <div class="uc-field"><label>Kích hoạt</label><p>OutboxWorker đã retry hết số lần; hoặc Quản trị viên tra cứu job thất bại</p></div>
-          <div class="uc-field"><label>Hậu điều kiện</label><p>Danh sách lỗi hiển thị; job được đánh dấu để xử lý thủ công hoặc bỏ qua</p></div>
+          <div class="uc-field"><label>Tác nhân</label><p><code>NotificationWorker</code>, <span class="actor">Lễ tân</span>, <span class="actor">Quản trị viên</span></p></div>
+          <div class="uc-field"><label>Tiền điều kiện</label><p>Đã giao dịch lịch hẹn thành công; gửi SMTP tạm thời thất bại</p></div>
+          <div class="uc-field"><label>Kích hoạt</label><p>Lỗi/timeout SMTP hoặc nhân sự mở <code>GET /api/notification-jobs</code></p></div>
+          <div class="uc-field"><label>Hậu điều kiện</label><p>Thử lại theo lịch [1, 5, 15 phút]; vượt 3 lần chuyển <code>FAILED</code> hiển thị cho quản trị/lễ tân</p></div>
           <div class="uc-field full"><label>Luồng chính</label><ul>
-            <li>1. GET /outbox-jobs?status=FAILED&amp;page=</li>
-            <li>2. Kiểm tra vai trò ADMIN</li>
-            <li>3. Hiển thị danh sách job thất bại với lý do lỗi và số lần retry</li>
-            <li>4. Quản trị viên chọn retry thủ công hoặc đánh DISMISSED</li>
+            <li>1. Ghi nhận lỗi gửi, tăng <code>attempts</code>, hẹn lại theo mảng trễ cố định <code>60s &rarr; 300s &rarr; 900s</code>.</li>
+            <li>2. Nếu <code>attempts &gt; 3</code> → chuyển <code>FAILED</code>, ghi <code>last_error</code> ngắn gọn.</li>
+            <li>3. <code>GET /api/notification-jobs</code> trả tối đa 100 job gần nhất để nhân sự theo dõi.</li>
           </ul></div>
           <div class="uc-field full"><label>Luồng ngoại lệ</label><ul>
-            <li><span class="exc">E1</span> Không có job FAILED → [] với 200</li>
-            <li><span class="exc">E2</span> Thiếu quyền ADMIN → 403</li>
+            <li><span class="exc">E1</span> Tài khoản ngoài Lễ tân/Quản trị gọi <code>/notification-jobs</code> → 403</li>
           </ul></div>
         </div></div></td></tr>
 
         <!-- M07 Kiểm toán -->
-        <tr class="fr-row" onclick="toggleFR('UC-17')">
+        <tr class="fr-row" data-id="UC-17" data-module="M07" onclick="toggleFR('UC-17')">
           <td><strong>UC-17</strong><span class="fr-arr" id="arr-UC-17">▸</span></td>
-          <td>Ghi sự kiện kiểm toán</td>
+          <td>Ghi sự kiện kiểm toán (Nội bộ fail-closed)</td>
           <td><span class="actor">Hệ thống</span></td>
           <td><span class="badge bm7">M07</span></td>
-          <td>Hành vi nội bộ — không phải hành động của Kiểm toán viên; lỗi audit → ROLLBACK</td>
+          <td>Đã sửa BE-01: audit <code>DENIED</code> mang <code>X-Request-Id</code> luôn được lưu nguyên tử; lỗi ghi → hoàn tác</td>
         </tr>
         <tr class="fr-detail" id="detail-UC-17"><td colspan="5"><div class="fr-dcard"><div class="uc-body">
-          <div class="uc-field"><label>Tác nhân</label><p>Hệ thống — AuditAspect (Spring AOP); kích hoạt bởi mọi dịch vụ được bảo vệ</p></div>
-          <div class="uc-field"><label>Tiền điều kiện</label><p>Đang trong giao dịch thao tác dữ liệu PHI</p></div>
-          <div class="uc-field"><label>Kích hoạt</label><p>Mọi thao tác đọc / ghi dữ liệu nhạy cảm được bảo vệ</p></div>
-          <div class="uc-field"><label>Hậu điều kiện</label><p>audit_event ghi thành công cùng giao dịch chính; fail-closed nếu ghi lỗi</p></div>
+          <div class="uc-field"><label>Tác nhân</label><p>Thành phần <code>Audit</code> trong Backend (kích hoạt tự động bởi các Service)</p></div>
+          <div class="uc-field"><label>Tiền điều kiện</label><p>Phát sinh truy cập nhạy cảm, thay đổi quyền, khóa/mở khóa hoặc từ chối truy cập</p></div>
+          <div class="uc-field"><label>Kích hoạt</label><p>Lời gọi <code>audit.record(...)</code> hoặc <code>audit.recordSystem(...)</code></p></div>
+          <div class="uc-field"><label>Hậu điều kiện</label><p>Lưu sự kiện (<code>actor_id</code>/<code>SYSTEM</code>, <code>action</code>, <code>resource</code>, <code>created_at</code>, <code>request_id</code>) không chứa PHI</p></div>
           <div class="uc-field full"><label>Luồng chính</label><ul>
-            <li>1. AuditAspect intercept trước / sau thao tác (annotation @Auditable)</li>
-            <li>2. INSERT audit_event cùng giao dịch chính (cùng connection)</li>
-            <li>3. Nếu INSERT lỗi → ROLLBACK toàn giao dịch (fail-closed)</li>
+            <li>1. Thao tác ghi nghiệp vụ ghi audit cùng kết nối &amp; giao dịch CSDL.</li>
+            <li>2. Thao tác đọc nhạy cảm ghi audit thành công trước khi trả dữ liệu.</li>
+            <li>3. Từ chối truy cập phòng telehealth ghi <code>DENIED</code> qua giao dịch riêng bền vững kèm <code>X-Request-Id</code> (<code>RG-01</code>).</li>
           </ul></div>
           <div class="uc-field full"><label>Luồng ngoại lệ</label><ul>
-            <li><span class="exc">E1 (BE-01)</span> Truy cập DENIED không sinh audit_event — <strong>lỗi chưa sửa</strong></li>
-            <li><span class="exc">E2</span> INSERT audit thất bại → ROLLBACK fail-closed</li>
+            <li><span class="exc">E1</span> Kho audit lỗi khi đọc/ghi dữ liệu nhạy cảm → rollback hoàn toàn và trả 503</li>
           </ul></div>
         </div></div></td></tr>
 
-        <tr class="fr-row" onclick="toggleFR('UC-18')">
+        <tr class="fr-row" data-id="UC-18" data-module="M07" onclick="toggleFR('UC-18')">
           <td><strong>UC-18</strong><span class="fr-arr" id="arr-UC-18">▸</span></td>
-          <td>Tra cứu lịch sử kiểm toán</td>
+          <td>Tra cứu và bảo vệ nhật ký kiểm toán</td>
           <td><span class="actor">Kiểm toán viên</span></td>
           <td><span class="badge bm7">M07</span></td>
-          <td>BE-03: Kiểm toán viên đọc được catalog endpoint không được phép — lỗi chưa sửa</td>
+          <td>Chỉ <code>AUDITOR</code> đọc có lọc &amp; phân trang; append-only ở CSDL; đã sửa BE-03 cô lập phạm vi</td>
         </tr>
         <tr class="fr-detail" id="detail-UC-18"><td colspan="5"><div class="fr-dcard"><div class="uc-body">
-          <div class="uc-field"><label>Tác nhân</label><p><span class="actor">Kiểm toán viên</span></p></div>
-          <div class="uc-field"><label>Tiền điều kiện</label><p>JWT với vai trò AUDITOR; Kiểm toán viên tra cứu audit qua UC-18</p></div>
-          <div class="uc-field"><label>Kích hoạt</label><p>Kiểm toán viên tra cứu nhật ký sự kiện hệ thống</p></div>
-          <div class="uc-field"><label>Hậu điều kiện</label><p>Danh sách audit_event đã lọc; PHI được ẩn trước khi trả</p></div>
+          <div class="uc-field"><label>Tác nhân</label><p><span class="actor">Kiểm toán viên</span> (<code>AUDITOR</code>)</p></div>
+          <div class="uc-field"><label>Tiền điều kiện</label><p>Đã đăng nhập với vai trò <code>AUDITOR</code></p></div>
+          <div class="uc-field"><label>Kích hoạt</label><p><code>GET /api/audit-events?from=&amp;to=&amp;actorId=&amp;resourceId=&amp;limit=20&amp;offset=0</code></p></div>
+          <div class="uc-field"><label>Hậu điều kiện</label><p>Danh sách sự kiện phân trang (mảng trực tiếp, <code>limit &le; 100</code>) không chứa PHI/token</p></div>
           <div class="uc-field full"><label>Luồng chính</label><ul>
-            <li>1. GET /audit-events?từ=&amp;đến=&amp;loại=</li>
-            <li>2. Kiểm tra vai trò AUDITOR</li>
-            <li>3. SELECT với bộ lọc</li>
-            <li>4. Che PHI (ẩn tên, CCCD) trước khi trả kết quả</li>
+            <li>1. Kiểm tra vai trò <code>AUDITOR</code>.</li>
+            <li>2. Lọc <code>from</code> (inclusive), <code>to</code> (exclusive), tác nhân và mã tài nguyên.</li>
+            <li>3. Trả kết quả có phân trang; tài khoản ứng dụng chỉ được <code>INSERT/SELECT</code> trên bảng <code>audit_event</code>.</li>
           </ul></div>
           <div class="uc-field full"><label>Luồng ngoại lệ</label><ul>
-            <li><span class="exc">E1 (BE-03)</span> Kiểm toán viên đọc được catalog endpoint không được phép — <strong>lỗi chưa sửa</strong></li>
-            <li><span class="exc">E2</span> Thiếu quyền AUDITOR → 403</li>
-            <li><span class="exc">E3</span> Không có sự kiện phù hợp → [] với 200</li>
+            <li><span class="exc">E1</span> Tài khoản ứng dụng yêu cầu UPDATE/DELETE bảng audit → CSDL từ chối</li>
+            <li><span class="exc">E2</span> <code>AUDITOR</code> thuần đọc endpoint danh mục khám/bác sĩ → bị chặn 403 (<code>RG-03</code>)</li>
           </ul></div>
         </div></div></td></tr>
 
         <!-- M08 Hàng đợi -->
-        <tr class="fr-row" onclick="toggleFR('UC-19')">
+        <tr class="fr-row" data-id="UC-19" data-module="M08" onclick="toggleFR('UC-19')">
           <td><strong>UC-19</strong><span class="fr-arr" id="arr-UC-19">▸</span></td>
           <td>Check-in bệnh nhân</td>
           <td><span class="actor">Lễ tân</span></td>
           <td><span class="badge bm8">M08</span></td>
-          <td>Cửa sổ [T−15, T+15) phút; chỉ 1 phiếu/lịch; ngoài cửa sổ → từ chối</td>
+          <td>Cửa sổ <code>[T−15p, T+15p)</code>; chỉ lịch trực tiếp; tối đa 1 phiếu/lịch; vị trí <code>MAX+1</code> dưới khóa Doctor</td>
         </tr>
         <tr class="fr-detail" id="detail-UC-19"><td colspan="5"><div class="fr-dcard"><div class="uc-body">
-          <div class="uc-field"><label>Tác nhân</label><p><span class="actor">Lễ tân</span></p></div>
-          <div class="uc-field"><label>Tiền điều kiện</label><p>Lịch CONFIRMED; trong cửa sổ [T−15, T+15) phút quanh giờ hẹn</p></div>
-          <div class="uc-field"><label>Kích hoạt</label><p>Lễ tân thực hiện check-in cho bệnh nhân</p></div>
-          <div class="uc-field"><label>Hậu điều kiện</label><p>1 phiếu chờ WAITING; lịch hẹn CHECKED_IN; audit CHECKIN</p></div>
+          <div class="uc-field"><label>Tác nhân</label><p><span class="actor">Lễ tân</span> (<code>RECEPTIONIST</code>)</p></div>
+          <div class="uc-field"><label>Tiền điều kiện</label><p>Lịch <code>IN_PERSON</code> trạng thái <code>CONFIRMED</code> trong cửa sổ check-in</p></div>
+          <div class="uc-field"><label>Kích hoạt</label><p><code>POST /api/appointments/{id}/check-in</code> + <code>Idempotency-Key</code></p></div>
+          <div class="uc-field"><label>Hậu điều kiện</label><p>1 phiếu <code>WAITING</code> ở vị trí <code>MAX(position)+1</code>, lịch chuyển <code>CHECKED_IN</code></p></div>
           <div class="uc-field full"><label>Luồng chính</label><ul>
-            <li>1. POST /appointments/{id}/check-in</li>
-            <li>2. BEGIN TRANSACTION · SELECT FOR UPDATE</li>
-            <li>3. Kiểm tra cửa sổ T±15 phút và trạng thái CONFIRMED</li>
-            <li>4. UPDATE appointment → CHECKED_IN + INSERT queue_ticket (WAITING)</li>
-            <li>5. COMMIT</li>
+            <li>1. Kiểm tra Idempotency; khóa bản ghi <code>Doctor</code> (<code>FOR UPDATE</code>) để tuần tự hóa hàng đợi theo ngày VN.</li>
+            <li>2. Nếu đã có ticket do request song song tạo trước → tái sử dụng chính ticket đó (<code>RG-10</code>).</li>
+            <li>3. Ngược lại kiểm tra cửa sổ <code>[start-900s, start+900s)</code>, cấp <code>MAX(position)+1</code> và chuyển lịch <code>CHECKED_IN</code>.</li>
           </ul></div>
           <div class="uc-field full"><label>Luồng ngoại lệ</label><ul>
-            <li><span class="exc">E1</span> Ngoài cửa sổ check-in → 422 OUTSIDE_CHECKIN_WINDOW</li>
-            <li><span class="exc">E2</span> Đã check-in rồi → 409 ALREADY_CHECKED_IN</li>
-            <li><span class="exc">E3</span> Lịch không ở CONFIRMED → 409 INVALID_STATE</li>
+            <li><span class="exc">E1</span> Ngoài cửa sổ thời gian hoặc lịch <code>REMOTE</code>/<code>CANCELLED</code> → 409</li>
           </ul></div>
         </div></div></td></tr>
 
-        <tr class="fr-row" onclick="toggleFR('UC-20')">
+        <tr class="fr-row" data-id="UC-20" data-module="M08" onclick="toggleFR('UC-20')">
           <td><strong>UC-20</strong><span class="fr-arr" id="arr-UC-20">▸</span></td>
           <td>Gọi bệnh nhân tiếp theo ⭐</td>
-          <td><span class="actor">Bác sĩ</span></td>
+          <td><span class="actor">Bác sĩ · Lễ tân</span></td>
           <td><span class="badge bm8">M08</span></td>
-          <td>FIFO; khóa tuần tự hóa tránh race condition; BE-04: hàng rỗng trả 404 thay 204</td>
+          <td>FIFO theo bác sĩ/ngày dưới khóa <code>Doctor</code>; đã sửa BE-04: hàng rỗng trả <strong>204 No Content</strong></td>
         </tr>
         <tr class="fr-detail" id="detail-UC-20"><td colspan="5"><div class="fr-dcard"><div class="uc-body">
-          <div class="uc-field"><label>Tác nhân</label><p><span class="actor">Bác sĩ</span></p></div>
-          <div class="uc-field"><label>Tiền điều kiện</label><p>Có phiếu chờ WAITING trong hàng đợi của bác sĩ trong ngày</p></div>
-          <div class="uc-field"><label>Kích hoạt</label><p>Bác sĩ nhấn "Gọi bệnh nhân tiếp theo"</p></div>
-          <div class="uc-field"><label>Hậu điều kiện</label><p>Phiếu IN_SERVICE; lịch hẹn IN_PROGRESS; thông tin bệnh nhân được trả về</p></div>
+          <div class="uc-field"><label>Tác nhân</label><p><span class="actor">Bác sĩ</span> (của hàng đợi) hoặc <span class="actor">Lễ tân</span></p></div>
+          <div class="uc-field"><label>Tiền điều kiện</label><p>Không có phiếu đang ở trạng thái <code>CALLED</code> hoặc <code>IN_SERVICE</code> của bác sĩ trong ngày</p></div>
+          <div class="uc-field"><label>Kích hoạt</label><p><code>POST /api/doctors/{id}/queue/next?date=YYYY-MM-DD</code> + <code>Idempotency-Key</code></p></div>
+          <div class="uc-field"><label>Hậu điều kiện</label><p>Phiếu đầu hàng chuyển <code>CALLED</code>; nếu rỗng trả <code>204 No Content</code> và ghi cache idempotency</p></div>
           <div class="uc-field full"><label>Luồng chính</label><ul>
-            <li>1. POST /queue/next</li>
-            <li>2. BEGIN TRANSACTION · SELECT queue_ticket WAITING FIFO FOR UPDATE</li>
-            <li>3. UPDATE queue_ticket → IN_SERVICE + UPDATE appointment → IN_PROGRESS</li>
-            <li>4. COMMIT · trả thông tin bệnh nhân</li>
+            <li>1. Kiểm tra Idempotency; khóa bản ghi <code>Doctor</code> (<code>FOR UPDATE</code>).</li>
+            <li>2. Nếu hàng đã có phiếu đang <code>CALLED</code>/<code>IN_SERVICE</code> → 409.</li>
+            <li>3. Lấy phiếu <code>WAITING</code> có <code>position</code> nhỏ nhất → chuyển <code>CALLED</code>; nếu không còn phiếu → hoàn tất Idempotency và trả 204 (<code>RG-04</code>).</li>
           </ul></div>
           <div class="uc-field full"><label>Luồng ngoại lệ</label><ul>
-            <li><span class="exc">E1 (BE-04)</span> Hàng đợi rỗng → hiện trả 404; nên trả <strong>204 No Content</strong></li>
-            <li><span class="exc">E2</span> Race condition 2 bác sĩ → khóa tuần tự hóa; chỉ 1 thành công</li>
+            <li><span class="exc">E1</span> Hai request đồng thời → khóa <code>Doctor</code> chỉ cho 1 request nhận phiếu <code>CALLED</code>, request sau nhận 409 (<code>RG-12</code>)</li>
           </ul></div>
         </div></div></td></tr>
 
-        <tr class="fr-row" onclick="toggleFR('UC-21')">
+        <tr class="fr-row" data-id="UC-21" data-module="M08" onclick="toggleFR('UC-21')">
           <td><strong>UC-21</strong><span class="fr-arr" id="arr-UC-21">▸</span></td>
-          <td>Trả phiếu về cuối hàng đợi</td>
+          <td>Bỏ lượt và đưa về cuối hàng đợi</td>
           <td><span class="actor">Lễ tân · Bác sĩ</span></td>
           <td><span class="badge bm8">M08</span></td>
-          <td>Phiếu xuống cuối; không tạo phiếu mới; chỉ WAITING mới được trả</td>
+          <td>Chỉ phiếu <code>CALLED</code>; giữ nguyên ticket ID; chuyển về <code>WAITING</code> ở vị trí <code>MAX+1</code></td>
         </tr>
         <tr class="fr-detail" id="detail-UC-21"><td colspan="5"><div class="fr-dcard"><div class="uc-body">
           <div class="uc-field"><label>Tác nhân</label><p><span class="actor">Lễ tân</span>, <span class="actor">Bác sĩ</span></p></div>
-          <div class="uc-field"><label>Tiền điều kiện</label><p>Có phiếu WAITING ở đầu hàng đợi</p></div>
-          <div class="uc-field"><label>Kích hoạt</label><p>Lễ tân hoặc bác sĩ nhấn "Bỏ qua / Trả lại hàng đợi"</p></div>
-          <div class="uc-field"><label>Hậu điều kiện</label><p>Phiếu SKIPPED; sort_order xuống cuối; bệnh nhân tiếp theo được gọi</p></div>
+          <div class="uc-field"><label>Tiền điều kiện</label><p>Phiếu đang ở trạng thái <code>CALLED</code>; có lý do và đúng <code>version</code></p></div>
+          <div class="uc-field"><label>Kích hoạt</label><p><code>POST /api/queue-tickets/{id}/skip</code> với <code>{reason, version}</code> + <code>Idempotency-Key</code></p></div>
+          <div class="uc-field"><label>Hậu điều kiện</label><p>Giữ nguyên <code>ticket.id</code>, đặt lại <code>status = WAITING</code> với <code>position = MAX(position) + 1</code> và ghi audit</p></div>
           <div class="uc-field full"><label>Luồng chính</label><ul>
-            <li>1. POST /queue-tickets/skip</li>
-            <li>2. BEGIN TRANSACTION · SELECT FOR UPDATE · kiểm tra WAITING</li>
-            <li>3. UPDATE SKIPPED + sort_order = MAX+1</li>
-            <li>4. COMMIT</li>
+            <li>1. Khóa <code>Doctor</code>; kiểm tra phiếu đang <code>CALLED</code> và khớp <code>version</code>.</li>
+            <li>2. Tính vị trí mới <code>MAX(position)+1</code> trong ngày/bác sĩ; cập nhật <code>status = WAITING</code>, tăng <code>version+1</code> và lưu lý do.</li>
           </ul></div>
           <div class="uc-field full"><label>Luồng ngoại lệ</label><ul>
-            <li><span class="exc">E1</span> Phiếu không ở trạng thái WAITING → 409 INVALID_STATE</li>
-            <li><span class="exc">E2</span> Không thuộc hàng đợi của bác sĩ → 403</li>
+            <li><span class="exc">E1</span> Phiếu đã vào khám (<code>IN_SERVICE</code>) hoặc sai version → 409</li>
           </ul></div>
         </div></div></td></tr>
 
         <!-- M09 Y tế từ xa -->
-        <tr class="fr-row" onclick="toggleFR('UC-22')">
+        <tr class="fr-row" data-id="UC-22" data-module="M09" onclick="toggleFR('UC-22')">
           <td><strong>UC-22</strong><span class="fr-arr" id="arr-UC-22">▸</span></td>
           <td>Chuẩn bị phiên khám từ xa</td>
-          <td><span class="actor">Bác sĩ · Nhà cung cấp video</span></td>
+          <td><span class="actor">Bệnh nhân · Bác sĩ</span></td>
           <td><span class="badge bm9">M09</span></td>
-          <td>Phòng được tạo trước giờ hẹn; token TTL ≤15 phút; nhà cung cấp video xác nhận sẵn sàng</td>
+          <td>Cửa sổ phòng chờ <code>[-10p, +15p)</code>; tạo hoặc lấy phiên duy nhất; kiểm tra camera/mic</td>
         </tr>
         <tr class="fr-detail" id="detail-UC-22"><td colspan="5"><div class="fr-dcard"><div class="uc-body">
-          <div class="uc-field"><label>Tác nhân</label><p><span class="actor">Bác sĩ</span>, Nhà cung cấp video</p></div>
-          <div class="uc-field"><label>Tiền điều kiện</label><p>Lịch hẹn loại TELEHEALTH, trạng thái CONFIRMED; còn trong cửa sổ chuẩn bị</p></div>
-          <div class="uc-field"><label>Kích hoạt</label><p>Hệ thống / bác sĩ khởi tạo phòng khám từ xa trước giờ hẹn</p></div>
-          <div class="uc-field"><label>Hậu điều kiện</label><p>telehealth_session WAITING; room token cấp cho bác sĩ; nhà cung cấp video xác nhận phòng sẵn sàng</p></div>
+          <div class="uc-field"><label>Tác nhân</label><p><span class="actor">Bệnh nhân</span>, <span class="actor">Bác sĩ</span></p></div>
+          <div class="uc-field"><label>Tiền điều kiện</label><p>Lịch <code>REMOTE</code> trạng thái <code>CONFIRMED</code> hoặc đang diễn ra trong cửa sổ <code>[start-600s, start+900s)</code></p></div>
+          <div class="uc-field"><label>Kích hoạt</label><p><code>POST /api/appointments/{id}/telehealth-session</code> (+ <code>Idempotency-Key</code>)</p></div>
+          <div class="uc-field"><label>Hậu điều kiện</label><p>Tạo hoặc trả lại đúng 1 phiên <code>telehealth_session</code> gắn với lịch</p></div>
           <div class="uc-field full"><label>Luồng chính</label><ul>
-            <li>1. POST /telehealth/sessions với appointmentId</li>
-            <li>2. Gọi Video Provider API tạo room</li>
-            <li>3. INSERT telehealth_session (WAITING) + lưu roomId</li>
-            <li>4. TokenService cấp room token TTL ≤15 phút cho bác sĩ</li>
-            <li>5. Trả roomId + token để bác sĩ chờ bệnh nhân vào</li>
+            <li>1. Kiểm tra quyền sở hữu/phân công, loại <code>REMOTE</code> và cửa sổ chuẩn bị.</li>
+            <li>2. Nếu phiên chưa tồn tại → chèn <code>telehealth_session</code> trạng thái <code>CREATED</code>.</li>
+            <li>3. Client kiểm tra thiết bị camera/micro cục bộ và lấy cấu hình STUN/TURN qua <code>GET /api/webrtc/ice</code>.</li>
           </ul></div>
           <div class="uc-field full"><label>Luồng ngoại lệ</label><ul>
-            <li><span class="exc">E1</span> Nhà cung cấp video không phản hồi → 503; không tạo phiên</li>
-            <li><span class="exc">E2</span> Lịch không phải TELEHEALTH → 422</li>
-            <li><span class="exc">E3</span> Phiên đã được tạo → trả roomId hiện có (idempotent)</li>
+            <li><span class="exc">E1</span> Lịch trực tiếp, đã hủy hoặc ngoài cửa sổ → 409 / 422</li>
           </ul></div>
         </div></div></td></tr>
 
-        <tr class="fr-row" onclick="toggleFR('UC-23')">
+        <tr class="fr-row" data-id="UC-23" data-module="M09" onclick="toggleFR('UC-23')">
           <td><strong>UC-23</strong><span class="fr-arr" id="arr-UC-23">▸</span></td>
           <td>Tham gia / Bắt đầu phiên từ xa ⭐</td>
           <td><span class="actor">Bệnh nhân · Bác sĩ</span></td>
           <td><span class="badge bm9">M09</span></td>
-          <td>Consent; token TTL ≤15 phút gắn participantId + roomId; nối lại trong cửa sổ còn mở</td>
+          <td>Xác nhận đồng ý; token phòng TTL <code>300 s</code>; signaling nội bộ + <code>coturn</code> STUN/TURN 3478</td>
         </tr>
         <tr class="fr-detail" id="detail-UC-23"><td colspan="5"><div class="fr-dcard"><div class="uc-body">
           <div class="uc-field"><label>Tác nhân</label><p><span class="actor">Bệnh nhân</span>, <span class="actor">Bác sĩ</span></p></div>
-          <div class="uc-field"><label>Tiền điều kiện</label><p>Phiên TELEHEALTH đã chuẩn bị (UC-22); consent đã xác nhận; trong cửa sổ hợp lệ</p></div>
-          <div class="uc-field"><label>Kích hoạt</label><p>Nhấn "Tham gia phòng khám"</p></div>
-          <div class="uc-field"><label>Hậu điều kiện</label><p>Hai phía kết nối WebRTC; phiên ACTIVE; có thể nối lại khi phiên còn mở</p></div>
+          <div class="uc-field"><label>Tiền điều kiện</label><p>Phiên <code>CREATED/WAITING/ACTIVE/RECONNECTING</code>; bệnh nhân đã chọn <code>consent=true</code>; bác sĩ bắt đầu trong <code>[start, start+15p)</code></p></div>
+          <div class="uc-field"><label>Kích hoạt</label><p><code>POST /api/telehealth-sessions/{id}/join</code> &amp; <code>POST /api/telehealth-sessions/{id}/start</code></p></div>
+          <div class="uc-field"><label>Hậu điều kiện</label><p>Phiên <code>ACTIVE</code>, lịch <code>IN_PROGRESS</code>, Encounter tạo nguyên tử; hai bên kết nối P2P DTLS-SRTP</p></div>
           <div class="uc-field full"><label>Luồng chính</label><ul>
-            <li>1. POST /telehealth/waiting-room với appointmentId</li>
-            <li>2. Kiểm tra consent + phiên hợp lệ</li>
-            <li>3. TokenService cấp room token TTL ≤15 phút, gắn participantId + roomId</li>
-            <li>4. UPDATE telehealth_session → ACTIVE · trả room token</li>
-            <li>5. Signaling Server trao đổi ICE / SDP → kết nối P2P WebRTC</li>
+            <li>1. Bệnh nhân gọi <code>join</code> (<code>{consent:true}</code>) → chuyển <code>WAITING</code> và nhận room token TTL <code>300 s</code>.</li>
+            <li>2. Bác sĩ gọi <code>start</code> → chuyển <code>ACTIVE</code>, lịch <code>IN_PROGRESS</code> và tạo <code>Encounter</code> nguyên tử, rồi gọi <code>join</code> lấy token.</li>
+            <li>3. Trao đổi OFFER/ANSWER/ICE qua <code>/api/telehealth-sessions/{id}/signals</code> (<code>X-Room-Token</code>, &le;300 msg/60s) và thiết lập media P2P qua STUN/TURN.</li>
           </ul></div>
           <div class="uc-field full"><label>Luồng ngoại lệ</label><ul>
-            <li><span class="exc">E1</span> Chưa consent → 403 CONSENT_REQUIRED</li>
-            <li><span class="exc">E2</span> Token hết hạn → 401; yêu cầu token mới</li>
-            <li><span class="exc">E3</span> Phiên đã kết thúc → 409; không cấp token mới</li>
-            <li><span class="exc">E4</span> Mất kết nối → nối lại trong cửa sổ phiên còn mở</li>
-            <li><span class="exc">Giới hạn</span> Signaling nội bộ trên localhost; chưa xác nhận media xuyên NAT / TURN thật</li>
+            <li><span class="exc">E1</span> Người ngoài biết ID phiên → 404 + ghi audit <code>DENIED</code> mang <code>X-Request-Id</code> (<code>RG-01</code>)</li>
+            <li><span class="exc">E2</span> Bệnh nhân chưa xác nhận đồng ý → 422/403</li>
           </ul></div>
         </div></div></td></tr>
 
-        <tr class="fr-row" onclick="toggleFR('UC-24')">
+        <tr class="fr-row" data-id="UC-24" data-module="M09" onclick="toggleFR('UC-24')">
           <td><strong>UC-24</strong><span class="fr-arr" id="arr-UC-24">▸</span></td>
-          <td>Nối lại / Kết thúc phiên từ xa</td>
+          <td>Mất kết nối, Nối lại &amp; Kết thúc phiên từ xa</td>
           <td><span class="actor">Bác sĩ · Bệnh nhân</span></td>
           <td><span class="badge bm9">M09</span></td>
-          <td>Chặn cấp token mới sau ENDED; signaling không cưỡng chế ngắt P2P đã thiết lập</td>
+          <td>ICE restart + audio-only fallback; giữ nguyên bệnh án; bác sĩ chủ động kết thúc (<code>ENDED</code>) thu hồi token</td>
         </tr>
         <tr class="fr-detail" id="detail-UC-24"><td colspan="5"><div class="fr-dcard"><div class="uc-body">
-          <div class="uc-field"><label>Tác nhân</label><p><span class="actor">Bác sĩ</span> (kết thúc), <span class="actor">Bệnh nhân</span> (nối lại)</p></div>
-          <div class="uc-field"><label>Tiền điều kiện</label><p>Phiên telehealth ACTIVE</p></div>
-          <div class="uc-field"><label>Kích hoạt</label><p>Bác sĩ nhấn "Kết thúc phiên" hoặc bệnh nhân / bác sĩ nối lại sau mất kết nối</p></div>
-          <div class="uc-field"><label>Hậu điều kiện</label><p>Nối lại: phiên tiếp tục; Kết thúc: phiên ENDED + appointment COMPLETED</p></div>
-          <div class="uc-field full"><label>Luồng chính — Nối lại</label><ul>
-            <li>1. POST /telehealth/waiting-room (tái dùng UC-23) trong khi phiên còn ACTIVE</li>
-            <li>2. TokenService cấp token mới TTL ≤15 phút</li>
-            <li>3. Signaling Server thiết lập lại ICE / SDP</li>
-          </ul></div>
-          <div class="uc-field full"><label>Luồng chính — Kết thúc</label><ul>
-            <li>1. POST /telehealth/sessions/{id}/end</li>
-            <li>2. UPDATE telehealth_session → ENDED + INSERT block_token</li>
-            <li>3. UPDATE appointment → COMPLETED</li>
-            <li>4. Trả 200</li>
+          <div class="uc-field"><label>Tác nhân</label><p><span class="actor">Bác sĩ</span> (kết thúc / nối lại), <span class="actor">Bệnh nhân</span> (nối lại)</p></div>
+          <div class="uc-field"><label>Tiền điều kiện</label><p>Phiên <code>ACTIVE</code> hoặc <code>RECONNECTING</code></p></div>
+          <div class="uc-field"><label>Kích hoạt</label><p><code>/connection</code> (<code>RECONNECTING/ACTIVE</code>), <code>join</code> cấp lại token, hoặc <code>/end</code></p></div>
+          <div class="uc-field"><label>Hậu điều kiện</label><p>Nối lại không phụ thuộc cửa sổ +15p ban đầu; <code>end</code> chuyển <code>ENDED</code> và xóa token/signal khỏi DB</p></div>
+          <div class="uc-field full"><label>Luồng chính</label><ul>
+            <li>1. Khi mất mạng: gửi <code>connection</code> (<code>RECONNECTING</code>), bệnh án nháp giữ nguyên, gọi lại <code>join</code> để làm mới token 300s (tự động thu hồi token cũ) và thực hiện <code>ICE restart</code> hoặc chuyển chế độ chỉ âm thanh.</li>
+            <li>2. Khi bác sĩ bấm Kết thúc: gọi <code>POST /end</code> → phiên <code>ENDED</code>, thu hồi toàn bộ token &amp; tín hiệu; sau đó bác sĩ hoàn tất Encounter riêng sau khi chốt <code>FINAL</code> (<code>BR-15</code>).</li>
           </ul></div>
           <div class="uc-field full"><label>Luồng ngoại lệ</label><ul>
-            <li><span class="exc">E1</span> Phiên không ở ACTIVE → 409 INVALID_STATE</li>
-            <li><span class="exc">E2</span> Không phải bác sĩ của phiên → 403</li>
-            <li><span class="exc">E3</span> Phiên đã ENDED → token bị chặn; không nối lại được</li>
+            <li><span class="exc">E1</span> Phiên đã <code>ENDED/CANCELLED</code> → từ chối cấp token và không cho phép mở lại bởi callback trễ</li>
+            <li><span class="exc">E2</span> Kiến trúc P2P chỉ thu hồi quyền signaling/token mới, không cưỡng chế cắt socket media đã thiết lập (ngoài phạm vi <code>AC-24-E</code>)</li>
+          </ul></div>
+        </div></div></td></tr>
+
+        <!-- Ca sử dụng mở rộng UC-25..UC-27 -->
+        <tr class="fr-row" data-id="UC-25" data-module="M06" onclick="toggleFR('UC-25')">
+          <td><strong>UC-25</strong><span class="fr-arr" id="arr-UC-25">▸</span></td>
+          <td>Báo chậm giờ khám</td>
+          <td><span class="actor">Lễ tân</span></td>
+          <td><span class="badge bm6">M06</span></td>
+          <td>Giữ nguyên giờ hẹn/trạng thái chính thức; tối đa 1 tác vụ email/version lịch; giờ dự kiến tùy chọn</td>
+        </tr>
+        <tr class="fr-detail" id="detail-UC-25"><td colspan="5"><div class="fr-dcard"><div class="uc-body">
+          <div class="uc-field"><label>Tác nhân</label><p><span class="actor">Lễ tân</span> (<code>RECEPTIONIST</code>)</p></div>
+          <div class="uc-field"><label>Tiền điều kiện</label><p>Lịch trong ngày VN hiện tại: <code>CONFIRMED</code> trước <code>start+15p</code> hoặc <code>CHECKED_IN</code> trực tiếp</p></div>
+          <div class="uc-field"><label>Kích hoạt</label><p><code>POST /api/appointments/{id}/delay-notice</code> kèm <code>{version, estimatedStartAt?}</code> + <code>Idempotency-Key</code></p></div>
+          <div class="uc-field"><label>Hậu điều kiện</label><p>Xếp tối đa 1 tác vụ <code>DELAY_NOTICE</code> cho phiên bản lịch đó; giữ nguyên giờ hẹn chính thức</p></div>
+          <div class="uc-field full"><label>Luồng chính</label><ul>
+            <li>1. Kiểm tra quyền <code>RECEPTIONIST</code>, điều kiện <code>AppointmentDelayPolicy.canNotify</code> và khớp <code>version</code>.</li>
+            <li>2. Nếu có <code>estimatedStartAt</code>: kiểm tra lớn hơn <code>max(start, now)</code> và trong cùng ngày VN.</li>
+            <li>3. Lưu job <code>DELAY_NOTICE</code> và ghi audit trong cùng giao dịch.</li>
+          </ul></div>
+          <div class="uc-field full"><label>Luồng ngoại lệ</label><ul>
+            <li><span class="exc">E1</span> Sai vai trò → 403; quá hạn hoặc đã có thông báo cho cùng version → 409; giờ dự kiến sai → 422</li>
+          </ul></div>
+        </div></div></td></tr>
+
+        <tr class="fr-row" data-id="UC-26" data-module="M04 M06" onclick="toggleFR('UC-26')">
+          <td><strong>UC-26</strong><span class="fr-arr" id="arr-UC-26">▸</span></td>
+          <td>Ghi nhận vắng hẹn (<code>NO_SHOW</code>) &amp; lời mời đặt lại</td>
+          <td><span class="actor">Lễ tân · Bác sĩ</span></td>
+          <td><span class="badge bm4">M04</span> <span class="badge bm6">M06</span></td>
+          <td>Từ mốc <code>start + 15 phút</code> trên lịch <code>CONFIRMED</code>; chặn nếu đã check-in; email mời tùy chọn</td>
+        </tr>
+        <tr class="fr-detail" id="detail-UC-26"><td colspan="5"><div class="fr-dcard"><div class="uc-body">
+          <div class="uc-field"><label>Tác nhân</label><p><span class="actor">Lễ tân</span> (lịch trực tiếp), <span class="actor">Bác sĩ</span> phụ trách (lịch từ xa)</p></div>
+          <div class="uc-field"><label>Tiền điều kiện</label><p>Lịch <code>CONFIRMED</code> và <code>now &ge; start + 900s</code> (+15 phút)</p></div>
+          <div class="uc-field"><label>Kích hoạt</label><p><code>POST /api/appointments/{id}/progress</code> với <code>targetStatus: "NO_SHOW"</code>, <code>noShowReason?</code>, <code>sendRebookingEmail?</code></p></div>
+          <div class="uc-field"><label>Hậu điều kiện</label><p>Lịch chuyển <code>NO_SHOW</code> (kết thúc); đóng phòng từ xa nếu có; xếp email mời đặt lại nếu được chọn; giữ nguyên quyền tài khoản bệnh nhân</p></div>
+          <div class="uc-field full"><label>Luồng chính</label><ul>
+            <li>1. Kiểm tra vai trò theo hình thức khám, trạng thái <code>CONFIRMED</code> và mốc +15 phút.</li>
+            <li>2. Cập nhật <code>NO_SHOW</code> + mã lý do (<code>PATIENT_ABSENT</code>, <code>COULD_NOT_CONTACT</code>, <code>TECHNICAL_ISSUE</code>, <code>OTHER</code>).</li>
+            <li>3. Nếu là lịch từ xa có phiên <code>CREATED/WAITING</code> → chuyển <code>CANCELLED</code>; nếu bật <code>sendRebookingEmail</code> → xếp job email (không lộ lý do nội bộ).</li>
+          </ul></div>
+          <div class="uc-field full"><label>Luồng ngoại lệ</label><ul>
+            <li><span class="exc">E1</span> Trước mốc +15 phút hoặc bệnh nhân đã check-in → 409</li>
+          </ul></div>
+        </div></div></td></tr>
+
+        <tr class="fr-row" data-id="UC-27" data-module="M01 M07" onclick="toggleFR('UC-27')">
+          <td><strong>UC-27</strong><span class="fr-arr" id="arr-UC-27">▸</span></td>
+          <td>Tra cứu &amp; Khóa/Mở khóa tài khoản bệnh nhân</td>
+          <td><span class="actor">Quản trị viên</span></td>
+          <td><span class="badge bm1">M01</span> <span class="badge bm7">M07</span></td>
+          <td>Tra chính xác UUID/email/SĐT qua blind index HMAC (cấm tìm tên, 409 khi trùng SĐT); trả 3 trường tối thiểu</td>
+        </tr>
+        <tr class="fr-detail" id="detail-UC-27"><td colspan="5"><div class="fr-dcard"><div class="uc-body">
+          <div class="uc-field"><label>Tác nhân</label><p><span class="actor">Quản trị viên</span> (<code>ADMINISTRATOR</code>)</p></div>
+          <div class="uc-field"><label>Tiền điều kiện</label><p>Tài khoản mục tiêu là bệnh nhân (<code>staff=false</code>); màn hình tra cứu mặc định trống</p></div>
+          <div class="uc-field"><label>Kích hoạt</label><p><code>GET /api/patient-accounts/lookup?q=...</code> hoặc <code>GET /patient-accounts/{id}</code> rồi <code>PUT /patient-accounts/{id}/access</code></p></div>
+          <div class="uc-field"><label>Hậu điều kiện</label><p>Chỉ trả <code>{id, displayName, active}</code> + audit; khóa tài khoản chặn ngay cả token đang dùng còn hạn</p></div>
+          <div class="uc-field full"><label>Luồng chính</label><ul>
+            <li>1. Quản trị nhập UUID, email hoặc SĐT (chuẩn hóa <code>+84</code>/<code>84</code> &rarr; <code>0</code>, 7–15 chữ số).</li>
+            <li>2. Backend băm <code>Crypto.hash(norm(q))</code> tra chỉ mục mù HMAC-SHA256; trả 3 trường tối thiểu + ghi audit <code>PATIENT_ACCOUNT_LOOKUP</code>.</li>
+            <li>3. Khóa/mở khóa gửi <code>{active, reason}</code> (<code>SECURITY_REVIEW</code>, <code>POLICY_REVIEW</code>, <code>PATIENT_REQUEST</code>), ghi audit và bảo toàn lịch sử khám.</li>
+          </ul></div>
+          <div class="uc-field full"><label>Luồng ngoại lệ</label><ul>
+            <li><span class="exc">E1</span> Nhập tên người hoặc chuỗi không đúng định dạng UUID/email/SĐT → 400</li>
+            <li><span class="exc">E2</span> Tài khoản đích là nhân sự → 404; nhiều tài khoản gia đình dùng chung SĐT → 409 yêu cầu nhập UUID</li>
+            <li><span class="exc">E3</span> Người không có quyền Quản trị → 403</li>
           </ul></div>
         </div></div></td></tr>
 

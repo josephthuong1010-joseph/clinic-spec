@@ -20,13 +20,28 @@
   </nav>
 </header>
 
-<main id="main"></main>
+<main id="main">
+  <div id="diag-subnav">
+    <a href="#req-summary">Tổng quan</a>
+    <a href="#fr">27 FR (EARS)</a>
+    <a href="#nfr">16 NFR &amp; Bằng chứng</a>
+    <a href="#br">19 Quy tắc BR</a>
+    <a href="#formulas">Công thức</a>
+    <a href="#review-matrix">Ma trận rà soát</a>
+    <a href="#scope-risks">Rủi ro &amp; Phạm vi</a>
+  </div>
+</main>
 
 <div id="lb" onclick="closeLb()"><img id="lb-img" src="" alt=""></div>
 
 <script src="sections/requirements.js"></script>
-<script>document.getElementById('main').innerHTML = window.SECTION_REQUIREMENTS;</script>
+<script>
+  document.getElementById('main').insertAdjacentHTML('beforeend', window.SECTION_REQUIREMENTS);
+</script>
 <script src="app.js"></script>
+<script>
+  initSubnavScrollSpy();
+</script>
 
 </body>
 </html>
