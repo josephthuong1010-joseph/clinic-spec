@@ -1,4 +1,4 @@
-/* app.js — Shared utilities: Mermaid, Expandable Rows, Filtering, Subnav ScrollSpy, Lightbox */
+/* app.js — Shared utilities: Mermaid, Expandable Rows, Filtering, Subnav ScrollSpy, Lightbox & Complete Deep-Linking */
 
 if (typeof mermaid !== 'undefined') {
   mermaid.initialize({
@@ -23,8 +23,62 @@ if (typeof mermaid !== 'undefined') {
   });
 }
 
+// ── Scroll & URL Helpers ──
+function _scrollToElement(el, offset) {
+  if (!el || typeof el.getBoundingClientRect !== 'function') return;
+  const topOffset = typeof offset === 'number' ? offset : 64;
+  if (typeof window.scrollTo === 'function') {
+    const y = Math.max(0, el.getBoundingClientRect().top + (window.scrollY || window.pageYOffset || 0) - topOffset);
+    window.scrollTo({ top: y, behavior: 'smooth' });
+  } else if (typeof el.scrollIntoView === 'function') {
+    el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+}
+
+function buildPageUrl(pageName, opts) {
+  const loc = window.location;
+  const o = opts || {};
+  let base = '';
+  if (!pageName) {
+    base = loc.protocol === 'file:'
+      ? loc.href.replace(/[?#].*$/, '')
+      : loc.origin + loc.pathname;
+  } else {
+    const cleanPage = String(pageName).replace(/\.html$/i, '').replace(/^\/+/, '');
+    if (loc.protocol === 'file:') {
+      const baseDir = loc.href.replace(/[^/]*(\?.*)?(#.*)?$/, '');
+      base = baseDir + cleanPage + '.html';
+    } else if (/\.html$/i.test(loc.pathname)) {
+      const dir = loc.pathname.replace(/[^/]*$/, '');
+      base = loc.origin + dir + cleanPage + '.html';
+    } else {
+      const dir = loc.pathname.replace(/[^/]*$/, '');
+      base = loc.origin + dir + (cleanPage === 'index' ? '' : cleanPage);
+    }
+  }
+  const qs = o.open ? '?open=' + encodeURIComponent(o.open) : '';
+  const hs = o.hash ? '#' + encodeURIComponent(o.hash) : '';
+  return base + qs + hs;
+}
+
+function _syncRowOpenParam(id, isOpen) {
+  if (!window.history || !window.history.replaceState) return;
+  try {
+    const url = new URL(window.location.href);
+    if (isOpen) {
+      url.searchParams.set('open', id);
+      url.searchParams.delete('diagram');
+      url.searchParams.delete('view');
+      url.hash = '';
+    } else if ((url.searchParams.get('open') || '').toUpperCase() === String(id || '').toUpperCase()) {
+      url.searchParams.delete('open');
+    }
+    window.history.replaceState(null, '', url.toString());
+  } catch (_) {}
+}
+
 // Toggle FR / UC / NFR detail rows
-function toggleFR(id) {
+function toggleFR(id, opts) {
   const row = document.getElementById('detail-' + id);
   const arr = document.getElementById('arr-' + id);
   if (!row) return;
@@ -33,6 +87,9 @@ function toggleFR(id) {
   if (isOpen && typeof mermaid !== 'undefined') {
     const nodes = Array.from(row.querySelectorAll('.mermaid:not([data-processed="true"])'));
     if (nodes.length) mermaid.run({ nodes });
+  }
+  if (!opts || opts.syncUrl !== false) {
+    _syncRowOpenParam(id, isOpen);
   }
 }
 
@@ -130,7 +187,7 @@ function toggleAllDetails(sectionId, expand) {
 function initSubnavScrollSpy() {
   const links = document.querySelectorAll('#diag-subnav a');
   if (!links.length) return;
-  const ids = Array.from(links).map(a => a.getAttribute('href').slice(1));
+  const ids = Array.from(links).map(a => (a.getAttribute('href') || '').replace(/^#/, ''));
 
   function update() {
     const offset = 110;
@@ -154,8 +211,21 @@ function initSubnavScrollSpy() {
   links.forEach(a => {
     a.addEventListener('click', e => {
       e.preventDefault();
-      const target = document.getElementById(a.getAttribute('href').slice(1));
-      if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      const id = (a.getAttribute('href') || '').replace(/^#/, '');
+      const target = document.getElementById(id);
+      if (target) {
+        _scrollToElement(target, 56);
+        if (window.history && window.history.replaceState) {
+          try {
+            const url = new URL(window.location.href);
+            url.searchParams.delete('open');
+            url.searchParams.delete('diagram');
+            url.searchParams.delete('view');
+            url.hash = id;
+            window.history.replaceState(null, '', url.toString());
+          } catch (_) {}
+        }
+      }
     });
   });
 }
@@ -189,16 +259,7 @@ function diagramSlugFromSrc(src) {
 }
 
 function buildDiagramShareUrl(slug) {
-  const loc = window.location;
-  const isDiagPage = /diagrams(?:\.html)?$/i.test(loc.pathname);
-  if (loc.protocol === 'file:') {
-    const baseDir = loc.href.replace(/[^/]*(\?.*)?(#.*)?$/, '');
-    return baseDir + 'diagrams.html?open=' + encodeURIComponent(slug);
-  }
-  const targetPath = isDiagPage
-    ? loc.pathname
-    : loc.pathname.replace(/[^/]*$/, '') + (loc.pathname.endsWith('.html') ? 'diagrams.html' : 'diagrams');
-  return loc.origin + targetPath + '?open=' + encodeURIComponent(slug);
+  return buildPageUrl('diagrams', { open: slug });
 }
 
 function copyTextWithFeedback(text, btnEl) {
@@ -206,7 +267,7 @@ function copyTextWithFeedback(text, btnEl) {
     if (!btnEl) return;
     const orig = btnEl.dataset.origLabel || btnEl.textContent;
     btnEl.dataset.origLabel = orig;
-    btnEl.textContent = '✓ Đã copy';
+    btnEl.textContent = btnEl.classList.contains('inline-copy') ? '✓' : '✓ Đã copy';
     btnEl.classList.add('copied');
     clearTimeout(btnEl._copyTimer);
     btnEl._copyTimer = setTimeout(() => {
@@ -214,12 +275,12 @@ function copyTextWithFeedback(text, btnEl) {
       btnEl.classList.remove('copied');
     }, 1600);
   };
-  if (navigator.clipboard && navigator.clipboard.writeText) {
+  if (typeof navigator !== 'undefined' && navigator.clipboard && navigator.clipboard.writeText) {
     navigator.clipboard.writeText(text).then(flash).catch(() => {
-      window.prompt('Sao chép liên kết sơ đồ:', text);
+      window.prompt('Sao chép liên kết:', text);
     });
   } else {
-    window.prompt('Sao chép liên kết sơ đồ:', text);
+    window.prompt('Sao chép liên kết:', text);
   }
 }
 
@@ -426,7 +487,7 @@ document.addEventListener('keydown', e => {
   else if (e.key === '0') _resetLbView();
 });
 
-// ── Auto-enhance Diagram Cards & Deep-Link Router ──
+// ── Auto-enhance Diagram Cards, Expandable Details, Reference Items & Section Headers ──
 function _enhanceDiagramCards() {
   const cards = document.querySelectorAll('.img-card');
   if (!cards.length) return;
@@ -464,10 +525,288 @@ function _enhanceDiagramCards() {
   });
 }
 
-function _initDeepLinks() {
-  const params = new URLSearchParams(window.location.search);
+function _enhanceExpandableRows() {
+  const rows = document.querySelectorAll('tr.fr-row[data-id]');
+  if (!rows.length) return;
+  rows.forEach(tr => {
+    const id = tr.dataset.id;
+    if (!id) return;
+    if (!document.getElementById(id)) tr.id = id;
+
+    const detail = document.getElementById('detail-' + id);
+    if (!detail) return;
+    const dcard = detail.querySelector('.fr-dcard');
+    if (!dcard || dcard.querySelector('.detail-bar')) return;
+
+    const bar = document.createElement('div');
+    bar.className = 'detail-bar';
+
+    const left = document.createElement('div');
+    left.className = 'detail-bar-left';
+    const badge = document.createElement('span');
+    badge.className = 'pill';
+    badge.textContent = 'Chi tiết ' + id;
+    left.appendChild(badge);
+
+    const frMatch = /^FR-(\d{2})$/i.exec(id);
+    const ucMatch = /^UC-(\d{2})$/i.exec(id);
+    if (frMatch) {
+      const targetUc = 'UC-' + frMatch[1];
+      const xref = document.createElement('a');
+      xref.className = 'xref-link';
+      xref.href = buildPageUrl('usecases', { open: targetUc });
+      xref.textContent = 'Mở ' + targetUc + ' →';
+      xref.title = 'Chuyển sang Use Case ' + targetUc;
+      left.appendChild(xref);
+    } else if (ucMatch) {
+      const targetFr = 'FR-' + ucMatch[1];
+      const xref = document.createElement('a');
+      xref.className = 'xref-link';
+      xref.href = buildPageUrl('requirements', { open: targetFr });
+      xref.textContent = 'Mở ' + targetFr + ' →';
+      xref.title = 'Chuyển sang Yêu cầu ' + targetFr;
+      left.appendChild(xref);
+    }
+
+    const actions = document.createElement('div');
+    actions.className = 'detail-bar-actions';
+    const copyBtn = document.createElement('button');
+    copyBtn.type = 'button';
+    copyBtn.className = 'ic-copy';
+    copyBtn.textContent = '🔗 Copy link mở chi tiết';
+    copyBtn.title = 'Sao chép liên kết mở thẳng chi tiết ' + id;
+    copyBtn.addEventListener('click', e => {
+      e.stopPropagation();
+      copyTextWithFeedback(buildPageUrl(null, { open: id }), copyBtn);
+    });
+    actions.appendChild(copyBtn);
+
+    bar.appendChild(left);
+    bar.appendChild(actions);
+    dcard.insertBefore(bar, dcard.firstChild);
+  });
+}
+
+function _appendCellCopyBtn(cell, urlGetter, title) {
+  if (!cell || cell.querySelector('.inline-copy')) return;
+  const wrap = document.createElement('div');
+  wrap.className = 'cell-with-copy';
+  const main = document.createElement('div');
+  main.className = 'cell-main';
+  while (cell.firstChild) main.appendChild(cell.firstChild);
+  const btn = document.createElement('button');
+  btn.type = 'button';
+  btn.className = 'inline-copy';
+  btn.textContent = '🔗';
+  btn.title = title;
+  btn.setAttribute('aria-label', title);
+  btn.addEventListener('click', e => {
+    e.stopPropagation();
+    copyTextWithFeedback(urlGetter(), btn);
+  });
+  wrap.appendChild(main);
+  wrap.appendChild(btn);
+  cell.appendChild(wrap);
+}
+
+function _enhanceReferenceItems() {
+  // 1. Business Rules (#br -> BR-01..BR-19)
+  document.querySelectorAll('#br tbody tr.plain-row').forEach(tr => {
+    const firstTd = tr.querySelector('td');
+    const code = firstTd ? firstTd.textContent.trim() : '';
+    if (!/^BR-\d{2}$/i.test(code)) return;
+    if (!document.getElementById(code)) tr.id = code;
+    const tds = tr.querySelectorAll('td');
+    const lastTd = tds[tds.length - 1];
+    _appendCellCopyBtn(lastTd, () => buildPageUrl(null, { open: code }), 'Sao chép link tới ' + code);
+  });
+
+  // 2. PCL Test Cases (#pcl -> TC-N01..TC-A14)
+  document.querySelectorAll('#pcl tbody tr').forEach(tr => {
+    const firstTd = tr.querySelector('td');
+    const code = firstTd ? firstTd.textContent.trim() : '';
+    if (!/^TC-[A-Z0-9-]+$/i.test(code)) return;
+    tr.classList.add('plain-row', 'pcl-row');
+    if (!document.getElementById(code)) tr.id = code;
+    _appendCellCopyBtn(firstTd, () => buildPageUrl(null, { open: code }), 'Sao chép link tới ' + code);
+  });
+
+  // 3. Formulas (#formulas -> formula-1..formula-6)
+  document.querySelectorAll('#formulas .formula-card').forEach((card, idx) => {
+    const id = card.id || ('formula-' + (idx + 1));
+    card.id = id;
+    const h4 = card.querySelector('h4');
+    if (!h4 || h4.querySelector('.inline-copy')) return;
+    const badge = h4.querySelector('.badge');
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'inline-copy';
+    btn.textContent = '🔗';
+    btn.title = 'Sao chép link tới công thức này';
+    btn.setAttribute('aria-label', btn.title);
+    btn.addEventListener('click', e => {
+      e.stopPropagation();
+      copyTextWithFeedback(buildPageUrl(null, { open: id }), btn);
+    });
+    if (badge) {
+      const meta = document.createElement('span');
+      meta.className = 'formula-meta';
+      h4.insertBefore(meta, badge);
+      meta.appendChild(badge);
+      meta.appendChild(btn);
+    } else {
+      h4.appendChild(btn);
+    }
+  });
+
+  // 4. Modules (#modules -> M01..M09)
+  document.querySelectorAll('#modules .mod').forEach(card => {
+    const h4 = card.querySelector('h4');
+    if (!h4) return;
+    const m = /^(M\d{2})\b/i.exec(h4.textContent.trim());
+    if (!m) return;
+    const code = m[1].toUpperCase();
+    if (!document.getElementById(code)) card.id = code;
+    if (h4.querySelector('.inline-copy')) return;
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'inline-copy';
+    btn.textContent = '🔗';
+    btn.title = 'Sao chép link tới phân hệ ' + code;
+    btn.setAttribute('aria-label', btn.title);
+    btn.addEventListener('click', e => {
+      e.stopPropagation();
+      copyTextWithFeedback(buildPageUrl(null, { open: code }), btn);
+    });
+    h4.appendChild(btn);
+  });
+
+  // 5. Review Matrix (#review-matrix -> click FR-XX jumps & opens FR-XX detail)
+  document.querySelectorAll('#review-matrix tbody tr.plain-row').forEach(tr => {
+    const firstTd = tr.querySelector('td');
+    const code = firstTd ? firstTd.textContent.trim() : '';
+    if (!/^FR-\d{2}$/i.test(code)) return;
+    if (firstTd.querySelector('.matrix-jump')) return;
+    const a = document.createElement('a');
+    a.className = 'matrix-jump';
+    a.href = '#' + code;
+    a.textContent = code;
+    a.title = 'Nhảy tới và mở chi tiết ' + code;
+    a.addEventListener('click', e => {
+      e.preventDefault();
+      _openAndFocusTarget(code, { updateUrlOpen: true });
+    });
+    firstTd.innerHTML = '';
+    firstTd.appendChild(a);
+  });
+}
+
+function _enhanceSectionHeaders() {
+  document.querySelectorAll('section.section[id] > .sh').forEach(sh => {
+    const sec = sh.parentElement;
+    if (!sec || !sec.id || sh.querySelector('.sec-copy')) return;
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'ic-copy sec-copy';
+    btn.textContent = '🔗 Copy link mục';
+    btn.title = 'Sao chép liên kết tới mục #' + sec.id;
+    btn.addEventListener('click', e => {
+      e.stopPropagation();
+      copyTextWithFeedback(buildPageUrl(null, { hash: sec.id }), btn);
+    });
+    sh.appendChild(btn);
+  });
+}
+
+// ── Deep-Link Router (?open=<ID|slug>, #<ID|diag-slug>) ──
+function _clearDeepTargets() {
+  document.querySelectorAll('.diag-target').forEach(el => el.classList.remove('diag-target'));
+}
+
+function _resetFilterIfHidden(el) {
+  if (!el || el.style.display !== 'none') return;
+  const sec = el.closest ? el.closest('section.section[id]') : null;
+  if (!sec || !sec.id) return;
+  const secId = sec.id;
+  window._sectionFilters[secId] = { module: 'ALL', query: '' };
+  const input = sec.querySelector('.search-in');
+  if (input) input.value = '';
+  sec.querySelectorAll('.chip').forEach((c, idx) => c.classList.toggle('active', idx === 0));
+  applySectionFilter(secId);
+}
+
+function _findExpandableRow(token) {
+  const norm = String(token || '').trim().toLowerCase();
+  if (!norm) return null;
+  const rows = document.querySelectorAll('tr.fr-row[data-id]');
+  for (let i = 0; i < rows.length; i++) {
+    if ((rows[i].dataset.id || '').toLowerCase() === norm) return rows[i];
+  }
+  return null;
+}
+
+function _findElementByIdInsensitive(token) {
+  const norm = String(token || '').trim().toLowerCase();
+  if (!norm) return null;
+  const exact = document.getElementById(token);
+  if (exact) return exact;
+  const all = document.querySelectorAll('[id]');
+  for (let i = 0; i < all.length; i++) {
+    if ((all[i].id || '').toLowerCase() === norm) return all[i];
+  }
+  return null;
+}
+
+function _openAndFocusTarget(rawTarget, opts) {
+  const o = opts || {};
+  const targetStr = String(rawTarget || '').trim();
+  if (!targetStr) return false;
+
+  // 1. Expandable rows (FR-01..27, NFR-01..16, UC-01..27, comma-separated supported)
+  const tokens = targetStr.split(',').map(s => s.trim()).filter(Boolean);
+  const matchedRows = tokens.map(_findExpandableRow).filter(Boolean);
+  if (matchedRows.length) {
+    _clearDeepTargets();
+    matchedRows.forEach(row => {
+      const realId = row.dataset.id;
+      _resetFilterIfHidden(row);
+      row.classList.add('diag-target');
+      const detail = document.getElementById('detail-' + realId);
+      if (detail) {
+        detail.classList.add('diag-target');
+        if (!detail.classList.contains('open')) toggleFR(realId, { syncUrl: false });
+      }
+    });
+    if (o.updateUrlOpen && matchedRows.length === 1) {
+      _syncRowOpenParam(matchedRows[0].dataset.id, true);
+    }
+    setTimeout(() => _scrollToElement(matchedRows[0], 64), 80);
+    return true;
+  }
+
+  // 2. Reference items (BR-*, TC-*, formula-*, M01..*) or section anchors (#standards, #fr, ...)
+  const el = _findElementByIdInsensitive(tokens[0]);
+  if (el) {
+    _clearDeepTargets();
+    _resetFilterIfHidden(el);
+    if (!el.classList.contains('section')) {
+      el.classList.add('diag-target');
+    }
+    setTimeout(() => _scrollToElement(el, 64), 70);
+    return true;
+  }
+  return false;
+}
+
+function _initDeepLinks(preferHash) {
+  const params = new URLSearchParams(window.location.search || '');
   const openParam = (params.get('open') || params.get('diagram') || params.get('view') || '').trim();
-  const rawHash = decodeURIComponent((window.location.hash || '').replace(/^#/, '')).trim();
+  let rawHash = '';
+  try {
+    rawHash = decodeURIComponent((window.location.hash || '').replace(/^#/, '')).trim();
+  } catch (_) {
+    rawHash = (window.location.hash || '').replace(/^#/, '').trim();
+  }
 
   // 1. Diagram deep-link (?open=<slug> opens Lightbox; #diag-<slug> scrolls & highlights)
   if (_lbState.items.length) {
@@ -482,39 +821,40 @@ function _initDeepLinks() {
       );
     };
 
-    const openItem = matchDiagram(openParam);
-    if (openItem) {
-      openItem.cardEl.classList.add('diag-target');
-      openItem.cardEl.scrollIntoView({ behavior: 'auto', block: 'center' });
-      lb(openItem.src, openItem.label);
-      return;
+    if (!preferHash && openParam) {
+      const openItem = matchDiagram(openParam);
+      if (openItem) {
+        _clearDeepTargets();
+        openItem.cardEl.classList.add('diag-target');
+        _scrollToElement(openItem.cardEl, 72);
+        lb(openItem.src, openItem.label);
+        return;
+      }
     }
 
     if (rawHash && /^diag-/i.test(rawHash)) {
       const hashItem = matchDiagram(rawHash);
       if (hashItem) {
+        _clearDeepTargets();
         hashItem.cardEl.classList.add('diag-target');
-        setTimeout(() => hashItem.cardEl.scrollIntoView({ behavior: 'smooth', block: 'center' }), 60);
+        setTimeout(() => _scrollToElement(hashItem.cardEl, 72), 60);
         return;
       }
     }
   }
 
-  // 2. FR / NFR / UC deep-link (#FR-01, #NFR-01, #UC-27 or ?open=FR-01)
-  const rowTargetId = openParam || rawHash;
-  if (rowTargetId) {
-    const row = document.querySelector(`tr.fr-row[data-id="${CSS.escape ? CSS.escape(rowTargetId) : rowTargetId}"]`);
-    if (row) {
-      row.classList.add('diag-target');
-      const detail = document.getElementById('detail-' + rowTargetId);
-      if (detail && !detail.classList.contains('open')) toggleFR(rowTargetId);
-      setTimeout(() => row.scrollIntoView({ behavior: 'smooth', block: 'center' }), 80);
-    }
-  }
+  // 2. Item / Section deep-link
+  const chosen = preferHash ? (rawHash || openParam) : (openParam || rawHash);
+  if (chosen) _openAndFocusTarget(chosen, { updateUrlOpen: false });
 }
+
+window.addEventListener('hashchange', () => _initDeepLinks(true));
 
 (function initSpecEnhancements() {
   _setupLightboxDom();
   _enhanceDiagramCards();
-  _initDeepLinks();
+  _enhanceExpandableRows();
+  _enhanceReferenceItems();
+  _enhanceSectionHeaders();
+  _initDeepLinks(false);
 })();

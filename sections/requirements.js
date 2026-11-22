@@ -71,28 +71,8 @@ window.SECTION_REQUIREMENTS = `
             <div class="ev-card"><div class="ev-label">API &amp; Thành phần</div><div class="ev-val"><code>GET /me</code>, <code>GET /me/profile</code>, <code>POST /me/contact/otp</code>, <code>PUT /me/contact</code> · <code>Access.java</code>, <code>ContactOtpService.java</code>, <code>JdbcContactOtpStore.java</code>, <code>Crypto.java</code></div></div>
             <div class="ev-card"><div class="ev-label">Quy tắc &amp; Tiêu chí</div><div class="ev-val">BR-01, BR-12 · UC-01 · AC-01 (6 kịch bản Gherkin) · NFR-04, NFR-15</div></div>
             <div class="ev-card"><div class="ev-label">Ca kiểm thử</div><div class="ev-val"><code>TC-01</code>, <code>TC-01-C..F</code>, <code>TC-N06/B06/A09/A10</code>, <code>AGENT-TC-002..016</code></div></div>
-            <div class="ev-card"><div class="ev-label">Bằng chứng đạt</div><div class="ev-val"><code>ContactOtpServiceTest</code> (5/5 PASS), <code>PatientAccountIntegrationTest</code> (MySQL 8.4 CI <code>#43</code>), <code>JwtValidationTest</code> (5/5), <code>account-page.test.tsx</code> (2/2), <code>test_azure_google_oauth.py</code>, <code>test:auth-runtime</code> (5/5). *(Google/Recovery/Brute-force 5x còn thiếu E2E tự động CI.)*</div></div>
+            <div class="ev-card"><div class="ev-label">Bằng chứng đạt</div><div class="ev-val"><code>ContactOtpServiceTest</code> (5/5 PASS), <code>PatientAccountIntegrationTest</code> (MySQL 8.4 CI <code>#43</code>), <code>JwtValidationTest</code> (5/5), <code>account-page.test.tsx</code> (2/2), <code>test_azure_google_oauth.py</code>, <code>test:auth-runtime</code> (5/5). <em>(Google/Recovery/Brute-force 5x còn thiếu E2E tự động CI.)</em></div></div>
           </div>
-          <div class="mermaid-wrap"><div class="mermaid">
-sequenceDiagram
-  actor U as Người dùng
-  participant FE as Frontend
-  participant KC as Keycloak / Google
-  participant API as Access &amp; ContactOtpService
-  participant DB as MySQL
-
-  U-&gt;&gt;FE: Đăng nhập (Mật khẩu / Google / Quên MK)
-  FE-&gt;&gt;KC: OIDC Authorization Code + PKCE S256
-  KC--&gt;&gt;FE: Code &rarr; access_token JWT
-  FE-&gt;&gt;API: GET /api/me/profile (Bearer JWT)
-  API-&gt;&gt;DB: UUIDv3(issuer|subject), mã hóa email AES-GCM + K_hmac
-  API--&gt;&gt;FE: 200 Hồ sơ tài khoản &amp; vai trò
-  U-&gt;&gt;FE: Đổi email nhận thông báo mới
-  FE-&gt;&gt;API: POST /api/me/contact/otp
-  API-&gt;&gt;DB: Lưu băm OTP (TTL 300s, cooldown 30s, 5/h) + gửi SMTP
-  U-&gt;&gt;FE: Nhập OTP 6 chữ số &rarr; PUT /api/me/contact
-  API-&gt;&gt;DB: Xác thực OTP một lần &amp; cập nhật email_encrypted/email_hash
-          </div></div>
           <div class="fr-diag-row">
             <div class="fr-diag-thumb" onclick="lb('assets/design/sequence-diagrams/auth-otp-contact.png')"><img src="assets/design/sequence-diagrams/auth-otp-contact.png" alt=""><span>Sequence: PKCE/Google &amp; OTP</span></div>
             <div class="fr-diag-thumb" onclick="lb('assets/design/activity-diagrams/account-security-otp.png')"><img src="assets/design/activity-diagrams/account-security-otp.png" alt=""><span>Activity: Bảo mật TK &amp; OTP</span></div>
@@ -116,7 +96,7 @@ sequenceDiagram
           </div>
           <div class="mermaid-wrap"><div class="mermaid">
 sequenceDiagram
-  actor U as Người dùng
+  participant U as Người dùng
   participant FE as Guard.tsx
   participant API as Backend API
   participant DB as MySQL (user_role)
@@ -234,21 +214,6 @@ sequenceDiagram
             <div class="ev-card"><div class="ev-label">Ca kiểm thử</div><div class="ev-val"><code>TC-07</code>, <code>RG-03</code>, <code>AGENT-TC-020</code>, <code>AGENT-TC-023</code></div></div>
             <div class="ev-card"><div class="ev-label">Bằng chứng đạt</div><div class="ev-val"><code>catalogReadsRequireAnOperationalRole</code> (<code>RG-03</code>, đã sửa BE-02/03), <code>BusinessRulesUnitTest</code>, k6 NFR-01 đạt <strong><code>p95 = 7,81 ms</code></strong> (nhanh hơn 578&times; so với trước tối ưu).</div></div>
           </div>
-          <div class="mermaid-wrap"><div class="mermaid">
-sequenceDiagram
-  actor U as Vai trò vận hành
-  participant API as ScheduleController
-  participant SVC as ScheduleService
-  participant DB as MySQL (V10/V11)
-
-  U-&gt;&gt;API: GET /api/slots?date=YYYY-MM-DD
-  API-&gt;&gt;API: requireSchedulingCatalogRead() (chặn AUDITOR 403)
-  API-&gt;&gt;SVC: slots(doctor, date, mode, specialty)
-  SVC-&gt;&gt;DB: 1. SELECT slot WHERE start_at trong ngày (ix_slot_start_at)
-  SVC-&gt;&gt;DB: 2. SELECT time_off &amp; appointment hoạt động trong cửa sổ ngày
-  SVC-&gt;&gt;SVC: Lọc giao nhau O(N) trong bộ nhớ (giới hạn 500)
-  SVC--&gt;&gt;U: 200 Danh sách slot trống
-          </div></div>
           <div class="fr-diag-row">
             <div class="fr-diag-thumb" onclick="lb('assets/design/sequence-diagrams/schedule-and-slots.png')"><img src="assets/design/sequence-diagrams/schedule-and-slots.png" alt=""><span>Sequence M03: Tối ưu NFR-01 (7,81 ms)</span></div>
           </div>
@@ -331,7 +296,7 @@ sequenceDiagram
             <div class="ev-card"><div class="ev-label">API &amp; Thành phần</div><div class="ev-val"><code>GET /appointments</code>, <code>GET /appointments/{id}</code>, <code>POST /appointments/{id}/progress</code> · <code>WorkflowService.java</code></div></div>
             <div class="ev-card"><div class="ev-label">Quy tắc &amp; Tiêu chí</div><div class="ev-val">BR-07, BR-08, BR-15 · UC-11 · AC-11 · AC-11-D/E</div></div>
             <div class="ev-card"><div class="ev-label">Ca kiểm thử</div><div class="ev-val"><code>TC-11</code>, <code>TC-11-D</code>, <code>TC-11-E</code></div></div>
-            <div class="ev-card"><div class="ev-label">Bằng chứng đạt</div><div class="ev-val"><code>SchedulingIntegrationTest</code>, <code>scripts/smoke.py</code>. *(Luồng khám hoàn tất E2E xuyên UI tiếp tục là mục kiểm tra bổ sung.)*</div></div>
+            <div class="ev-card"><div class="ev-label">Bằng chứng đạt</div><div class="ev-val"><code>SchedulingIntegrationTest</code>, <code>scripts/smoke.py</code>. <em>(Luồng khám hoàn tất E2E xuyên UI tiếp tục là mục kiểm tra bổ sung.)</em></div></div>
           </div>
           <div class="fr-diag-row">
             <div class="fr-diag-thumb" onclick="lb('assets/design/sequence-diagrams/consultation-progress.png')"><img src="assets/design/sequence-diagrams/consultation-progress.png" alt=""><span>Sequence: Tiến trình khám</span></div>
@@ -454,26 +419,6 @@ sequenceDiagram
             <div class="ev-card"><div class="ev-label">Ca kiểm thử</div><div class="ev-val"><code>TC-17</code>, <code>TC-A14</code>, <code>RG-01</code>, <code>AGENT-TC-015</code></div></div>
             <div class="ev-card"><div class="ev-label">Bằng chứng đạt</div><div class="ev-val"><code>deniedTelehealthJoinPersistsOnlyAudit</code> (<code>RG-01</code>, đã sửa dứt điểm BE-01), <code>SchedulingIntegrationTest</code> (fault injection rollback), <code>PatientAccountIntegrationTest</code>.</div></div>
           </div>
-          <div class="mermaid-wrap"><div class="mermaid">
-sequenceDiagram
-  actor A as Tác nhân
-  participant F as RequestCorrelation
-  participant SVC as Service (@Transactional)
-  participant AUD as Audit
-  participant DB as MySQL (audit_event)
-
-  A-&gt;&gt;F: Request kèm Bearer JWT
-  F-&gt;&gt;SVC: Gắn X-Request-Id
-  SVC-&gt;&gt;DB: Nghiệp vụ nhạy cảm / Đọc bệnh án
-  SVC-&gt;&gt;AUD: audit.record(actorId, action, resource)
-  alt Lưu audit thất bại
-    DB--&gt;&gt;SVC: Lỗi DB
-    SVC-&gt;&gt;DB: ROLLBACK (Fail-closed, trả 503)
-  else Thành công / DENIED từ xa
-    AUD-&gt;&gt;DB: INSERT audit_event (không PHI, có X-Request-Id)
-    SVC--&gt;&gt;A: Trả kết quả + header X-Request-Id
-  end
-          </div></div>
           <div class="fr-diag-row">
             <div class="fr-diag-thumb" onclick="lb('assets/design/sequence-diagrams/audit-fail-closed.png')"><img src="assets/design/sequence-diagrams/audit-fail-closed.png" alt=""><span>Sequence M07: Audit Fail-Closed &amp; DENIED (RG-01)</span></div>
           </div>
@@ -611,7 +556,7 @@ sequenceDiagram
           <p class="fr-desc-full"><span class="kw-ears">NẾU</span> luồng âm thanh/hình ảnh gián đoạn khi phiên còn <code>ACTIVE/RECONNECTING</code>, hệ thống <span class="kw-shall">PHẢI</span> giữ nguyên bệnh án đã lưu và cho phép nối lại (kể cả sau mốc +15 phút) bằng token mới, hỗ trợ <code>ICE restart</code> và chế độ chỉ âm thanh. Khi bác sĩ bấm kết thúc (<code>ENDED</code>), hệ thống thu hồi token/tín hiệu, chặn cấp mới và từ chối callback trễ.</p>
           <div class="ev-grid">
             <div class="ev-card"><div class="ev-label">API &amp; Thành phần</div><div class="ev-val"><code>POST /telehealth-sessions/{id}/connection</code>, <code>POST /end</code> · <code>TelehealthService.java</code>, <code>TelehealthRoom.tsx</code></div></div>
-            <div class="ev-card"><div class="ev-label">Quy tắc &amp; Tiêu chí</div><div class="ev-val">BR-14, BR-15 · UC-24 · AC-24 · AC-24-D *(AC-24-E ngoài kiến trúc P2P)*</div></div>
+            <div class="ev-card"><div class="ev-label">Quy tắc &amp; Tiêu chí</div><div class="ev-val">BR-14, BR-15 · UC-24 · AC-24 · AC-24-D <em>(AC-24-E ngoài kiến trúc P2P)</em></div></div>
             <div class="ev-card"><div class="ev-label">Ca kiểm thử</div><div class="ev-val"><code>TC-24</code>, <code>TC-24-D/F</code>, <code>TC-N06</code></div></div>
             <div class="ev-card"><div class="ev-label">Bằng chứng đạt</div><div class="ev-val"><code>npm run test:rtc</code> (mute, ICE restart, renew token, kết thúc &amp; audio-only fallback), <code>SchedulingIntegrationTest</code>, <code>doctor-call-navigation.test.tsx</code> (2/2), nhóm đã thử nghiệm trên điện thoại.</div></div>
           </div>
@@ -677,28 +622,6 @@ sequenceDiagram
           <div class="fr-diag-row">
             <div class="fr-diag-thumb" onclick="lb('assets/design/sequence-diagrams/patient-account-admin.png')"><img src="assets/design/sequence-diagrams/patient-account-admin.png" alt=""><span>Sequence: Tra cứu HMAC &amp; Khóa TK</span></div>
           </div>
-          <div class="mermaid-wrap"><div class="mermaid">
-sequenceDiagram
-  actor AD as Quản trị viên
-  participant API as AuthController
-  participant SVC as Access &amp; Crypto
-  participant DB as MySQL (user_account)
-  participant AUD as Audit
-
-  AD-&gt;&gt;API: GET /api/patient-accounts/lookup?q=...
-  API-&gt;&gt;SVC: Chuẩn hóa UUID / email / SĐT (+84 &rarr; 0)
-  alt Chuỗi tên hoặc sai định dạng
-    SVC--&gt;&gt;AD: 400 Invalid identifier
-  else Tính K_hmac blind index
-    SVC-&gt;&gt;DB: SELECT id, display_name, active WHERE staff=FALSE AND hash=?
-    alt Khớp &ge; 2 tài khoản (trùng SĐT gia đình)
-      DB--&gt;&gt;AD: 409 Ambiguous phone (yêu cầu nhập UUID)
-    else Khớp 1 bệnh nhân
-      SVC-&gt;&gt;AUD: Ghi audit PATIENT_ACCOUNT_LOOKUP
-      SVC--&gt;&gt;AD: 200 {id, displayName, active}
-    end
-  end
-          </div></div>
         </div></td></tr>
 
       </tbody>
@@ -778,7 +701,7 @@ sequenceDiagram
           <td>Bảo mật truyền dẫn, Mã hóa &amp; Header</td>
           <td>TLS + HSTS (<code>31536000 s</code>), AES-256-GCM (IV 12B, tag 128b), <code>K_hmac</code> tách khóa, CSP <code>frame-ancestors 'none'</code>, XFO <code>DENY</code></td>
           <td><code>ContactOtpServiceTest</code>, <code>test_security_headers_config.py</code>, <code>verify-live-demo.py</code> HTTPS thật (6/6), <code>AGENT-TC-007/008/009</code></td>
-          <td><span class="badge bstat-ok">✓ Đạt *(kèm rủi ro demo)*</span></td>
+          <td><span class="badge bstat-ok">✓ Đạt (kèm rủi ro demo)</span></td>
         </tr>
         <tr class="fr-detail" id="detail-NFR-04"><td colspan="5"><div class="fr-dcard">
           <div class="ev-grid">
@@ -826,7 +749,7 @@ sequenceDiagram
           <td>Khả năng sử dụng (Usability)</td>
           <td>&ge; 4/5 bệnh nhân hoàn thành đặt lịch trong &le; 3 phút sau hướng dẫn</td>
           <td><code>TC-N05</code> — Nhóm đã thử nghiệm đặt lịch thực tế trên điện thoại qua bản demo Azure HTTPS</td>
-          <td><span class="badge bstat-ok">✓ Đạt *(thử thực tế)*</span></td>
+          <td><span class="badge bstat-ok">✓ Đạt (thử thực tế)</span></td>
         </tr>
         <tr class="fr-detail" id="detail-NFR-08"><td colspan="5"><div class="fr-dcard">
           <p class="fr-desc-full">Luồng đặt lịch thiết kế gọn 3 bước trên màn hình máy tính và điện thoại. Nhóm xác nhận đã kiểm tra thao tác đặt lịch thực tế trên điện thoại hoàn thành đúng quy trình; biên bản bấm giờ chi tiết từng cá nhân không lưu thành file trong repo (<code>evidence_ref=NOT_RETAINED</code>).</p>

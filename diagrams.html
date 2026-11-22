@@ -42,36 +42,7 @@
 </script>
 <script src="app.js"></script>
 <script>
-(function(){
-  var links = document.querySelectorAll('#diag-subnav a');
-  var ids = [];
-  links.forEach(function(a){ ids.push(a.getAttribute('href').slice(1)); });
-
-  function update(){
-    var scrollY = window.scrollY || document.documentElement.scrollTop;
-    var offset = 100;
-    var current = '';
-    for(var i = ids.length - 1; i >= 0; i--){
-      var el = document.getElementById(ids[i]);
-      if(el && el.getBoundingClientRect().top <= offset) { current = ids[i]; break; }
-    }
-    links.forEach(function(a){
-      if(a.getAttribute('href') === '#' + current) a.classList.add('active');
-      else a.classList.remove('active');
-    });
-  }
-
-  window.addEventListener('scroll', update, {passive:true});
-  update();
-
-  links.forEach(function(a){
-    a.addEventListener('click', function(e){
-      e.preventDefault();
-      var target = document.getElementById(this.getAttribute('href').slice(1));
-      if(target) target.scrollIntoView({behavior:'smooth',block:'start'});
-    });
-  });
-})();
+  initSubnavScrollSpy();
 </script>
 
 </body>

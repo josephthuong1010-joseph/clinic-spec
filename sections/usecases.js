@@ -10,9 +10,27 @@ window.SECTION_USECASES = `
     <span>📏</span>
     <div><strong>Chuẩn đặc tả Use Case:</strong> Trình bày theo mẫu <strong>Fully Dressed Use Case của Alistair Cockburn</strong> (gồm các trường chuẩn: <em>Tác nhân, Tiền điều kiện, Kích hoạt, Hậu điều kiện, Luồng chính, Luồng thay thế, Luồng ngoại lệ</em>) kết hợp mô hình hóa <strong>OMG UML 2.5</strong>.</div>
   </div>
-  <div class="alert alert-info" style="margin-bottom:16px">
+  <div class="alert alert-info" style="margin-bottom:14px">
     <span>ℹ️</span>
     <div><strong>Ghi chú thiết kế:</strong> Ghi nhận sự kiện kiểm toán (<code>UC-17</code>) là hành vi nội bộ nguyên tử trong giao dịch/fail-closed — khác với thao tác tra cứu nhật ký của Kiểm toán viên (<code>UC-18</code>). <code>UC-02</code> là tiền điều kiện bắt buộc cho mọi API được bảo vệ. Xem đơn thuốc thuộc phạm vi truy cập lịch sử <code>UC-12</code>.</div>
+  </div>
+  <div class="filter-bar">
+    <input type="search" class="search-in" placeholder="Tìm theo mã UC, tên, tác nhân, endpoint API..." oninput="setSearchFilter('uc-list', this.value)">
+    <div class="chip-group">
+      <button type="button" class="chip active" onclick="setModuleFilter('uc-list','ALL',this)">Tất cả (27)</button>
+      <button type="button" class="chip" onclick="setModuleFilter('uc-list','M01',this)">M01</button>
+      <button type="button" class="chip" onclick="setModuleFilter('uc-list','M02',this)">M02</button>
+      <button type="button" class="chip" onclick="setModuleFilter('uc-list','M03',this)">M03</button>
+      <button type="button" class="chip" onclick="setModuleFilter('uc-list','M04',this)">M04</button>
+      <button type="button" class="chip" onclick="setModuleFilter('uc-list','M05',this)">M05</button>
+      <button type="button" class="chip" onclick="setModuleFilter('uc-list','M06',this)">M06</button>
+      <button type="button" class="chip" onclick="setModuleFilter('uc-list','M07',this)">M07</button>
+      <button type="button" class="chip" onclick="setModuleFilter('uc-list','M08',this)">M08</button>
+      <button type="button" class="chip" onclick="setModuleFilter('uc-list','M09',this)">M09</button>
+    </div>
+    <button type="button" class="btn-mini" onclick="toggleAllDetails('uc-list', true)">Mở tất cả</button>
+    <button type="button" class="btn-mini" onclick="toggleAllDetails('uc-list', false)">Thu gọn</button>
+    <span class="filter-count" id="count-uc-list">Hiển thị 27 / 27 mục</span>
   </div>
   <div class="tbl-wrap">
     <table>
