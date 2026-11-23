@@ -1,8 +1,8 @@
-/* sections/requirements.js — Đồng bộ đầy đủ 27 FR (EARS), 16 NFR + Bằng chứng, 19 BR, Công thức lượng hóa & Ma trận rà soát (SE-project-main@327a553, 22/11/2026) */
+/* sections/requirements.js — Đồng bộ đầy đủ 27 FR (EARS), 16 NFR + Bằng chứng, 19 BR, Công thức lượng hóa & Ma trận rà soát (SE-project-main, 23/11/2026) */
 
 window.SECTION_REQUIREMENTS = `
 <section class="section" id="req-summary">
-  <div class="sh"><span class="sh-ic">📌</span><div class="sh-txt"><h2>Tổng hợp Đặc tả Yêu cầu &amp; Bằng chứng Nghiệm thu</h2><p>Đối chiếu đồng bộ 1:1 với kho mã nguồn <code>SE-project-main</code> (nhánh <code>main@327a553</code> · 22/11/2026)</p></div></div>
+  <div class="sh"><span class="sh-ic">📌</span><div class="sh-txt"><h2>Tổng hợp Đặc tả Yêu cầu &amp; Bằng chứng Nghiệm thu</h2><p>Đối chiếu đồng bộ 1:1 với kho mã nguồn <code>SE-project-main</code> (<code>main@3eb59d7</code> · <code>V1..V12</code> · 23/11/2026)</p></div></div>
 
   <div class="alert alert-info" style="margin-bottom:14px">
     <span>📏</span>
@@ -13,8 +13,8 @@ window.SECTION_REQUIREMENTS = `
     <div class="sum-item"><div class="n">27 / 27</div><div class="l">FR đã triển khai</div></div>
     <div class="sum-item"><div class="n" style="color:var(--ok)">16 / 16</div><div class="l">NFR đạt nghiệm thu</div></div>
     <div class="sum-item"><div class="n">19</div><div class="l">Quy tắc nghiệp vụ (BR)</div></div>
-    <div class="sum-item"><div class="n">50 / 61</div><div class="l">API Paths / Operations</div></div>
-    <div class="sum-item"><div class="n" style="color:var(--ok)">86 + 79</div><div class="l">Test BE (MySQL) + FE (Vitest)</div></div>
+    <div class="sum-item"><div class="n">55 / 66</div><div class="l">API Paths / Operations</div></div>
+    <div class="sum-item"><div class="n" style="color:var(--ok)">95+ / 110</div><div class="l">Test BE + FE (Vitest)</div></div>
     <div class="sum-item"><div class="n" style="color:var(--ok)">7,81 ms</div><div class="l">NFR-01 /api/slots p95</div></div>
   </div>
 
@@ -406,18 +406,18 @@ sequenceDiagram
         <!-- M07 -->
         <tr class="fr-row" data-id="FR-17" data-module="M07" onclick="toggleFR('FR-17')">
           <td><strong>FR-17</strong><span class="fr-arr" id="arr-FR-17">▸</span></td>
-          <td>Ghi nhật ký kiểm toán fail-closed</td>
+          <td>Ghi nhật ký kiểm toán fail-closed &amp; chuỗi băm</td>
           <td><span class="badge bm7">M07</span></td>
-          <td>KHI đọc/ghi dữ liệu nhạy cảm, đổi quyền hoặc từ chối truy cập, PHẢI ghi audit kèm <code>X-Request-Id</code> không chứa PHI/token</td>
+          <td>KHI đọc/ghi nhạy cảm, đổi quyền, xuất CSV, kiểm chứng hay niêm phong, PHẢI ghi audit nối chuỗi <code>HMAC-SHA256-CHAIN-V1</code> mang <code>X-Request-Id</code> không chứa PHI/token</td>
           <td>UC-17 · <span class="badge bstat-ok">Đạt</span></td>
         </tr>
         <tr class="fr-detail" id="detail-FR-17"><td colspan="5"><div class="fr-dcard">
-          <p class="fr-desc-full"><span class="kw-ears">KHI</span> phát sinh thao tác đọc/ghi dữ liệu nhạy cảm, đổi quyền, khóa tài khoản hoặc bị từ chối phòng từ xa (<code>DENIED</code>), hệ thống <span class="kw-shall">PHẢI</span> ghi sự kiện kiểm toán (tác nhân hoặc <code>SYSTEM</code>, thao tác, tài nguyên, thời điểm, <code>X-Request-Id</code>) theo nguyên tắc fail-closed (lỗi ghi audit thì hoàn tác/không trả dữ liệu).</p>
+          <p class="fr-desc-full"><span class="kw-ears">KHI</span> phát sinh thao tác đọc/ghi dữ liệu nhạy cảm, đổi quyền, khóa tài khoản, bị từ chối phòng từ xa (<code>DENIED</code>), xuất biên bản kiểm toán (<code>AUDIT_EXPORT</code>), kiểm chứng toàn vẹn (<code>AUDIT_INTEGRITY_VERIFIED</code>) hoặc niêm phong lưu trữ (<code>AUDIT_ARCHIVE_CREATED</code>), hệ thống <span class="kw-shall">PHẢI</span> ghi sự kiện kiểm toán (tác nhân hoặc <code>SYSTEM</code>, thao tác, tài nguyên, thời điểm UTC micro giây, <code>X-Request-Id</code>) và nối vào chuỗi băm mật mã <code>HMAC-SHA256-CHAIN-V1</code> (<code>chain_seq</code>, <code>prev_hash</code>, <code>event_hash</code> dưới khóa <code>audit_chain_head FOR UPDATE</code>) theo nguyên tắc fail-closed (lỗi ghi audit thì hoàn tác hoàn toàn).</p>
           <div class="ev-grid">
-            <div class="ev-card"><div class="ev-label">API &amp; Thành phần</div><div class="ev-val"><code>Audit.java</code>, <code>RequestCorrelation.java</code> · kích hoạt từ mọi Service được bảo vệ</div></div>
+            <div class="ev-card"><div class="ev-label">API &amp; Thành phần</div><div class="ev-val"><code>Audit.java</code>, <code>AuditHashChain.java</code>, <code>Crypto.auditMac</code>, <code>V12__audit_hardening.sql</code> · kích hoạt từ mọi Service được bảo vệ</div></div>
             <div class="ev-card"><div class="ev-label">Quy tắc &amp; Tiêu chí</div><div class="ev-val">BR-12, BR-13, BR-16 · UC-17 · AC-17 · NFR-05, NFR-12</div></div>
-            <div class="ev-card"><div class="ev-label">Ca kiểm thử</div><div class="ev-val"><code>TC-17</code>, <code>TC-A14</code>, <code>RG-01</code>, <code>AGENT-TC-015</code></div></div>
-            <div class="ev-card"><div class="ev-label">Bằng chứng đạt</div><div class="ev-val"><code>deniedTelehealthJoinPersistsOnlyAudit</code> (<code>RG-01</code>, đã sửa dứt điểm BE-01), <code>SchedulingIntegrationTest</code> (fault injection rollback), <code>PatientAccountIntegrationTest</code>.</div></div>
+            <div class="ev-card"><div class="ev-label">Ca kiểm thử</div><div class="ev-val"><code>TC-17</code>, <code>TC-A14</code>, <code>RG-01</code>, <code>AGENT-TC-015</code>, <code>AGENT-TC-037</code></div></div>
+            <div class="ev-card"><div class="ev-label">Bằng chứng đạt</div><div class="ev-val"><code>AuditHardeningUnitTest</code> (9/9 PASS), <code>deniedTelehealthJoinPersistsOnlyAudit</code> (<code>RG-01</code>), <code>SchedulingIntegrationTest</code> (fault injection rollback), <code>PatientAccountIntegrationTest</code>.</div></div>
           </div>
           <div class="fr-diag-row">
             <div class="fr-diag-thumb" onclick="lb('assets/design/sequence-diagrams/audit-fail-closed.png')"><img src="assets/design/sequence-diagrams/audit-fail-closed.png" alt=""><span>Sequence M07: Audit Fail-Closed &amp; DENIED (RG-01)</span></div>
@@ -426,18 +426,18 @@ sequenceDiagram
 
         <tr class="fr-row" data-id="FR-18" data-module="M07" onclick="toggleFR('FR-18')">
           <td><strong>FR-18</strong><span class="fr-arr" id="arr-FR-18">▸</span></td>
-          <td>Tra cứu &amp; Bảo vệ nhật ký kiểm toán</td>
+          <td>Tra cứu, Xuất CSV, Kiểm chứng &amp; Lưu trữ kiểm toán</td>
           <td><span class="badge bm7">M07</span></td>
-          <td>KHI <code>AUDITOR</code> tìm nhật ký theo thời gian/tác nhân/tài nguyên, trả danh sách phân trang và cấm UPDATE/DELETE từ ứng dụng</td>
+          <td>KHI <code>AUDITOR</code> tra cứu, hệ thống lọc server-side, phân trang con trỏ, chuẩn hóa tiếng Việt, thống kê Summary Bar, xuất CSV BOM chống injection, kiểm chứng chuỗi băm &amp; niêm phong lưu trữ</td>
           <td>UC-18 · <span class="badge bstat-ok">Đạt</span></td>
         </tr>
         <tr class="fr-detail" id="detail-FR-18"><td colspan="5"><div class="fr-dcard">
-          <p class="fr-desc-full"><span class="kw-ears">KHI</span> Kiểm toán viên lọc nhật ký kiểm toán theo <code>from</code>, <code>to</code> (exclusive UTC), <code>actorId</code>, <code>resourceId</code>, hệ thống <span class="kw-shall">PHẢI</span> trả danh sách phân trang (tối đa 100/trang), cấm tài khoản ứng dụng sửa/xóa bản ghi <code>audit_event</code> ở tầng CSDL và cô lập phạm vi quyền <code>AUDITOR</code> (không đọc được catalog khám).</p>
+          <p class="fr-desc-full"><span class="kw-ears">KHI</span> Kiểm toán viên tra cứu nhật ký kiểm toán, hệ thống <span class="kw-shall">PHẢI</span> hỗ trợ lọc server-side (<code>from</code>, <code>to</code>, <code>actorId</code>, <code>resourceId</code>, <code>result</code>, <code>action</code>, <code>category</code>, <code>actorType</code>, <code>correlationId</code>, <code>excludeReadNoise</code>), trả nhãn tác nhân an toàn không lộ email/SĐT/PHI, phân trang con trỏ (<code>cursorCreatedAt</code>/<code>cursorId</code>) tránh trôi trang do <code>AUDIT_SEARCH</code>, thống kê tóm tắt (<code>/summary</code>), xuất CSV UTF-8 BOM chống formula injection tối đa <code>5.000</code> dòng kèm <code>AUDIT_EXPORT</code> (<code>/export</code>), kiểm chứng toàn vẹn chuỗi băm (<code>/verify</code>), quản trị chính sách lưu trữ <code>365/1.825</code> ngày &amp; niêm phong lô bất biến <code>audit_archive_batch</code> (<code>/retention</code>, <code>/archive</code>), cấm <code>UPDATE/DELETE</code> ở tầng CSDL và cô lập quyền <code>AUDITOR</code>.</p>
           <div class="ev-grid">
-            <div class="ev-card"><div class="ev-label">API &amp; Thành phần</div><div class="ev-val"><code>GET /audit-events</code> · <code>AuditController.java</code>, <code>Audit.java</code></div></div>
+            <div class="ev-card"><div class="ev-label">API &amp; Thành phần</div><div class="ev-val"><code>GET /audit-events</code>, <code>/summary</code>, <code>/export</code>, <code>POST /verify</code>, <code>GET /retention</code>, <code>POST /archive</code> · <code>AuditController.java</code>, <code>AuditService.java</code>, <code>AuditActionCatalog.java</code>, <code>Audit.tsx</code></div></div>
             <div class="ev-card"><div class="ev-label">Quy tắc &amp; Tiêu chí</div><div class="ev-val">BR-01, BR-12, BR-13 · UC-18 · AC-18 · NFR-05</div></div>
-            <div class="ev-card"><div class="ev-label">Ca kiểm thử</div><div class="ev-val"><code>TC-18</code>, <code>RG-03</code></div></div>
-            <div class="ev-card"><div class="ev-label">Bằng chứng đạt</div><div class="ev-val"><code>SchedulingIntegrationTest</code> (xác minh quyền đọc audit, lọc phân trang, chặn UPDATE/DELETE và cô lập <code>AUDITOR</code> <code>RG-03</code>).</div></div>
+            <div class="ev-card"><div class="ev-label">Ca kiểm thử</div><div class="ev-val"><code>TC-18</code>, <code>RG-03</code>, <code>AGENT-TC-037</code>, <code>AGENT-TC-038</code></div></div>
+            <div class="ev-card"><div class="ev-label">Bằng chứng đạt</div><div class="ev-val"><code>AuditHardeningUnitTest</code> (9/9 PASS), <code>audit-page.test.tsx</code> (Vitest + RTL), <code>SchedulingIntegrationTest</code> (xác minh quyền đọc audit, chặn UPDATE/DELETE và cô lập <code>AUDITOR</code> <code>RG-03</code>).</div></div>
           </div>
           <div class="fr-diag-row">
             <div class="fr-diag-thumb" onclick="lb('assets/design/sequence-diagrams/audit-fail-closed.png')"><img src="assets/design/sequence-diagrams/audit-fail-closed.png" alt=""><span>Sequence M07: Tra cứu Audit &amp; Trigger bất biến</span></div>
@@ -713,13 +713,13 @@ sequenceDiagram
 
         <tr class="fr-row" data-id="NFR-05" data-module="SEC" onclick="toggleFR('NFR-05')">
           <td><strong>NFR-05</strong><span class="fr-arr" id="arr-NFR-05">▸</span></td>
-          <td>Nhật ký kiểm toán (Audit Fail-Closed)</td>
-          <td>100% thao tác nhạy cảm ghi audit cùng giao dịch; đọc lỗi audit hoàn tác; bảng <code>audit_event</code> append-only</td>
-          <td><code>RG-01</code> (audit <code>DENIED</code> mang <code>X-Request-Id</code>), fault injection rollback trong <code>SchedulingIntegrationTest</code>, <code>PatientAccountIntegrationTest</code></td>
+          <td>Nhật ký kiểm toán (Fail-Closed &amp; Chuỗi băm)</td>
+          <td>100% thao tác nhạy cảm ghi audit nối chuỗi <code>HMAC-SHA256-CHAIN-V1</code> cùng giao dịch; đọc lỗi audit hoàn tác; <code>audit_event</code> &amp; <code>audit_archive_batch</code> append-only</td>
+          <td><code>AuditHardeningUnitTest</code> (9/9), <code>audit-page.test.tsx</code>, <code>RG-01</code>, fault injection rollback trong <code>SchedulingIntegrationTest</code>, <code>PatientAccountIntegrationTest</code></td>
           <td><span class="badge bstat-ok">✓ Đạt</span></td>
         </tr>
         <tr class="fr-detail" id="detail-NFR-05"><td colspan="5"><div class="fr-dcard">
-          <p class="fr-desc-full">Kiểm thử tiêm lỗi DB (<code>DataAccessResourceFailureException</code>) xác nhận hệ thống từ chối thao tác nhạy cảm và không trả dữ liệu khi ghi nhật ký kiểm toán thất bại; tác vụ nền dùng <code>actorType=SYSTEM</code>, không chứa PHI.</p>
+          <p class="fr-desc-full">Kiểm thử tiêm lỗi DB (<code>DataAccessResourceFailureException</code>) xác nhận hệ thống từ chối thao tác nhạy cảm và không trả dữ liệu khi ghi nhật ký kiểm toán thất bại; mỗi sự kiện mới (<code>V12</code>) được niêm phong chuỗi băm <code>HMAC-SHA256-CHAIN-V1</code> bằng khóa tách riêng <code>K_audit</code>, kiểm chứng được 4 dạng sửa đổi trái phép (<code>SEQUENCE_GAP</code>, <code>PREV_HASH_MISMATCH</code>, <code>HASH_MISMATCH</code>, <code>HEAD_MISMATCH</code>); tác vụ nền dùng <code>actorType=SYSTEM</code>, nhãn tác nhân an toàn không lộ email/SĐT/PHI.</p>
         </div></td></tr>
 
         <tr class="fr-row" data-id="NFR-06" data-module="REL" onclick="toggleFR('NFR-06')">
@@ -888,7 +888,7 @@ sequenceDiagram
         <tr class="plain-row" data-module="M05"><td><strong>BR-10</strong></td><td><span class="badge bm5">M05</span></td><td>Mỗi lịch hẹn ứng với tối đa 1 lần khám; phát hành đơn yêu cầu &ge; 1 dòng thuốc đủ 5 trường; không tự đề xuất thuốc hoặc liều dùng.</td></tr>
         <tr class="plain-row" data-module="M06"><td><strong>BR-11</strong></td><td><span class="badge bm6">M06</span></td><td>Gửi thông báo sau commit; lỗi SMTP không hoàn tác lịch. Worker kiểm tra lại version và trạng thái trước khi gửi để bỏ tác vụ lỗi thời.</td></tr>
         <tr class="plain-row" data-module="M01 M06"><td><strong>BR-12</strong></td><td><span class="badge bm6">M06/M07</span></td><td>Không đưa chẩn đoán, nội dung đơn thuốc, room token hay JWT vào Email hoặc nhật ký kỹ thuật.</td></tr>
-        <tr class="plain-row" data-module="M01"><td><strong>BR-13</strong></td><td><span class="badge bm7">M07</span></td><td>Sự kiện kiểm toán gồm tác nhân (hoặc <code>SYSTEM</code>), thao tác, mã tài nguyên, thời điểm, kết quả và <code>X-Request-Id</code>; không lưu bệnh án.</td></tr>
+        <tr class="plain-row" data-module="M07"><td><strong>BR-13</strong></td><td><span class="badge bm7">M07</span></td><td>Sự kiện kiểm toán gồm tác nhân (kèm nhãn an toàn không lộ email/SĐT/PHI hoặc <code>SYSTEM</code>), thao tác, mã tài nguyên, thời điểm micro giây UTC, kết quả, <code>X-Request-Id</code> và chuỗi băm mật mã <code>HMAC-SHA256-CHAIN-V1</code>; chính sách lưu trữ <code>365/1.825</code> ngày (<code>APPEND_ONLY_NO_APP_DELETE</code>), không lưu bệnh án.</td></tr>
         <tr class="plain-row" data-module="M09"><td><strong>BR-14</strong></td><td><span class="badge bm9">M09</span></td><td>Chỉ bệnh nhân và bác sĩ đúng lịch được vào phiên từ xa hợp lệ; room token ngắn hạn (<code>300 s</code>) gắn chặt phiên và người tham gia.</td></tr>
         <tr class="plain-row" data-module="M09 M05"><td><strong>BR-15</strong></td><td><span class="badge bm9">M09/M05</span></td><td>Mất luồng hình ảnh/âm thanh không tự hoàn tất khám; kết thúc phiên (<code>ENDED</code>), chốt bệnh án (<code>FINAL</code>) và hoàn tất ca là các thao tác tách biệt.</td></tr>
         <tr class="plain-row" data-module="M01"><td><strong>BR-16</strong></td><td><span class="badge bm7">M07</span></td><td>Audit thao tác ghi lưu trong cùng giao dịch; đọc dữ liệu nhạy cảm phải lưu audit thành công trước khi trả dữ liệu (fail-closed).</td></tr>
@@ -951,7 +951,7 @@ sequenceDiagram
         <tr class="plain-row" data-module="M03"><td><strong>SCR-20</strong></td><td><code>/admin/schedules</code></td><td>Điều phối lịch làm việc &amp; lịch nghỉ bác sĩ toàn phòng khám</td><td><code>ADMINISTRATOR</code></td><td><span class="badge bm3">M03</span> · FR-05, FR-06 · UC-05, UC-06 · <code>admin/Schedules.tsx</code></td></tr>
         <tr class="plain-row" data-module="M03"><td><strong>SCR-21</strong></td><td><code>/admin/clinic-hours</code></td><td>Cấu hình Giờ hoạt động 7 ngày &amp; Ngày nghỉ lễ ưu tiên <code>H_eff(D)</code></td><td><code>ADMINISTRATOR</code></td><td><span class="badge bm3">M03</span> · FR-05 · UC-05 · <code>admin/ClinicHours.tsx</code></td></tr>
         <tr class="plain-row" data-module="M01 M07"><td><strong>SCR-22</strong></td><td><code>/admin/patient-accounts</code></td><td>Tra cứu chính xác tài khoản bệnh nhân (Blind Index HMAC) &amp; Khóa/Mở khóa</td><td><code>ADMINISTRATOR</code></td><td><span class="badge bm1">M01/M07</span> · FR-27, FR-17 · UC-27, UC-17 · <code>admin/PatientAccounts.tsx</code></td></tr>
-        <tr class="plain-row" data-module="M07"><td><strong>SCR-23</strong></td><td><code>/audit</code></td><td>Nhật ký kiểm toán hệ thống (Append-only, lọc phân trang, <code>X-Request-Id</code>)</td><td><code>AUDITOR</code></td><td><span class="badge bm7">M07</span> · FR-17, FR-18 · UC-17, UC-18 · <code>staff/Audit.tsx</code></td></tr>
+        <tr class="plain-row" data-module="M07"><td><strong>SCR-23</strong></td><td><code>/audit</code></td><td>Nhật ký kiểm toán (Chuẩn hóa hành động VN, Cách 1 rút gọn UUID 2 cột, Summary Bar, lọc server-side, phân trang con trỏ, xuất CSV BOM, kiểm chứng chuỗi băm &amp; lưu trữ <code>365/1.825</code> ngày)</td><td><code>AUDITOR</code></td><td><span class="badge bm7">M07</span> · FR-17, FR-18 · UC-17, UC-18 · <code>staff/Audit.tsx</code>, <code>core/audit-labels.ts</code></td></tr>
         <tr class="plain-row" data-module="M01"><td><strong>DLG-01</strong></td><td>Overlay trên <code>SCR-02</code></td><td>Hộp thoại / Trạng thái Xác thực OTP 6 chữ số khi đổi email (TTL 300s, cooldown 30s)</td><td>5 vai trò đã đăng nhập</td><td><span class="badge bm1">M01</span> · FR-01, NFR-15 · UC-01 · <code>account/Account.tsx</code></td></tr>
         <tr class="plain-row" data-module="M04"><td><strong>DLG-02</strong></td><td>Overlay trên <code>SCR-03/05</code></td><td>Hộp thoại Đổi lịch / Hủy lịch hẹn (&ge; 2 giờ trước giờ khám, kèm lý do bắt buộc)</td><td><code>PATIENT</code></td><td><span class="badge bm4">M04</span> · FR-09, FR-10 · UC-09, UC-10 · <code>patient/Appointments.tsx</code></td></tr>
         <tr class="plain-row" data-module="M06"><td><strong>DLG-03</strong></td><td>Overlay trên <code>SCR-15</code></td><td>Hộp thoại Báo chậm giờ hẹn (<code>DELAY_NOTICE</code>, giờ bắt đầu dự kiến tùy chọn)</td><td><code>RECEPTIONIST</code></td><td><span class="badge bm6">M06</span> · FR-25 · UC-25 · <code>staff/Reception.tsx</code></td></tr>
@@ -968,13 +968,14 @@ sequenceDiagram
 
   <div class="formula-grid">
     <div class="formula-card">
-      <h4><span>1. Định danh, Mã hóa &amp; Blind Index</span><span class="badge bm1">M01/M07</span></h4>
-      <div class="formula-src"><code>Access.java</code> · <code>Crypto.java</code></div>
+      <h4><span>1. Định danh, Mã hóa, Blind Index &amp; Chuỗi băm Audit</span><span class="badge bm1">M01/M07</span></h4>
+      <div class="formula-src"><code>Access.java</code> · <code>Crypto.java</code> · <code>AuditHashChain.java</code> · <code>V12</code></div>
       <div class="formula-expr">userId = UUIDv3(UTF8(issuer + "|" + subject))
 C = IV_12 || E_{K, GCM}(IV_12, P) || Tag_16   (|Tag| = 128 bit)
-K_hmac = HMAC-SHA256(K, "cliniccare:blind-index:v1")
-h(x) = hex_lower(HMAC-SHA256(K_hmac, norm(x)))  in {0-9a-f}^64</div>
-      <div class="formula-note">Tách khóa <code>K_hmac</code> khỏi khóa mã hóa AES-256-GCM; chuẩn hóa SĐT <code>+84/84(&ge;11) &rarr; 0</code> dài 7–15 chữ số; tra cứu khớp &ge;2 người trả <code>409</code>.</div>
+K_hmac  = HMAC-SHA256(K, "cliniccare:blind-index:v1")
+K_audit = HMAC-SHA256(K, "cliniccare:audit-chain:v1")
+H_n = HMAC-SHA256(K_audit, "v1|"||s_n||H_{n-1}||id||micros(t)||fields)</div>
+      <div class="formula-note">Tách độc lập <code>K_hmac</code> và <code>K_audit</code> khỏi khóa AES-256-GCM; chuẩn hóa thời điểm về micro giây (<code>DATETIME(6)</code>); xuất CSV tối đa <code>5.000</code> dòng/lần kèm BOM &amp; chống formula injection; lưu trữ nóng <code>365</code> ngày / dài hạn <code>1.825</code> ngày.</div>
     </div>
 
     <div class="formula-card">
@@ -1066,8 +1067,8 @@ Cov_line, Cov_branch &ge; 60% (jacoco:check CI) | Smoke_pass = 6/6 = 100%</div>
         <tr class="plain-row" data-module="M05"><td><strong>FR-14</strong></td><td><span class="badge bm5">M05</span></td><td>BR-09,10 · UC-14 · AC-14 · <code>SCR-12, SCR-06</code></td><td><code>/encounters/{id}/prescriptions</code>, <code>/prescriptions/{id}/issue</code></td><td><code>SchedulingIntegrationTest</code> (422 khi thiếu trường), <code>clinical-flow.test.tsx</code></td></tr>
         <tr class="plain-row" data-module="M06"><td><strong>FR-15</strong></td><td><span class="badge bm6">M06</span></td><td>BR-11,12 · UC-15 · AC-15 · <code>SCR-17</code></td><td><code>/notification-jobs</code>, <code>NotificationWorker</code></td><td><code>SchedulingIntegrationTest</code> + Mailpit smoke (30p &amp; lọc version)</td></tr>
         <tr class="plain-row" data-module="M06"><td><strong>FR-16</strong></td><td><span class="badge bm6">M06</span></td><td>BR-11 · UC-16 · AC-16 · <code>SCR-17, SCR-14</code></td><td><code>NotificationStore</code> (backoff 1/5/15 phút)</td><td><code>SchedulingIntegrationTest</code> (thử lại 3 lần &amp; đánh FAILED không rollback lịch)</td></tr>
-        <tr class="plain-row" data-module="M07"><td><strong>FR-17</strong></td><td><span class="badge bm7">M07</span></td><td>BR-12,13,16 · UC-17 · AC-17 · <code>SCR-23 (Nội bộ M01..09)</code></td><td><code>Audit.java</code>, <code>RequestCorrelation.java</code></td><td><code>RG-01</code> (audit <code>DENIED</code>), tiêm lỗi DB audit rollback, <code>PatientAccountIntegrationTest</code></td></tr>
-        <tr class="plain-row" data-module="M07"><td><strong>FR-18</strong></td><td><span class="badge bm7">M07</span></td><td>BR-01,12,13 · UC-18 · AC-18 · <code>SCR-23</code></td><td><code>GET /audit-events</code></td><td><code>SchedulingIntegrationTest</code> (phân trang, cấm UPDATE/DELETE CSDL), <code>RG-03</code></td></tr>
+        <tr class="plain-row" data-module="M07"><td><strong>FR-17</strong></td><td><span class="badge bm7">M07</span></td><td>BR-12,13,16 · UC-17 · AC-17 · <code>SCR-23 (Nội bộ M01..09)</code></td><td><code>Audit.java</code>, <code>AuditHashChain.java</code>, <code>V12__audit_hardening.sql</code></td><td><code>AuditHardeningUnitTest</code> (9/9), <code>RG-01</code> (audit <code>DENIED</code>), tiêm lỗi DB rollback</td></tr>
+        <tr class="plain-row" data-module="M07"><td><strong>FR-18</strong></td><td><span class="badge bm7">M07</span></td><td>BR-01,12,13 · UC-18 · AC-18 · <code>SCR-23</code></td><td><code>GET /audit-events</code>, <code>/summary</code>, <code>/export</code>, <code>/verify</code>, <code>/retention</code>, <code>/archive</code></td><td><code>AuditHardeningUnitTest</code>, <code>audit-page.test.tsx</code>, <code>SchedulingIntegrationTest</code>, <code>RG-03</code></td></tr>
         <tr class="plain-row" data-module="M08"><td><strong>FR-19</strong></td><td><span class="badge bm8">M08</span></td><td>BR-06,07,08 · UC-19 · AC-19 · <code>SCR-15</code></td><td><code>POST /appointments/{id}/check-in</code></td><td><code>RG-10</code>, <code>RG-11</code>, <code>checkInHasExactTimeBoundariesAndRoleChecks</code></td></tr>
         <tr class="plain-row" data-module="M08"><td><strong>FR-20</strong></td><td><span class="badge bm8">M08</span></td><td>BR-06 · UC-20 · AC-20 · <code>SCR-11, SCR-16</code></td><td><code>GET /doctors/{id}/queue</code>, <code>POST .../queue/next</code></td><td><code>RG-04</code> (204 hàng rỗng), <code>RG-12</code> (khóa gọi đồng thời)</td></tr>
         <tr class="plain-row" data-module="M08"><td><strong>FR-21</strong></td><td><span class="badge bm8">M08</span></td><td>BR-06 · UC-21 · AC-21 · <code>SCR-11, SCR-16</code></td><td><code>POST /queue-tickets/{id}/skip</code></td><td><code>SchedulingIntegrationTest</code> (trả về <code>WAITING</code> ở <code>MAX+1</code> giữ ID)</td></tr>

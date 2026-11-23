@@ -5,7 +5,7 @@ window.SECTION_DIAGRAMS = `
 <section class="section" id="uc-diag">
   <div class="alert alert-info" style="margin-bottom:18px">
     <span>📐</span>
-    <div><strong>Đồng bộ thiết kế 100% (<code>main@327a553</code>):</strong> Đầy đủ <strong>38 sơ đồ</strong> theo chuẩn <strong>OMG UML 2.5</strong>, mô hình kiến trúc <strong>Kruchten 4+1 Views</strong> và <strong>IE / Crow's Foot ERD</strong>, bao phủ toàn bộ <strong>9 phân hệ M01–M09</strong>, <strong>27 Use Case</strong>, <strong>24 bảng MySQL 8.4 (<code>V1..V11</code>)</strong> và hạ tầng Azure VM. Các sơ đồ nhiều đường nối (Use Case, Class, ERD, Kiến trúc/Triển khai) đã được <strong>phân màu theo Tác nhân / Miền / Tuyến giao thức kèm bảng chú giải Legend</strong> chuẩn OMG UML 2.5; nhấn nút <code>🔗 Copy link</code> trên từng sơ đồ để mở trực tiếp.</div>
+    <div><strong>Đồng bộ thiết kế 100% (<code>main@3eb59d7</code> · 23/11/2026):</strong> Đầy đủ <strong>38 sơ đồ</strong> theo chuẩn <strong>OMG UML 2.5</strong>, mô hình kiến trúc <strong>Kruchten 4+1 Views</strong> và <strong>IE / Crow's Foot ERD</strong>, bao phủ toàn bộ <strong>9 phân hệ M01–M09</strong>, <strong>27 Use Case</strong>, <strong>26 bảng MySQL 8.4 (<code>V1..V12</code>, gồm <code>audit_chain_head</code> &amp; <code>audit_archive_batch</code>)</strong> và hạ tầng Azure VM. Các sơ đồ nhiều đường nối (Use Case, Class, ERD, Kiến trúc/Triển khai) đã được <strong>phân màu theo Tác nhân / Miền / Tuyến giao thức kèm bảng chú giải Legend</strong> chuẩn OMG UML 2.5; nhấn nút <code>🔗 Copy link</code> trên từng sơ đồ để mở trực tiếp.</div>
   </div>
 
   <div class="sh"><span class="sh-ic">🗂️</span><div class="sh-txt"><h2>Sơ đồ Use Case (5 sơ đồ)</h2><p>OMG UML 2.5 · Tổng quan 27 UC và 4 bản tách nhóm theo phân hệ <code>M01–M09</code> · Nhấn vào ảnh để phóng to</p></div></div>
@@ -168,7 +168,7 @@ window.SECTION_DIAGRAMS = `
 </section>
 
 <section class="section" id="erd">
-  <div class="sh"><span class="sh-ic">🗄️</span><div class="sh-txt"><h2>Entity Relationship Diagram (4 sơ đồ)</h2><p>Cấu trúc thật <strong>24 bảng MySQL 8.4 / InnoDB</strong> theo <code>Flyway V1..V11</code> · 4 góc nhìn (IE / Crow's Foot)</p></div></div>
+  <div class="sh"><span class="sh-ic">🗄️</span><div class="sh-txt"><h2>Entity Relationship Diagram (4 sơ đồ)</h2><p>Cấu trúc thật <strong>26 bảng MySQL 8.4 / InnoDB</strong> theo <code>Flyway V1..V12</code> (bổ sung chuỗi băm <code>audit_chain_head</code> &amp; lưu trữ <code>audit_archive_batch</code> ở <code>V12</code>) · 4 góc nhìn (IE / Crow's Foot)</p></div></div>
   <div class="img-grid">
     <div class="img-card" onclick="lb('assets/design/database/erd.png')">
       <img src="assets/design/database/erd.png" alt="ERD Tổng quan 24 bảng" onerror="this.style.height='120px';this.alt='Không tìm thấy ảnh'">

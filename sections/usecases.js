@@ -416,46 +416,47 @@ window.SECTION_USECASES = `
         <!-- M07 Kiểm toán -->
         <tr class="fr-row" data-id="UC-17" data-module="M07" onclick="toggleFR('UC-17')">
           <td><strong>UC-17</strong><span class="fr-arr" id="arr-UC-17">▸</span></td>
-          <td>Ghi sự kiện kiểm toán (Nội bộ fail-closed)</td>
+          <td>Ghi sự kiện kiểm toán (Fail-closed &amp; Chuỗi băm)</td>
           <td><span class="actor">Hệ thống</span></td>
           <td><span class="badge bm7">M07</span></td>
-          <td>Đã sửa BE-01: audit <code>DENIED</code> mang <code>X-Request-Id</code> luôn được lưu nguyên tử; lỗi ghi → hoàn tác</td>
+          <td>Ghi audit nối chuỗi băm <code>HMAC-SHA256-CHAIN-V1</code> (<code>V12</code>), giữ nguyên <code>DENIED</code> mang <code>X-Request-Id</code>; lỗi ghi → hoàn tác</td>
         </tr>
         <tr class="fr-detail" id="detail-UC-17"><td colspan="5"><div class="fr-dcard"><div class="uc-body">
-          <div class="uc-field"><label>Tác nhân</label><p>Thành phần <code>Audit</code> trong Backend (kích hoạt tự động bởi các Service)</p></div>
-          <div class="uc-field"><label>Tiền điều kiện</label><p>Phát sinh truy cập nhạy cảm, thay đổi quyền, khóa/mở khóa hoặc từ chối truy cập</p></div>
-          <div class="uc-field"><label>Kích hoạt</label><p>Lời gọi <code>audit.record(...)</code> hoặc <code>audit.recordSystem(...)</code></p></div>
-          <div class="uc-field"><label>Hậu điều kiện</label><p>Lưu sự kiện (<code>actor_id</code>/<code>SYSTEM</code>, <code>action</code>, <code>resource</code>, <code>created_at</code>, <code>request_id</code>) không chứa PHI</p></div>
+          <div class="uc-field"><label>Tác nhân</label><p>Thành phần <code>Audit</code> &amp; <code>AuditHashChain</code> trong Backend (kích hoạt tự động bởi các Service)</p></div>
+          <div class="uc-field"><label>Tiền điều kiện</label><p>Phát sinh truy cập nhạy cảm, thay đổi quyền, khóa/mở khóa, xuất CSV/kiểm chứng/niêm phong hoặc từ chối truy cập</p></div>
+          <div class="uc-field"><label>Kích hoạt</label><p>Lời gọi <code>audit.record(...)</code> (<code>MANDATORY</code>) hoặc <code>audit.denied(...)</code> (<code>REQUIRES_NEW</code>)</p></div>
+          <div class="uc-field"><label>Hậu điều kiện</label><p>Lưu sự kiện (<code>actor_id</code>/<code>SYSTEM</code>, <code>action</code>, <code>resource_id</code>, <code>created_at</code> micro giây, <code>correlation_id</code>, <code>chain_seq</code>, <code>prev_hash</code>, <code>event_hash</code>) và cập nhật <code>audit_chain_head</code> không chứa PHI</p></div>
           <div class="uc-field full"><label>Luồng chính</label><ul>
-            <li>1. Thao tác ghi nghiệp vụ ghi audit cùng kết nối &amp; giao dịch CSDL.</li>
-            <li>2. Thao tác đọc nhạy cảm ghi audit thành công trước khi trả dữ liệu.</li>
+            <li>1. Khóa bản ghi đỉnh <code>audit_chain_head (id=1) FOR UPDATE</code>, tính <code>chain_seq = last_seq + 1</code> và <code>event_hash = HMAC-SHA256(K_audit, ...)</code>.</li>
+            <li>2. Chèn <code>audit_event</code> và cập nhật <code>audit_chain_head</code> trong cùng kết nối &amp; giao dịch CSDL; đọc nhạy cảm lưu audit trước khi trả dữ liệu.</li>
             <li>3. Từ chối truy cập phòng telehealth ghi <code>DENIED</code> qua giao dịch riêng bền vững kèm <code>X-Request-Id</code> (<code>RG-01</code>).</li>
           </ul></div>
           <div class="uc-field full"><label>Luồng ngoại lệ</label><ul>
-            <li><span class="exc">E1</span> Kho audit lỗi khi đọc/ghi dữ liệu nhạy cảm → rollback hoàn toàn và trả 503</li>
+            <li><span class="exc">E1</span> Kho audit lỗi khi đọc/ghi dữ liệu nhạy cảm → rollback hoàn toàn (kể cả <code>audit_chain_head</code> để không đứt số thứ tự chuỗi) và trả 503</li>
           </ul></div>
         </div></div></td></tr>
 
         <tr class="fr-row" data-id="UC-18" data-module="M07" onclick="toggleFR('UC-18')">
           <td><strong>UC-18</strong><span class="fr-arr" id="arr-UC-18">▸</span></td>
-          <td>Tra cứu và bảo vệ nhật ký kiểm toán</td>
+          <td>Tra cứu, Xuất CSV, Kiểm chứng &amp; Lưu trữ kiểm toán</td>
           <td><span class="actor">Kiểm toán viên</span></td>
           <td><span class="badge bm7">M07</span></td>
-          <td>Chỉ <code>AUDITOR</code> đọc có lọc &amp; phân trang; append-only ở CSDL; đã sửa BE-03 cô lập phạm vi</td>
+          <td>Chỉ <code>AUDITOR</code>: lọc server-side, phân trang con trỏ, Summary Bar, xuất CSV BOM, kiểm chứng chuỗi băm &amp; niêm phong lưu trữ</td>
         </tr>
         <tr class="fr-detail" id="detail-UC-18"><td colspan="5"><div class="fr-dcard"><div class="uc-body">
           <div class="uc-field"><label>Tác nhân</label><p><span class="actor">Kiểm toán viên</span> (<code>AUDITOR</code>)</p></div>
           <div class="uc-field"><label>Tiền điều kiện</label><p>Đã đăng nhập với vai trò <code>AUDITOR</code></p></div>
-          <div class="uc-field"><label>Kích hoạt</label><p><code>GET /api/audit-events?from=&amp;to=&amp;actorId=&amp;resourceId=&amp;limit=20&amp;offset=0</code></p></div>
-          <div class="uc-field"><label>Hậu điều kiện</label><p>Danh sách sự kiện phân trang (mảng trực tiếp, <code>limit &le; 100</code>) không chứa PHI/token</p></div>
+          <div class="uc-field"><label>Kích hoạt</label><p><code>GET /api/audit-events</code> (+ <code>/summary</code>, <code>/export</code>, <code>/retention</code>), <code>POST /api/audit-events/verify</code>, <code>POST /api/audit-events/archive</code></p></div>
+          <div class="uc-field"><label>Hậu điều kiện</label><p>Trả danh sách phân trang con trỏ kèm nhãn tác nhân an toàn (không lộ email/SĐT/PHI), thống kê, CSV BOM (kèm <code>AUDIT_EXPORT</code>), báo cáo kiểm chứng toàn vẹn (kèm <code>AUDIT_INTEGRITY_VERIFIED</code>) hoặc lô lưu trữ bất biến (kèm <code>AUDIT_ARCHIVE_CREATED</code>)</p></div>
           <div class="uc-field full"><label>Luồng chính</label><ul>
-            <li>1. Kiểm tra vai trò <code>AUDITOR</code>.</li>
-            <li>2. Lọc <code>from</code> (inclusive), <code>to</code> (exclusive), tác nhân và mã tài nguyên.</li>
-            <li>3. Trả kết quả có phân trang; tài khoản ứng dụng chỉ được <code>INSERT/SELECT</code> trên bảng <code>audit_event</code>.</li>
+            <li>1. Kiểm tra vai trò <code>AUDITOR</code> và xác thực bộ lọc (<code>from</code>, <code>to</code>, <code>actorId</code>, <code>resourceId</code>, <code>result</code>, <code>action</code>, <code>category</code>, <code>actorType</code>, <code>correlationId</code>, <code>excludeReadNoise</code>).</li>
+            <li>2. Phân trang bằng con trỏ <code>(cursorCreatedAt, cursorId)</code> để không trôi/trùng dòng khi <code>AUDIT_SEARCH</code> ghi thêm; giao diện <code>SCR-23</code> chuẩn hóa hành động tiếng Việt và rút gọn UUID theo Cách 1 (đủ 36 ký tự ở Modal/Sao chép/CSV).</li>
+            <li>3. Hỗ trợ tổng hợp Summary Bar, xuất CSV UTF-8 có BOM chống formula injection tối đa 5.000 dòng, kiểm chứng chuỗi băm <code>HMAC-SHA256-CHAIN-V1</code> và niêm phong lô <code>audit_archive_batch</code> theo chính sách lưu trữ <code>365/1.825</code> ngày (<code>APPEND_ONLY_NO_APP_DELETE</code>).</li>
           </ul></div>
           <div class="uc-field full"><label>Luồng ngoại lệ</label><ul>
-            <li><span class="exc">E1</span> Tài khoản ứng dụng yêu cầu UPDATE/DELETE bảng audit → CSDL từ chối</li>
+            <li><span class="exc">E1</span> Tài khoản ứng dụng yêu cầu UPDATE/DELETE bảng <code>audit_event</code> hoặc <code>audit_archive_batch</code> → trigger CSDL từ chối</li>
             <li><span class="exc">E2</span> <code>AUDITOR</code> thuần đọc endpoint danh mục khám/bác sĩ → bị chặn 403 (<code>RG-03</code>)</li>
+            <li><span class="exc">E3</span> Phát hiện sai lệch chuỗi băm (<code>SEQUENCE_GAP</code>/<code>PREV_HASH_MISMATCH</code>/<code>HASH_MISMATCH</code>/<code>HEAD_MISMATCH</code>) → trả <code>TAMPERED</code> kèm vị trí hỏng đầu tiên</li>
           </ul></div>
         </div></div></td></tr>
 
