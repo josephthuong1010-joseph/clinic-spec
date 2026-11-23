@@ -770,7 +770,7 @@ sequenceDiagram
           <td><strong>NFR-10</strong><span class="fr-arr" id="arr-NFR-10">▸</span></td>
           <td>Công nghệ chuẩn, OpenAPI 3.1 &amp; Quản lý Git</td>
           <td>React + TS / Spring Boot / MySQL 8.4; OpenAPI 3.1 khớp 100% mã nguồn; UML trong Git</td>
-          <td>Job <code>api-contract</code> (<code>openapi_spec_validator</code>) xanh trên CI: 50 đường dẫn / 61 thao tác, phủ đủ <code>FR-01..27</code></td>
+          <td>Job <code>api-contract</code> (<code>openapi_spec_validator</code>) xanh trên CI: 55 đường dẫn / 66 thao tác, phủ đủ <code>FR-01..27</code></td>
           <td><span class="badge bstat-ok">✓ Đạt</span></td>
         </tr>
         <tr class="fr-detail" id="detail-NFR-10"><td colspan="5"><div class="fr-dcard">

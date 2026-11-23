@@ -1,4 +1,4 @@
-/* sections/testing.js — Bảng PCL N/B/A, Agent Catalog, Benchmark NFR-01 & Ma trận truy vết (main@327a553, 22/11/2026) */
+/* sections/testing.js — Bảng PCL N/B/A, Agent Catalog, Benchmark NFR-01 & Ma trận truy vết (đồng bộ SE-project-main, 23/11/2026) */
 
 window.SECTION_TESTING = `
 <section class="section" id="pcl">
@@ -6,14 +6,14 @@ window.SECTION_TESTING = `
     <span>📏</span>
     <div><strong>Chuẩn &amp; Kỹ thuật kiểm thử áp dụng:</strong> Phân cấp &amp; truy vết theo <strong>ISO/IEC/IEEE 29119</strong>; phân loại ca theo chuẩn <strong>PCL (<code>N / B / A</code>)</strong>; cấu trúc unit test <strong>Arrange–Act–Assert (AAA)</strong>; tiêu chí NFR tham chiếu <strong>ISO/IEC 25010:2023</strong>, <strong>OWASP ASVS 5.0 / WSTG</strong> và quét tự động <strong>WCAG 2.2 AA</strong> (<code>axe-core</code>).</div>
   </div>
-  <div class="sh"><span class="sh-ic">🧪</span><div class="sh-txt"><h2>Bảng PCL — Kiểm thử theo chuẩn N/B/A</h2><p>30 ca PCL (<code>N</code>=Normal · <code>B</code>=Boundary · <code>A</code>=Abnormal) · CI <code>#43</code> (<code>7c13276</code>) đạt 86/86 test Backend + cổng <code>jacoco:check</code> &ge;60% + 79/79 Vitest</p></div></div>
+  <div class="sh"><span class="sh-ic">🧪</span><div class="sh-txt"><h2>Bảng PCL — Kiểm thử theo chuẩn N/B/A</h2><p>30 ca PCL (<code>N</code>=Normal · <code>B</code>=Boundary · <code>A</code>=Abnormal) · CI xanh 95+ test Backend (MySQL 8.4 + <code>V1..V12</code> + <code>jacoco:check</code> &ge;60%) + 110 Vitest (28 file)</p></div></div>
 
   <div class="sum-bar" style="margin-bottom:16px">
     <div class="sum-item"><div class="n" style="color:var(--ok)">30 / 30</div><div class="l">Ca PCL Đạt ✓</div></div>
-    <div class="sum-item"><div class="n">86</div><div class="l">Backend tests (MySQL 8.4)</div></div>
-    <div class="sum-item"><div class="n">79 / 22</div><div class="l">Frontend Vitest / File</div></div>
+    <div class="sum-item"><div class="n">95+</div><div class="l">Backend tests (MySQL 8.4)</div></div>
+    <div class="sum-item"><div class="n">110 / 28</div><div class="l">Frontend Vitest / File</div></div>
     <div class="sum-item"><div class="n">17</div><div class="l">Playwright (scan/rtc/auth)</div></div>
-    <div class="sum-item"><div class="n" style="color:var(--ok)">24 / 24</div><div class="l">Sổ test Agent PASS</div></div>
+    <div class="sum-item"><div class="n" style="color:var(--ok)">38</div><div class="l">Ca trong Sổ test Agent</div></div>
     <div class="sum-item"><div class="n" style="color:var(--ok)">16 / 16</div><div class="l">NFR Đạt</div></div>
     <div class="sum-item"><div class="n" style="color:var(--ok)">9,37 ms</div><div class="l">NFR-01 Overall p95</div></div>
   </div>
@@ -55,7 +55,7 @@ window.SECTION_TESTING = `
       </tbody>
     </table>
   </div>
-  <p style="font-size:12px;color:var(--txt3);margin-top:12px"><strong style="color:var(--txt2)">Tóm tắt:</strong> 30/30 ca PCL đều đạt (0 lỗi). Toàn bộ 86 test Backend chạy trên MySQL 8.4 Testcontainers và đạt cổng JaCoCo <code>LINE &ge;60%</code>, <code>BRANCH &ge;60%</code> tại CI <code>#43</code>.</p>
+  <p style="font-size:12px;color:var(--txt3);margin-top:12px"><strong style="color:var(--txt2)">Tóm tắt:</strong> 30/30 ca PCL đều đạt (0 lỗi). Toàn bộ 95+ test Backend chạy trên MySQL 8.4 Testcontainers (<code>V1..V12</code>) và đạt cổng JaCoCo <code>LINE &ge;60%</code>, <code>BRANCH &ge;60%</code>.</p>
 </section>
 
 <section class="section" id="nfr-01-bench">
@@ -75,7 +75,7 @@ window.SECTION_TESTING = `
 </section>
 
 <section class="section" id="agent-suite">
-  <div class="sh"><span class="sh-ic">📑</span><div class="sh-txt"><h2>Bộ kiểm thử mở rộng &amp; Xác minh thực địa (<code>AGENT-TC-001..023</code>, <code>TC-N05</code>)</h2><p>24/24 ca trong sổ kiểm thử đều đạt trạng thái <code>PASS</code> sau CI <code>#43</code> (<code>7c13276</code>) và NFR-01 Run <code>44931759747</code> (<code>12740a9</code>)</p></div></div>
+  <div class="sh"><span class="sh-ic">📑</span><div class="sh-txt"><h2>Bộ kiểm thử mở rộng &amp; Xác minh thực địa (<code>AGENT-TC-001..038</code>, <code>TC-N05</code>)</h2><p>Tổng hợp nhóm ca kiểm thử mở rộng trong sổ kiểm thử agent (đồng bộ 23/11/2026, gồm nâng cấp kiểm toán <code>V12</code> và quét Playwright/<code>axe</code> trên <code>/audit</code>)</p></div></div>
   <div class="tbl-wrap">
     <table>
       <thead><tr><th>Nhóm ca kiểm thử</th><th>Mã ca</th><th>Công cụ / Môi trường</th><th>Nội dung &amp; Kết quả xác minh gần nhất</th><th>Trạng thái</th></tr></thead>
@@ -87,14 +87,14 @@ window.SECTION_TESTING = `
         <tr><td><strong>Guard &amp; Post-Deploy Smoke</strong></td><td><code>AGENT-TC-017</code>, <code>018</code></td><td>Vitest + Python + GitHub Actions</td><td><code>guard-redirect.test.tsx</code> (2/2) chuyển về trang chủ vai trò mới khi <code>fromSignin=true</code>; <code>verify-live-demo.py</code> kiểm tra 6/6 chốt HTTPS + OIDC + WebRTC ICE/STUN.</td><td><span class="badge bstat-ok">✓ PASS</span></td></tr>
         <tr><td><strong>TURN/WebRTC, Business Rules &amp; Backup</strong></td><td><code>AGENT-TC-019..021</code></td><td>Python + JUnit + MySQL 8.4 <code>mysqldump</code></td><td>Cấu hình <code>coturn</code> quota <code>4/32</code> &amp; STUN 3478 UDP/TCP phản hồi <code>0x0101</code>; <code>BusinessRulesUnitTest</code> (5/5); <code>BackupRestoreIntegrationTest</code> restore &amp; kiểm FK + AES-GCM (CI <code>#43</code>).</td><td><span class="badge bstat-ok">✓ PASS</span></td></tr>
         <tr><td><strong>Tải chuẩn NFR-01 &amp; Usability</strong></td><td><code>AGENT-TC-022..023</code>, <code>TC-N05</code></td><td>GitHub Actions + MySQL 8.4 + k6 · Điện thoại thật</td><td><code>Nfr01LoadHarnessTests</code> (4/4); k6 50 VU &times; 15m đạt <code>p95 = 9,37 ms</code>; <code>TC-N05</code> nhóm thử thực tế trên điện thoại (không lưu biên bản bấm giờ riêng).</td><td><span class="badge bstat-ok">✓ PASS</span></td></tr>
-        <tr><td><strong>Nâng cấp Kiểm toán M07 (3 ưu tiên)</strong></td><td><code>AGENT-TC-037..038</code></td><td>JUnit + Mockito + Vitest + RTL (<code>AuditHardeningUnitTest</code>, <code>audit-page.test.tsx</code>)</td><td>Tách khóa <code>K_audit</code>, chuỗi băm <code>HMAC-SHA256-CHAIN-V1</code> phát hiện đủ 4 lỗi <code>TAMPERED</code>, lọc server-side, phân trang con trỏ chống trôi trang, nhãn tác nhân an toàn, chuẩn hóa hành động VN, Cách 1 rút gọn UUID 2 cột, CSV BOM chống formula injection và niêm phong lô <code>audit_archive_batch</code>.</td><td><span class="badge bstat-ok">✓ PASS</span></td></tr>
+        <tr><td><strong>Nâng cấp Kiểm toán M07 (3 ưu tiên)</strong></td><td><code>AGENT-TC-037..038</code></td><td>JUnit + Mockito + Vitest + RTL + Playwright/<code>axe</code> (<code>AuditHardeningUnitTest</code>, <code>audit-page.test.tsx</code>)</td><td>Tách khóa <code>K_audit</code>, chuỗi băm <code>HMAC-SHA256-CHAIN-V1</code> xác minh trong snapshot <code>REPEATABLE READ</code> phát hiện đủ 4 lỗi <code>TAMPERED</code> (gồm <code>chain_seq &le; 0</code>) và cảnh báo khi <code>truncated</code>, lọc server-side kể cả từ khóa tiếng Việt, phân trang con trỏ chống trôi trang, nhãn tác nhân an toàn, chuẩn hóa hành động VN, Cách 1 rút gọn UUID 2 cột, CSV BOM đủ <code>Mã sự kiện (UUID)</code> chống formula injection, niêm phong tuần tự dưới khóa <code>FOR UPDATE</code> vào <code>audit_archive_batch</code> và quét Playwright/<code>axe</code> đạt 0 tràn ngang &amp; 0 vi phạm.</td><td><span class="badge bstat-ok">✓ PASS</span></td></tr>
       </tbody>
     </table>
   </div>
 </section>
 
 <section class="section" id="trace">
-  <div class="sh"><span class="sh-ic">🔗</span><div class="sh-txt"><h2>Ma trận truy vết tổng hợp (27 FR &rarr; UC &rarr; NFR &rarr; Bằng chứng)</h2><p>Đối chiếu <code>docs/requirements/traceability-matrix.md</code> tại <code>main@327a553</code> · Xem chi tiết tra cứu tại trang <a href="requirements.html#review-matrix">Yêu cầu</a></p></div></div>
+  <div class="sh"><span class="sh-ic">🔗</span><div class="sh-txt"><h2>Ma trận truy vết tổng hợp (27 FR &rarr; UC &rarr; NFR &rarr; Bằng chứng)</h2><p>Đối chiếu <code>docs/requirements/traceability-matrix.md</code> (23/11/2026) · Xem chi tiết tra cứu tại trang <a href="requirements.html#review-matrix">Yêu cầu</a></p></div></div>
   <div class="tbl-wrap">
     <table>
       <thead><tr><th>FR</th><th>UC</th><th>Thao tác API chính</th><th>NFR liên quan</th><th>Tình trạng &amp; Bằng chứng</th></tr></thead>

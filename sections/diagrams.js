@@ -99,8 +99,8 @@ window.SECTION_DIAGRAMS = `
       <div class="ic-label">UC-15/16 Thông báo bất đồng bộ (<code>notification_job</code>)</div>
     </div>
     <div class="img-card" onclick="lb('assets/design/sequence-diagrams/audit-fail-closed.png')">
-      <img src="assets/design/sequence-diagrams/audit-fail-closed.png" alt="M07 Ghi Audit Fail-Closed, DENIED độc lập và Trigger bất biến" onerror="this.style.height='100px';this.alt='Không tìm thấy ảnh'">
-      <div class="ic-label">M07 Audit Fail-Closed (<code>MANDATORY</code>), <code>DENIED</code> &amp; Trigger</div>
+      <img src="assets/design/sequence-diagrams/audit-fail-closed.png" alt="M07 Ghi Audit Fail-Closed, chuỗi băm HMAC-SHA256, kiểm chứng và lưu trữ V12" onerror="this.style.height='100px';this.alt='Không tìm thấy ảnh'">
+      <div class="ic-label">M07 Audit Fail-Closed, chuỗi băm <code>HMAC-SHA256-CHAIN-V1</code>, kiểm chứng &amp; lưu trữ (<code>V12</code>)</div>
     </div>
     <div class="img-card" onclick="lb('assets/design/sequence-diagrams/telehealth.png')">
       <img src="assets/design/sequence-diagrams/telehealth.png" alt="UC-22/23/24 Phiên khám từ xa WebRTC" onerror="this.style.height='100px';this.alt='Không tìm thấy ảnh'">
@@ -158,11 +158,11 @@ window.SECTION_DIAGRAMS = `
 </section>
 
 <section class="section" id="class-diag">
-  <div class="sh"><span class="sh-ic">🧱</span><div class="sh-txt"><h2>Class Diagram (1 sơ đồ PIM)</h2><p>Mô hình miền UML 2.5 · đồng bộ toàn bộ 24 thực thể từ migration <code>V1..V11</code></p></div></div>
+  <div class="sh"><span class="sh-ic">🧱</span><div class="sh-txt"><h2>Class Diagram (1 sơ đồ PIM)</h2><p>Mô hình miền UML 2.5 · đồng bộ toàn bộ 26 thực thể từ migration <code>V1..V12</code> (gồm <code>AuditChainHead</code> &amp; <code>AuditArchiveBatch</code>)</p></div></div>
   <div class="img-grid">
     <div class="img-card" onclick="lb('assets/design/class-diagram/class-diagram.png')" style="max-width:760px">
       <img src="assets/design/class-diagram/class-diagram.png" alt="Class Diagram Domain Model" onerror="this.style.height='160px';this.alt='Không tìm thấy ảnh'">
-      <div class="ic-label">Domain Model (PIM): <code>UserAccount</code>, <code>ContactOtp</code>, <code>ClinicHours/Holiday</code>, <code>Doctor/Slot/Appointment</code>, <code>QueueTicket/Encounter/MedicalRecord/Prescription</code>, <code>TelehealthSession/Token/Signal</code>, <code>NotificationJob/AuditEvent/IdempotencyRecord</code></div>
+      <div class="ic-label">Domain Model (PIM): <code>UserAccount</code>, <code>ContactOtp</code>, <code>ClinicHours/Holiday</code>, <code>Doctor/Slot/Appointment</code>, <code>QueueTicket/Encounter/MedicalRecord/Prescription</code>, <code>TelehealthSession/Token/Signal</code>, <code>NotificationJob/AuditEvent/AuditChainHead/AuditArchiveBatch/IdempotencyRecord</code></div>
     </div>
   </div>
 </section>
@@ -171,8 +171,8 @@ window.SECTION_DIAGRAMS = `
   <div class="sh"><span class="sh-ic">🗄️</span><div class="sh-txt"><h2>Entity Relationship Diagram (4 sơ đồ)</h2><p>Cấu trúc thật <strong>26 bảng MySQL 8.4 / InnoDB</strong> theo <code>Flyway V1..V12</code> (bổ sung chuỗi băm <code>audit_chain_head</code> &amp; lưu trữ <code>audit_archive_batch</code> ở <code>V12</code>) · 4 góc nhìn (IE / Crow's Foot)</p></div></div>
   <div class="img-grid">
     <div class="img-card" onclick="lb('assets/design/database/erd.png')">
-      <img src="assets/design/database/erd.png" alt="ERD Tổng quan 24 bảng" onerror="this.style.height='120px';this.alt='Không tìm thấy ảnh'">
-      <div class="ic-label">ERD Tổng quan — đủ 24 bảng <code>V1..V11</code> + trigger bất biến &amp; index hiệu năng</div>
+      <img src="assets/design/database/erd.png" alt="ERD Tổng quan 26 bảng" onerror="this.style.height='120px';this.alt='Không tìm thấy ảnh'">
+      <div class="ic-label">ERD Tổng quan — đủ 26 bảng <code>V1..V12</code> + trigger bất biến, chuỗi băm &amp; index hiệu năng</div>
     </div>
     <div class="img-card" onclick="lb('assets/design/database/erd-scheduling.png')">
       <img src="assets/design/database/erd-scheduling.png" alt="ERD Nhóm Đặt lịch" onerror="this.style.height='120px';this.alt='Không tìm thấy ảnh'">
@@ -184,7 +184,7 @@ window.SECTION_DIAGRAMS = `
     </div>
     <div class="img-card" onclick="lb('assets/design/database/erd-infrastructure.png')">
       <img src="assets/design/database/erd-infrastructure.png" alt="ERD Nhóm Hạ tầng" onerror="this.style.height='120px';this.alt='Không tìm thấy ảnh'">
-      <div class="ic-label">ERD — Danh tính, OTP (<code>V9</code>), Outbox <code>notification_job</code> &amp; Kiểm toán (<code>M01–M06–M07</code>)</div>
+      <div class="ic-label">ERD — Danh tính, OTP (<code>V9</code>), Outbox <code>notification_job</code> &amp; Kiểm toán chuỗi băm/lưu trữ (<code>M01–M06–M07</code>, <code>V12</code>)</div>
     </div>
   </div>
 </section>
