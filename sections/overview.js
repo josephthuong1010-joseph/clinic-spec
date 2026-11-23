@@ -31,9 +31,9 @@ window.SECTION_OVERVIEW = `
     <div class="stk">WebRTC + coturn 4.7 <span>UDP/TCP 3478 · ICE restart</span></div>
     <div class="stk">OpenAPI 3.1 <span>55 paths · 66 ops</span></div>
     <div class="stk">Caddy 2 + Nginx 1.28 <span>HSTS · CSP · 429 limit</span></div>
-    <div class="stk">JUnit 5 + JaCoCo <span>95+ tests · &ge;60% gate</span></div>
+    <div class="stk">JUnit 5 + JaCoCo <span>102 tests · &ge;60% gate</span></div>
     <div class="stk">Vitest 5.1 + Playwright <span>110 unit + 17 E2E/axe</span></div>
-    <div class="stk">k6 Load Test <span>50 VU · p95 9,37 ms</span></div>
+    <div class="stk">k6 Load Test <span>50 VU · p95 9,29 ms</span></div>
   </div>
 
   <div class="ov-grid">
@@ -72,7 +72,7 @@ window.SECTION_OVERVIEW = `
   <div class="mod-grid">
     <div class="mod m1"><h4>M01 · Xác thực &amp; Tài khoản</h4><p>OIDC PKCE S256, Google OAuth2, quên mật khẩu SMTP, khóa tạm 5 lần sai, OTP 6 số đổi email, tra cứu UUID/email/SĐT qua blind index HMAC</p></div>
     <div class="mod m2"><h4>M02 · Bác sĩ &amp; Chuyên khoa</h4><p>Danh mục bác sĩ, chuyên khoa, kích hoạt/ngừng nhận lịch an toàn khi không còn lịch hẹn tương lai</p></div>
-    <div class="mod m3"><h4>M03 · Lịch làm việc &amp; Giờ khám</h4><p>Giờ hoạt động hằng tuần, ngày nghỉ lễ ưu tiên, lịch làm/nghỉ bác sĩ, truy vấn slot khả dụng tối ưu <code>p95 = 7,81 ms</code></p></div>
+    <div class="mod m3"><h4>M03 · Lịch làm việc &amp; Giờ khám</h4><p>Giờ hoạt động hằng tuần, ngày nghỉ lễ ưu tiên, lịch làm/nghỉ bác sĩ, truy vấn slot khả dụng tối ưu <code>p95 = 7,02 ms</code></p></div>
     <div class="mod m4"><h4>M04 · Lịch hẹn &amp; Vắng hẹn</h4><p>Đặt/đổi/hủy (<code>&ge;2h</code>), chống trùng bác sĩ &amp; bệnh nhân, Idempotency 24h, chuyển tiến trình và ghi nhận <code>NO_SHOW</code></p></div>
     <div class="mod m5"><h4>M05 · Hồ sơ lâm sàng</h4><p>Encounter, hồ sơ <code>DRAFT &rarr; FINAL</code> bất biến, bản bổ sung có lý do (khóa lạc quan), đơn thuốc <code>ISSUED</code> bất biến</p></div>
     <div class="mod m6"><h4>M06 · Thông báo Outbox</h4><p>Xác nhận, nhắc trước 30 phút, báo chậm giờ <code>DELAY_NOTICE</code>, lời mời đặt lại <code>NO_SHOW</code>, thử lại SMTP 1/5/15 phút</p></div>

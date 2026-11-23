@@ -186,7 +186,7 @@ window.SECTION_USECASES = `
           <td>Tìm slot khả dụng</td>
           <td><span class="actor">Bệnh nhân · Bác sĩ · Lễ tân · Quản trị</span></td>
           <td><span class="badge bm3">M03</span></td>
-          <td>Đã sửa BE-02/03: mọi vai trò vận hành đọc được (<code>AUDITOR</code> thuần bị chặn 403); tối ưu NFR-01 <code>p95 = 7,81 ms</code></td>
+          <td>Đã sửa BE-02/03: mọi vai trò vận hành đọc được (<code>AUDITOR</code> thuần bị chặn 403); tối ưu NFR-01 <code>p95 = 7,02 ms</code></td>
         </tr>
         <tr class="fr-detail" id="detail-UC-07"><td colspan="5"><div class="fr-dcard"><div class="uc-body">
           <div class="uc-field"><label>Tác nhân</label><p>Vai trò vận hành: <span class="actor">Bệnh nhân</span>, <span class="actor">Bác sĩ</span>, <span class="actor">Lễ tân</span>, <span class="actor">Quản trị viên</span></p></div>
