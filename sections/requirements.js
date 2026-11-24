@@ -1,8 +1,8 @@
-/* sections/requirements.js — Đồng bộ đầy đủ 27 FR (EARS), 16 NFR + Bằng chứng, 19 BR, Công thức lượng hóa & Ma trận rà soát (SE-project-main, 23/11/2026) */
+/* sections/requirements.js — Đồng bộ đầy đủ 27 FR (EARS), 16 NFR + Bằng chứng, 19 BR, Công thức lượng hóa & Ma trận rà soát (SE-project-main, 24/11/2026) */
 
 window.SECTION_REQUIREMENTS = `
 <section class="section" id="req-summary">
-  <div class="sh"><span class="sh-ic">📌</span><div class="sh-txt"><h2>Tổng hợp Đặc tả Yêu cầu &amp; Bằng chứng Nghiệm thu</h2><p>Đối chiếu đồng bộ 1:1 với kho mã nguồn <code>SE-project-main</code> (<code>main@3eb59d7</code> · <code>V1..V12</code> · 23/11/2026)</p></div></div>
+  <div class="sh"><span class="sh-ic">📌</span><div class="sh-txt"><h2>Tổng hợp Đặc tả Yêu cầu &amp; Bằng chứng Nghiệm thu</h2><p>Đối chiếu đồng bộ 1:1 với kho mã nguồn <code>SE-project-main</code> (<code>main</code> · <code>V1..V13</code> · 24/11/2026)</p></div></div>
 
   <div class="alert alert-info" style="margin-bottom:14px">
     <span>📏</span>
@@ -13,14 +13,14 @@ window.SECTION_REQUIREMENTS = `
     <div class="sum-item"><div class="n">27 / 27</div><div class="l">FR đã triển khai</div></div>
     <div class="sum-item"><div class="n" style="color:var(--ok)">16 / 16</div><div class="l">NFR đạt nghiệm thu</div></div>
     <div class="sum-item"><div class="n">19</div><div class="l">Quy tắc nghiệp vụ (BR)</div></div>
-    <div class="sum-item"><div class="n">55 / 66</div><div class="l">API Paths / Operations</div></div>
-    <div class="sum-item"><div class="n" style="color:var(--ok)">95+ / 110</div><div class="l">Test BE + FE (Vitest)</div></div>
+    <div class="sum-item"><div class="n">55 / 67</div><div class="l">API Paths / Operations</div></div>
+    <div class="sum-item"><div class="n" style="color:var(--ok)">106 / 113+</div><div class="l">Test BE + FE (Vitest)</div></div>
     <div class="sum-item"><div class="n" style="color:var(--ok)">7,02 ms</div><div class="l">NFR-01 /api/slots p95</div></div>
   </div>
 
   <div class="alert alert-ok">
     <span>✅</span>
-    <div><strong>Trạng thái đồng bộ:</strong> Các lỗi tồn đọng cũ (<code>BE-01..04</code>) đều đã được khắc phục và kiểm chứng hồi quy (<code>RG-01..12</code>). Các tính năng mở rộng thực tế (Google OAuth2, Quên mật khẩu SMTP, Khóa tạm 5 lần sai, OTP 6 số đổi email, Tra cứu UUID/email/SĐT qua HMAC tách khóa, Báo chậm giờ, Vắng hẹn <code>NO_SHOW</code>, Ngày nghỉ lễ, Rollback &amp; Smoke test tự động) đã được lượng hóa và cập nhật đầy đủ vào đặc tả này.</div>
+    <div><strong>Trạng thái đồng bộ:</strong> Các lỗi tồn đọng cũ (<code>BE-01..04</code>) đều đã được khắc phục và kiểm chứng hồi quy (<code>RG-01..12</code>). Các tính năng mở rộng thực tế (Google OAuth2, Đăng ký đồng bộ hồ sơ cá nhân <code>V13</code> kèm chuẩn SĐT di động VN 10 số &amp; chu kỳ sửa 90 ngày, Đổi mật khẩu AIA &amp; Quên mật khẩu SMTP trung tính vai trò, Khóa tạm 5 lần sai, OTP 6 số đổi email, Tra cứu UUID/email/SĐT qua HMAC tách khóa, Báo chậm giờ, Vắng hẹn <code>NO_SHOW</code>, Ngày nghỉ lễ, Rollback &amp; Smoke test tự động) đã được lượng hóa và cập nhật đầy đủ vào đặc tả này.</div>
   </div>
 
   <div class="ears-box">
@@ -60,18 +60,18 @@ window.SECTION_REQUIREMENTS = `
         <!-- M01 -->
         <tr class="fr-row" data-id="FR-01" data-module="M01" onclick="toggleFR('FR-01')">
           <td><strong>FR-01</strong><span class="fr-arr" id="arr-FR-01">▸</span></td>
-          <td>Xác thực OIDC, Google OAuth2, Quên mật khẩu &amp; OTP email</td>
+          <td>Xác thực OIDC, Google OAuth2, Đồng bộ hồ sơ cá nhân, Đổi/Quên MK &amp; OTP email</td>
           <td><span class="badge bm1">M01</span></td>
-          <td>KHI xác thực (mật khẩu &ge;8 ký tự hoặc Google OAuth2), tạo phiên PKCE S256 <code>UUIDv3(issuer|subject)</code>; khóa tạm 5 lần sai (60–900s); đổi email cần OTP 6 số</td>
+          <td>KHI xác thực/đăng ký PKCE S256 (<code>UUIDv3</code>), đồng bộ hồ sơ cá nhân (SĐT VN 10 số, chu kỳ sửa 90 ngày), đổi MK AIA, khóa tạm 5 lần sai, đổi email cần OTP 6 số</td>
           <td>UC-01 · <span class="badge bstat-ok">Đạt</span></td>
         </tr>
         <tr class="fr-detail" id="detail-FR-01"><td colspan="5"><div class="fr-dcard">
-          <p class="fr-desc-full"><span class="kw-ears">KHI</span> IdP (Keycloak 26.4) xác thực hợp lệ qua tài khoản/email (tối thiểu 8 ký tự) hoặc Google OAuth2, hệ thống <span class="kw-shall">PHẢI</span> tạo phiên PKCE S256 gắn định danh tất định <code>UUIDv3(issuer|subject)</code>, tự cấp vai trò <code>PATIENT</code> lần đầu, bật khóa tạm <code>60–900 s</code> sau 5 lần nhập sai trong <code>900 s</code>, hỗ trợ quên mật khẩu qua SMTP với thông báo trung tính, và yêu cầu xác thực OTP 6 chữ số (TTL <code>300 s</code>, cooldown <code>30 s</code>, tối đa 5 lần sai, tối đa 5 lượt/giờ/email đích) khi đổi sang email mới (<code>V9__contact_otp.sql</code>).</p>
+          <p class="fr-desc-full"><span class="kw-ears">KHI</span> IdP (Keycloak 26.4) xác thực hợp lệ qua tài khoản/email (tối thiểu 8 ký tự), tự đăng ký hoặc Google OAuth2 với giao diện trung tính cho cả 5 vai trò, hệ thống <span class="kw-shall">PHẢI</span> tạo phiên PKCE S256 gắn định danh tất định <code>UUIDv3(issuer|subject)</code>, tự cấp vai trò <code>PATIENT</code> lần đầu, đồng bộ các trường hồ sơ đăng ký (<code>phoneNumber</code> chuẩn di động VN 10 số đầu <code>03/05/07/08/09</code>, <code>birthDate</code>, <code>hometown</code>, <code>permanentAddress</code> mã hóa AES-256-GCM trong <code>V13__user_profile_fields.sql</code>), giới hạn chu kỳ <code>90 ngày</code> khi sửa lại thông tin cá nhân đã có dữ liệu (<code>PUT /me/profile</code>, trả <code>409</code> nếu chưa đến hạn), hỗ trợ đổi mật khẩu qua Keycloak AIA (<code>kc_action=UPDATE_PASSWORD</code>) quay về <code>/account</code>, quên mật khẩu qua SMTP, bật khóa tạm <code>60–900 s</code> sau 5 lần nhập sai trong <code>900 s</code>, và yêu cầu OTP 6 chữ số (TTL <code>300 s</code>, cooldown <code>30 s</code>, tối đa 5 lần sai, tối đa 5 lượt/giờ/email đích) khi đổi sang email mới (<code>V9__contact_otp.sql</code>).</p>
           <div class="ev-grid">
-            <div class="ev-card"><div class="ev-label">API &amp; Thành phần</div><div class="ev-val"><code>GET /me</code>, <code>GET /me/profile</code>, <code>POST /me/contact/otp</code>, <code>PUT /me/contact</code> · <code>Access.java</code>, <code>ContactOtpService.java</code>, <code>JdbcContactOtpStore.java</code>, <code>Crypto.java</code></div></div>
-            <div class="ev-card"><div class="ev-label">Quy tắc &amp; Tiêu chí</div><div class="ev-val">BR-01, BR-12 · UC-01 · AC-01 (6 kịch bản Gherkin) · NFR-04, NFR-15</div></div>
-            <div class="ev-card"><div class="ev-label">Ca kiểm thử</div><div class="ev-val"><code>TC-01</code>, <code>TC-01-C..F</code>, <code>TC-N06/B06/A09/A10</code>, <code>AGENT-TC-002..016</code></div></div>
-            <div class="ev-card"><div class="ev-label">Bằng chứng đạt</div><div class="ev-val"><code>ContactOtpServiceTest</code> (5/5 PASS), <code>PatientAccountIntegrationTest</code> (MySQL 8.4 CI <code>#43</code>), <code>JwtValidationTest</code> (5/5), <code>account-page.test.tsx</code> (2/2), <code>test_azure_google_oauth.py</code>, <code>test:auth-runtime</code> (5/5). <em>(Google/Recovery/Brute-force 5x còn thiếu E2E tự động CI.)</em></div></div>
+            <div class="ev-card"><div class="ev-label">API &amp; Thành phần</div><div class="ev-val"><code>GET /me</code>, <code>GET/PUT /me/profile</code>, <code>POST /me/contact/otp</code>, <code>PUT /me/contact</code> · <code>Access.java</code>, <code>ContactOtpService.java</code>, <code>Account.tsx</code>, <code>Crypto.java</code></div></div>
+            <div class="ev-card"><div class="ev-label">Quy tắc &amp; Tiêu chí</div><div class="ev-val">BR-01, BR-12 · UC-01 · AC-01 (7 kịch bản Gherkin) · NFR-04, NFR-15</div></div>
+            <div class="ev-card"><div class="ev-label">Ca kiểm thử</div><div class="ev-val"><code>TC-01</code>, <code>TC-01-C..G</code>, <code>TC-N06/B06/A09/A10</code>, <code>AGENT-TC-002..016</code></div></div>
+            <div class="ev-card"><div class="ev-label">Bằng chứng đạt</div><div class="ev-val"><code>AccessProfileValidationTest</code> (3/3 PASS), <code>ContactOtpServiceTest</code> (5/5 PASS), <code>PatientAccountIntegrationTest</code> (MySQL 8.4: đồng bộ claim đăng ký &amp; khóa 90 ngày), <code>JwtValidationTest</code> (5/5), <code>account-page.test.tsx</code> (5/5), <code>test_azure_google_oauth.py</code> (11/11), <code>test:auth-runtime</code> (5/5).</div></div>
           </div>
           <div class="fr-diag-row">
             <div class="fr-diag-thumb" onclick="lb('assets/design/sequence-diagrams/auth-otp-contact.png')"><img src="assets/design/sequence-diagrams/auth-otp-contact.png" alt=""><span>Sequence: PKCE/Google &amp; OTP</span></div>
@@ -612,7 +612,7 @@ sequenceDiagram
           <td>UC-27 · <span class="badge bstat-ok">Đạt</span></td>
         </tr>
         <tr class="fr-detail" id="detail-FR-27"><td colspan="5"><div class="fr-dcard">
-          <p class="fr-desc-full"><span class="kw-ears">KHI</span> Quản trị viên tra cứu chính xác tài khoản bệnh nhân theo UUID, email hoặc số điện thoại chuẩn hóa (<code>+84</code>/<code>84</code> &rarr; <code>0</code>, 7–15 chữ số) qua blind index <code>K_hmac</code>, hệ thống <span class="kw-shall">PHẢI</span> chặn tìm theo tên (<code>400</code>), chặn tài khoản nhân sự (<code>404</code>), trả <code>409</code> nếu nhiều tài khoản dùng chung SĐT, chỉ trả <code>{id, displayName, active}</code> kèm audit. Khóa/mở khóa cần lý do, ghi audit và chặn token hiện hành ngay lập tức.</p>
+          <p class="fr-desc-full"><span class="kw-ears">KHI</span> Quản trị viên tra cứu chính xác tài khoản bệnh nhân theo UUID, email hoặc số điện thoại di động Việt Nam 10 chữ số chuẩn hóa (<code>+84</code>/<code>84</code> &rarr; <code>0</code>, đầu số <code>03/05/07/08/09</code>) qua blind index <code>K_hmac</code>, hệ thống <span class="kw-shall">PHẢI</span> chặn tìm theo tên (<code>400</code>), chặn tài khoản nhân sự (<code>404</code>), trả <code>409</code> nếu nhiều tài khoản dùng chung SĐT, chỉ trả <code>{id, displayName, active}</code> kèm audit. Khóa/mở khóa cần lý do, ghi audit và chặn token hiện hành ngay lập tức.</p>
           <div class="ev-grid">
             <div class="ev-card"><div class="ev-label">API &amp; Thành phần</div><div class="ev-val"><code>GET /patient-accounts/lookup?q=</code>, <code>GET /patient-accounts/{id}</code>, <code>PUT /patient-accounts/{id}/access</code> · <code>Access.java</code>, <code>V8</code></div></div>
             <div class="ev-card"><div class="ev-label">Quy tắc &amp; Tiêu chí</div><div class="ev-val">BR-13, BR-19 · UC-27 · AC-27 · NFR-03, NFR-04, NFR-05</div></div>
@@ -770,7 +770,7 @@ sequenceDiagram
           <td><strong>NFR-10</strong><span class="fr-arr" id="arr-NFR-10">▸</span></td>
           <td>Công nghệ chuẩn, OpenAPI 3.1 &amp; Quản lý Git</td>
           <td>React + TS / Spring Boot / MySQL 8.4; OpenAPI 3.1 khớp 100% mã nguồn; UML trong Git</td>
-          <td>Job <code>api-contract</code> (<code>openapi_spec_validator</code>) xanh trên CI: 55 đường dẫn / 66 thao tác, phủ đủ <code>FR-01..27</code></td>
+          <td>Job <code>api-contract</code> (<code>openapi_spec_validator</code>) xanh trên CI: 55 đường dẫn / 67 thao tác, phủ đủ <code>FR-01..27</code></td>
           <td><span class="badge bstat-ok">✓ Đạt</span></td>
         </tr>
         <tr class="fr-detail" id="detail-NFR-10"><td colspan="5"><div class="fr-dcard">
@@ -929,8 +929,8 @@ sequenceDiagram
     <table>
       <thead><tr><th>Mã</th><th>Route / Phạm vi</th><th>Tên màn hình / Hộp thoại chuẩn</th><th>Vai trò được phép</th><th>Phân hệ · FR · UC · Nguồn FE</th></tr></thead>
       <tbody>
-        <tr class="plain-row" data-module="M01"><td><strong>SCR-01</strong></td><td><code>/login</code>, <code>/callback</code></td><td>Đăng nhập OIDC PKCE, Google OAuth2 &amp; Quên mật khẩu</td><td>Mọi người dùng</td><td><span class="badge bm1">M01</span> · FR-01, FR-02 · UC-01, UC-02 · <code>auth/LoginPage.tsx</code>, <code>Guard.tsx</code></td></tr>
-        <tr class="plain-row" data-module="M01"><td><strong>SCR-02</strong></td><td><code>/account</code></td><td>Tài khoản của tôi &amp; Xác thực OTP 6 số đổi email</td><td>5 vai trò đã đăng nhập</td><td><span class="badge bm1">M01</span> · FR-01 · UC-01 · <code>features/account/Account.tsx</code></td></tr>
+        <tr class="plain-row" data-module="M01"><td><strong>SCR-01</strong></td><td><code>/login</code>, <code>/callback</code></td><td>Đăng nhập / Đăng ký OIDC PKCE trung tính vai trò, Google OAuth2 &amp; Đổi/Quên mật khẩu</td><td>Mọi người dùng</td><td><span class="badge bm1">M01</span> · FR-01, FR-02 · UC-01, UC-02 · <code>auth/LoginPage.tsx</code>, <code>Guard.tsx</code></td></tr>
+        <tr class="plain-row" data-module="M01"><td><strong>SCR-02</strong></td><td><code>/account</code></td><td>Tài khoản của tôi: Hồ sơ cá nhân (chu kỳ 90 ngày), SĐT VN 10 số, Đổi mật khẩu AIA &amp; OTP 6 số đổi email</td><td>5 vai trò đã đăng nhập</td><td><span class="badge bm1">M01</span> · FR-01 · UC-01 · <code>features/account/Account.tsx</code></td></tr>
         <tr class="plain-row" data-module="M04 M05 M09"><td><strong>SCR-03</strong></td><td><code>/patient</code></td><td>Tổng quan Cổng Bệnh nhân</td><td><code>PATIENT</code></td><td><span class="badge bm4">M04/M05/M09</span> · FR-11, FR-12, FR-22 · UC-11, UC-12, UC-22 · <code>patient/Dashboard.tsx</code></td></tr>
         <tr class="plain-row" data-module="M03 M04"><td><strong>SCR-04</strong></td><td><code>/patient/booking</code></td><td>Đặt lịch khám 3 bước (<code>SCR-04A</code> Bước 1 · <code>SCR-04</code> Bước 2 · <code>SCR-04B</code> Bước 3)</td><td><code>PATIENT</code></td><td><span class="badge bm4">M03/M04</span> · FR-07, FR-08 · UC-07, UC-08 · <code>patient/Booking.tsx</code></td></tr>
         <tr class="plain-row" data-module="M04 M06"><td><strong>SCR-05</strong></td><td><code>/patient/appointments</code></td><td>Lịch khám của tôi (Theo dõi, Đổi lịch &amp; Hủy lịch &ge; 2h)</td><td><code>PATIENT</code></td><td><span class="badge bm4">M04/M06</span> · FR-09, FR-10, FR-11, FR-15 · UC-09..11, UC-15 · <code>patient/Appointments.tsx</code></td></tr>
@@ -1051,8 +1051,8 @@ Cov_line, Cov_branch &ge; 60% (jacoco:check CI) | Smoke_pass = 6/6 = 100%</div>
     <table>
       <thead><tr><th>FR</th><th>Phân hệ</th><th>BR · UC · AC · Màn hình (SCR)</th><th>Endpoint / Thành phần thực thi</th><th>Ca kiểm thử &amp; Bằng chứng thực tế</th></tr></thead>
       <tbody>
-        <tr class="plain-row" data-module="M01"><td><strong>FR-01</strong></td><td><span class="badge bm1">M01</span></td><td>BR-01,12 · UC-01 · AC-01 · <code>SCR-01/02, DLG-01/06</code></td><td><code>/me</code>, <code>/me/profile</code>, <code>/me/contact/otp</code>, <code>/me/contact</code></td><td><code>ContactOtpServiceTest</code> (5/5), <code>PatientAccountIntegrationTest</code> (CI #43), <code>account-page.test.tsx</code>, <code>test_azure_google_oauth.py</code></td></tr>
-        <tr class="plain-row" data-module="M01"><td><strong>FR-02</strong></td><td><span class="badge bm1">M01</span></td><td>BR-01,13,16 · UC-02 · AC-02 · <code>SCR-01, SCR-19</code></td><td><code>/users</code>, <code>/users/{id}/roles</code>, <code>Guard.tsx</code></td><td><code>SchedulingIntegrationTest</code>, <code>JwtValidationTest</code> (5/5), <code>guard-redirect.test.tsx</code> (2/2)</td></tr>
+        <tr class="plain-row" data-module="M01"><td><strong>FR-01</strong></td><td><span class="badge bm1">M01</span></td><td>BR-01,12 · UC-01 · AC-01 · <code>SCR-01/02, DLG-01/06</code></td><td><code>GET /me</code>, <code>GET/PUT /me/profile</code>, <code>POST /me/contact/otp</code>, <code>PUT /me/contact</code></td><td><code>AccessProfileValidationTest</code> (3/3), <code>ContactOtpServiceTest</code> (5/5), <code>PatientAccountIntegrationTest</code>, <code>account-page.test.tsx</code> (5/5), <code>test_azure_google_oauth.py</code> (11/11)</td></tr>
+        <tr class="plain-row" data-module="M01"><td><strong>FR-02</strong></td><td><span class="badge bm1">M01</span></td><td>BR-01,13,16 · UC-02 · AC-02 · <code>SCR-01, SCR-19</code></td><td><code>/users</code>, <code>/users/{id}/roles</code>, <code>Guard.tsx</code></td><td><code>SchedulingIntegrationTest</code>, <code>JwtValidationTest</code> (5/5), <code>guard-redirect.test.tsx</code> (3/3)</td></tr>
         <tr class="plain-row" data-module="M02"><td><strong>FR-03</strong></td><td><span class="badge bm2">M02</span></td><td>BR-01,05 · UC-03 · AC-03 · <code>SCR-18, SCR-19</code></td><td><code>/specialties</code>, <code>/doctors</code>, <code>/staff/provision</code></td><td><code>CatalogService</code> + <code>BusinessRulesUnitTest</code>, <code>StaffProvisioningIntegrationTest</code> (2/2), <code>specialties-ui.test.tsx</code></td></tr>
         <tr class="plain-row" data-module="M02"><td><strong>FR-04</strong></td><td><span class="badge bm2">M02</span></td><td>BR-05 · UC-04 · AC-04 · <code>SCR-19</code></td><td><code>PUT /doctors/{id}</code></td><td><code>RG-08</code>, <code>RG-09</code>, <code>BusinessRulesUnitTest</code></td></tr>
         <tr class="plain-row" data-module="M03"><td><strong>FR-05</strong></td><td><span class="badge bm3">M03</span></td><td>BR-02,04,05 · UC-05 · AC-05 · <code>SCR-09, SCR-20, SCR-21</code></td><td><code>/clinic/hours</code>, <code>/clinic/holidays</code>, <code>/doctors/{id}/availability</code></td><td><code>RG-06</code>, <code>clinic-hours.test.ts</code>, <code>clinic-hours-ui.test.tsx</code>, <code>schedule-manager.test.tsx</code></td></tr>

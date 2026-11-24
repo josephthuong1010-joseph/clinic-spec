@@ -1,11 +1,11 @@
-/* sections/diagrams.js — 38 sơ đồ OMG UML 2.5, Kruchten 4+1 & ERD (đồng bộ 100% SE-project-main@327a553, 22/11/2026) */
+/* sections/diagrams.js — 38 sơ đồ OMG UML 2.5, Kruchten 4+1 & ERD (đồng bộ 100% SE-project-main, 24/11/2026) */
 /* Toàn bộ ảnh PNG phản chiếu trực tiếp từ SE-project-main/docs/design/ ở 150 DPI */
 
 window.SECTION_DIAGRAMS = `
 <section class="section" id="uc-diag">
   <div class="alert alert-info" style="margin-bottom:18px">
     <span>📐</span>
-    <div><strong>Đồng bộ thiết kế 100% (<code>main@3eb59d7</code> · 23/11/2026):</strong> Đầy đủ <strong>38 sơ đồ</strong> theo chuẩn <strong>OMG UML 2.5</strong>, mô hình kiến trúc <strong>Kruchten 4+1 Views</strong> và <strong>IE / Crow's Foot ERD</strong>, bao phủ toàn bộ <strong>9 phân hệ M01–M09</strong>, <strong>27 Use Case</strong>, <strong>26 bảng MySQL 8.4 (<code>V1..V12</code>, gồm <code>audit_chain_head</code> &amp; <code>audit_archive_batch</code>)</strong> và hạ tầng Azure VM. Các sơ đồ nhiều đường nối (Use Case, Class, ERD, Kiến trúc/Triển khai) đã được <strong>phân màu theo Tác nhân / Miền / Tuyến giao thức kèm bảng chú giải Legend</strong> chuẩn OMG UML 2.5; nhấn nút <code>🔗 Copy link</code> trên từng sơ đồ để mở trực tiếp.</div>
+    <div><strong>Đồng bộ thiết kế 100% (<code>main</code> · 24/11/2026):</strong> Đầy đủ <strong>38 sơ đồ</strong> theo chuẩn <strong>OMG UML 2.5</strong>, mô hình kiến trúc <strong>Kruchten 4+1 Views</strong> và <strong>IE / Crow's Foot ERD</strong>, bao phủ toàn bộ <strong>9 phân hệ M01–M09</strong>, <strong>27 Use Case</strong>, <strong>26 bảng MySQL 8.4 (<code>V1..V13</code>, gồm <code>audit_chain_head</code>, <code>audit_archive_batch</code> &amp; các cột hồ sơ cá nhân mã hóa ở <code>V13</code>)</strong> và hạ tầng Azure VM. Các sơ đồ nhiều đường nối (Use Case, Class, ERD, Kiến trúc/Triển khai) đã được <strong>phân màu theo Tác nhân / Miền / Tuyến giao thức kèm bảng chú giải Legend</strong> chuẩn OMG UML 2.5; nhấn nút <code>🔗 Copy link</code> trên từng sơ đồ để mở trực tiếp.</div>
   </div>
 
   <div class="sh"><span class="sh-ic">🗂️</span><div class="sh-txt"><h2>Sơ đồ Use Case (5 sơ đồ)</h2><p>OMG UML 2.5 · Tổng quan 27 UC và 4 bản tách nhóm theo phân hệ <code>M01–M09</code> · Nhấn vào ảnh để phóng to</p></div></div>
@@ -158,7 +158,7 @@ window.SECTION_DIAGRAMS = `
 </section>
 
 <section class="section" id="class-diag">
-  <div class="sh"><span class="sh-ic">🧱</span><div class="sh-txt"><h2>Class Diagram (1 sơ đồ PIM)</h2><p>Mô hình miền UML 2.5 · đồng bộ toàn bộ 26 thực thể từ migration <code>V1..V12</code> (gồm <code>AuditChainHead</code> &amp; <code>AuditArchiveBatch</code>)</p></div></div>
+  <div class="sh"><span class="sh-ic">🧱</span><div class="sh-txt"><h2>Class Diagram (1 sơ đồ PIM)</h2><p>Mô hình miền UML 2.5 · đồng bộ toàn bộ 26 thực thể từ migration <code>V1..V13</code> (gồm <code>AuditChainHead</code>, <code>AuditArchiveBatch</code> &amp; hồ sơ cá nhân <code>UserAccount</code>)</p></div></div>
   <div class="img-grid">
     <div class="img-card" onclick="lb('assets/design/class-diagram/class-diagram.png')" style="max-width:760px">
       <img src="assets/design/class-diagram/class-diagram.png" alt="Class Diagram Domain Model" onerror="this.style.height='160px';this.alt='Không tìm thấy ảnh'">
@@ -168,11 +168,11 @@ window.SECTION_DIAGRAMS = `
 </section>
 
 <section class="section" id="erd">
-  <div class="sh"><span class="sh-ic">🗄️</span><div class="sh-txt"><h2>Entity Relationship Diagram (4 sơ đồ)</h2><p>Cấu trúc thật <strong>26 bảng MySQL 8.4 / InnoDB</strong> theo <code>Flyway V1..V12</code> (bổ sung chuỗi băm <code>audit_chain_head</code> &amp; lưu trữ <code>audit_archive_batch</code> ở <code>V12</code>) · 4 góc nhìn (IE / Crow's Foot)</p></div></div>
+  <div class="sh"><span class="sh-ic">🗄️</span><div class="sh-txt"><h2>Entity Relationship Diagram (4 sơ đồ)</h2><p>Cấu trúc thật <strong>26 bảng MySQL 8.4 / InnoDB</strong> theo <code>Flyway V1..V13</code> (bổ sung chuỗi băm <code>audit_chain_head</code> &amp; lưu trữ <code>audit_archive_batch</code> ở <code>V12</code>, cột hồ sơ cá nhân mã hóa ở <code>V13</code>) · 4 góc nhìn (IE / Crow's Foot)</p></div></div>
   <div class="img-grid">
     <div class="img-card" onclick="lb('assets/design/database/erd.png')">
       <img src="assets/design/database/erd.png" alt="ERD Tổng quan 26 bảng" onerror="this.style.height='120px';this.alt='Không tìm thấy ảnh'">
-      <div class="ic-label">ERD Tổng quan — đủ 26 bảng <code>V1..V12</code> + trigger bất biến, chuỗi băm &amp; index hiệu năng</div>
+      <div class="ic-label">ERD Tổng quan — đủ 26 bảng <code>V1..V13</code> + trigger bất biến, chuỗi băm &amp; index hiệu năng</div>
     </div>
     <div class="img-card" onclick="lb('assets/design/database/erd-scheduling.png')">
       <img src="assets/design/database/erd-scheduling.png" alt="ERD Nhóm Đặt lịch" onerror="this.style.height='120px';this.alt='Không tìm thấy ảnh'">
@@ -184,7 +184,7 @@ window.SECTION_DIAGRAMS = `
     </div>
     <div class="img-card" onclick="lb('assets/design/database/erd-infrastructure.png')">
       <img src="assets/design/database/erd-infrastructure.png" alt="ERD Nhóm Hạ tầng" onerror="this.style.height='120px';this.alt='Không tìm thấy ảnh'">
-      <div class="ic-label">ERD — Danh tính, OTP (<code>V9</code>), Outbox <code>notification_job</code> &amp; Kiểm toán chuỗi băm/lưu trữ (<code>M01–M06–M07</code>, <code>V12</code>)</div>
+      <div class="ic-label">ERD — Danh tính &amp; hồ sơ cá nhân (<code>V13</code>), OTP (<code>V9</code>), Outbox <code>notification_job</code> &amp; Kiểm toán chuỗi băm/lưu trữ (<code>M01–M06–M07</code>, <code>V12</code>)</div>
     </div>
   </div>
 </section>

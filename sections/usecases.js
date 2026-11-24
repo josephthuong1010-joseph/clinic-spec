@@ -1,10 +1,10 @@
-/* sections/usecases.js — 27 Use Case (chuẩn Alistair Cockburn + OMG UML 2.5 · đồng bộ main@327a553, 22/11/2026) */
+/* sections/usecases.js — 27 Use Case (chuẩn Alistair Cockburn + OMG UML 2.5 · đồng bộ SE-project-main, 24/11/2026) */
 
 window.SECTION_USECASES = `
 <section class="section" id="uc-list">
   <div class="sh"><span class="sh-ic">👥</span><div class="sh-txt">
     <h2>Danh sách 27 Use Case</h2>
-    <p>UC-01..UC-27 (<code>main@327a553</code>) · nhấn vào hàng để mở đặc tả đầy đủ · Sơ đồ UML tương ứng xem tại <a href="diagrams.html#uc-diag">Sơ đồ UML</a> &amp; <a href="requirements.html">Yêu cầu</a></p>
+    <p>UC-01..UC-27 (<code>SE-project-main</code> · 24/11/2026) · nhấn vào hàng để mở đặc tả đầy đủ · Sơ đồ UML tương ứng xem tại <a href="diagrams.html#uc-diag">Sơ đồ UML</a> &amp; <a href="requirements.html">Yêu cầu</a></p>
   </div></div>
   <div class="alert alert-info" style="margin-bottom:12px">
     <span>📏</span>
@@ -40,26 +40,28 @@ window.SECTION_USECASES = `
         <!-- M01 Danh tính & Tài khoản -->
         <tr class="fr-row" data-id="UC-01" data-module="M01" onclick="toggleFR('UC-01')">
           <td><strong>UC-01</strong><span class="fr-arr" id="arr-UC-01">▸</span></td>
-          <td>Đăng nhập, Google OAuth2, Quên mật khẩu &amp; OTP liên hệ</td>
+          <td>Đăng nhập, Đăng ký đồng bộ hồ sơ, Đổi/Quên mật khẩu &amp; OTP liên hệ</td>
           <td><span class="actor">Người dùng</span> · <span class="actor">IdP</span></td>
           <td><span class="badge bm1">M01</span></td>
-          <td>PKCE S256 · Google OAuth2 tự cấp <code>PATIENT</code> · khóa tạm 5 lần sai · đổi email xác thực OTP 6 số</td>
+          <td>PKCE S256 trung tính 5 vai trò · Google OAuth2 · đồng bộ hồ sơ <code>V13</code> (SĐT VN 10 số, chu kỳ 90 ngày) · đổi MK AIA · OTP 6 số</td>
         </tr>
         <tr class="fr-detail" id="detail-UC-01"><td colspan="5"><div class="fr-dcard"><div class="uc-body">
           <div class="uc-field"><label>Tác nhân</label><p>Người dùng (mọi vai trò) · Keycloak 26.4 / Google OAuth2</p></div>
-          <div class="uc-field"><label>Tiền điều kiện</label><p>Tài khoản tồn tại và <code>active=true</code> (hoặc đăng nhập Google lần đầu hợp lệ)</p></div>
-          <div class="uc-field"><label>Kích hoạt</label><p>Nhấn Đăng nhập, Tiếp tục với Google, Quên mật khẩu hoặc Cập nhật liên hệ</p></div>
-          <div class="uc-field"><label>Hậu điều kiện</label><p>JWT access token lưu trong bộ nhớ client; tự chuyển về trang chủ vai trò mới nếu URL trước đó trái quyền</p></div>
+          <div class="uc-field"><label>Tiền điều kiện</label><p>Tài khoản tồn tại và <code>active=true</code> (hoặc tự đăng ký / đăng nhập Google lần đầu hợp lệ)</p></div>
+          <div class="uc-field"><label>Kích hoạt</label><p>Nhấn Đăng nhập, Đăng ký, Tiếp tục với Google, Đổi/Quên mật khẩu hoặc Cập nhật liên hệ &amp; hồ sơ cá nhân</p></div>
+          <div class="uc-field"><label>Hậu điều kiện</label><p>JWT access token lưu trong bộ nhớ client; hồ sơ cá nhân đồng bộ tại <code>/account</code>; tự chuyển về trang chủ vai trò mới nếu URL trước đó trái quyền</p></div>
           <div class="uc-field full"><label>Luồng chính &amp; Thay thế</label><ul>
-            <li>1. Frontend chuyển hướng Keycloak (Authorization Code + PKCE S256); người dùng đăng nhập mật khẩu (&ge;8 ký tự) hoặc chọn <strong>Tiếp tục với Google</strong>.</li>
-            <li>2. Lần đầu đăng nhập: Backend tạo tài khoản <code>UUIDv3(issuer|subject)</code>, tự cấp vai trò <code>PATIENT</code>, mã hóa AES-256-GCM email/SĐT + băm chỉ mục mù HMAC-SHA256.</li>
-            <li>3. <strong>Quên mật khẩu:</strong> hiển thị thông báo trung tính; gửi liên kết đặt lại qua SMTP nếu tồn tại và mở khóa tạm ngay khi hoàn tất.</li>
-            <li>4. <strong>Cập nhật liên hệ (<code>PUT /api/me/contact</code>):</strong> đổi sang email mới bắt buộc xác thực OTP 6 chữ số (<code>POST /api/me/contact/otp</code>, TTL 300s, cooldown 30s, tối đa 5/giờ/email đích, tối đa 5 lần sai); sửa chỉ SĐT không cần OTP.</li>
+            <li>1. Frontend chuyển hướng Keycloak (Authorization Code + PKCE S256, thông điệp trung tính cho cả 5 vai trò); người dùng đăng nhập mật khẩu (&ge;8 ký tự), tự đăng ký hoặc chọn <strong>Tiếp tục với Google</strong>.</li>
+            <li>2. Lần đầu đăng nhập / sau đăng ký: Backend tạo tài khoản <code>UUIDv3(issuer|subject)</code>, tự cấp vai trò <code>PATIENT</code>, tự động đồng bộ các claim đăng ký (<code>phoneNumber</code>, <code>birthDate</code>, <code>hometown</code>, <code>permanentAddress</code>) vào <code>user_account</code> (mã hóa AES-256-GCM cho email/SĐT/quê quán/địa chỉ thường trú + blind index HMAC-SHA256).</li>
+            <li>3. <strong>Đổi mật khẩu &amp; Quên mật khẩu:</strong> Đổi mật khẩu mở luồng Keycloak AIA (<code>kc_action=UPDATE_PASSWORD</code>) rồi quay thẳng về <code>/account</code> kèm thông báo thành công; Quên mật khẩu gửi liên kết qua SMTP với thông báo trung tính và mở khóa tạm ngay khi hoàn tất.</li>
+            <li>4. <strong>Cập nhật liên hệ (<code>PUT /api/me/contact</code>):</strong> SĐT bắt buộc chuẩn di động Việt Nam 10 số (<code>03/05/07/08/09</code> + 8 chữ số, tự chuẩn hóa <code>+84</code>/<code>84</code> &rarr; <code>0</code>); đổi sang email mới bắt buộc xác thực OTP 6 chữ số (<code>POST /api/me/contact/otp</code>, TTL 300s, cooldown 30s, tối đa 5/giờ/email đích, tối đa 5 lần sai).</li>
+            <li>5. <strong>Cập nhật hồ sơ cá nhân (<code>PUT /api/me/profile</code>):</strong> Bổ sung lần đầu các trường đang trống không bị khóa; khi sửa đổi hoặc xóa trường cá nhân đã có dữ liệu, hệ thống ghi audit <code>PROFILE_UPDATED</code> và khóa chỉnh sửa tiếp trong <strong>90 ngày</strong>.</li>
           </ul></div>
           <div class="uc-field full"><label>Luồng ngoại lệ</label><ul>
             <li><span class="exc">E1</span> Sai mật khẩu 5 lần trong 15 phút → Keycloak tạm khóa 60–900 giây; mở khóa khẩn cấp qua Quên mật khẩu</li>
             <li><span class="exc">E2</span> Tài khoản bị quản trị khóa → Backend từ chối 403 ngay cả khi JWT còn hạn</li>
             <li><span class="exc">E3</span> Sai/hết hạn OTP hoặc vượt giới hạn gửi → 400 / 429 (kèm Nginx rate-limit <code>10r/m</code> theo IP)</li>
+            <li><span class="exc">E4</span> SĐT sai định dạng di động VN 10 số hoặc ngày sinh tương lai/trước 1900 → 400; sửa lại hồ sơ cá nhân khi chưa hết chu kỳ 90 ngày → 409</li>
           </ul></div>
         </div></div></td></tr>
 
@@ -652,7 +654,7 @@ window.SECTION_USECASES = `
           <div class="uc-field"><label>Kích hoạt</label><p><code>GET /api/patient-accounts/lookup?q=...</code> hoặc <code>GET /patient-accounts/{id}</code> rồi <code>PUT /patient-accounts/{id}/access</code></p></div>
           <div class="uc-field"><label>Hậu điều kiện</label><p>Chỉ trả <code>{id, displayName, active}</code> + audit; khóa tài khoản chặn ngay cả token đang dùng còn hạn</p></div>
           <div class="uc-field full"><label>Luồng chính</label><ul>
-            <li>1. Quản trị nhập UUID, email hoặc SĐT (chuẩn hóa <code>+84</code>/<code>84</code> &rarr; <code>0</code>, 7–15 chữ số).</li>
+            <li>1. Quản trị nhập UUID, email hoặc SĐT di động Việt Nam 10 chữ số (chuẩn hóa <code>+84</code>/<code>84</code> &rarr; <code>0</code>, đầu số <code>03/05/07/08/09</code>).</li>
             <li>2. Backend băm <code>Crypto.hash(norm(q))</code> tra chỉ mục mù HMAC-SHA256; trả 3 trường tối thiểu + ghi audit <code>PATIENT_ACCOUNT_LOOKUP</code>.</li>
             <li>3. Khóa/mở khóa gửi <code>{active, reason}</code> (<code>SECURITY_REVIEW</code>, <code>POLICY_REVIEW</code>, <code>PATIENT_REQUEST</code>), ghi audit và bảo toàn lịch sử khám.</li>
           </ul></div>
