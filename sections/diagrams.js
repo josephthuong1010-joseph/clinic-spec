@@ -56,7 +56,7 @@ window.SECTION_DIAGRAMS = `
     </div>
     <div class="img-card" onclick="lb('assets/design/sequence-diagrams/schedule-and-slots.png')">
       <img src="assets/design/sequence-diagrams/schedule-and-slots.png" alt="M03 Giờ mở cửa, Ngày lễ, Lịch nghỉ và Tìm slot tối ưu NFR-01" onerror="this.style.height='100px';this.alt='Không tìm thấy ảnh'">
-      <div class="ic-label">M03 Giờ phòng khám, Ngày lễ &amp; Tìm slot NFR-01 (<code>7,02 ms</code>)</div>
+      <div class="ic-label">M03 Giờ phòng khám, Ngày lễ &amp; Tìm slot NFR-01 (<code>6,86 ms</code>)</div>
     </div>
     <div class="img-card" onclick="lb('assets/design/sequence-diagrams/book-appointment.png')">
       <img src="assets/design/sequence-diagrams/book-appointment.png" alt="UC-08 Đặt lịch hẹn" onerror="this.style.height='100px';this.alt='Không tìm thấy ảnh'">
@@ -207,7 +207,7 @@ window.SECTION_DIAGRAMS = `
   </div>
   <div style="margin-top:20px;display:grid;grid-template-columns:1fr 1fr;gap:16px">
     <div class="ov-card"><h4>Tại sao Modular Monolith?</h4><p>Phạm vi đồ án có nhiều giao dịch ACID phối hợp nhiều thực thể (<code>Doctor &rarr; Patient &rarr; Appointment &rarr; Encounter</code>). Modular monolith giữ giao dịch nguyên tử trong MySQL và tách ranh giới dịch vụ rõ ràng mà không gánh phức tạp distributed transaction.</p></div>
-    <div class="ov-card"><h4>Chống tranh chấp slot &amp; Tối ưu NFR-01</h4><p><code>SELECT ... FOR UPDATE</code> theo thứ tự khóa cố định (<code>Doctor-ID &rarr; Patient-ID</code>) tránh deadlock, kết hợp covering/window indexes (<code>V10</code>–<code>V11</code>) đưa độ trễ <code>GET /api/slots p95</code> từ 4,52 s xuống <code>7,02 ms</code> dưới tải 50 VU.</p></div>
+    <div class="ov-card"><h4>Chống tranh chấp slot &amp; Tối ưu NFR-01</h4><p><code>SELECT ... FOR UPDATE</code> theo thứ tự khóa cố định (<code>Doctor-ID &rarr; Patient-ID</code>) tránh deadlock, kết hợp covering/window indexes (<code>V10</code>–<code>V11</code>) đưa độ trễ <code>GET /api/slots p95</code> từ 4,52 s xuống <code>6,86 ms</code> dưới tải 50 VU.</p></div>
   </div>
 </section>
 `;

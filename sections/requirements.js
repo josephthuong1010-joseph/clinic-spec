@@ -15,7 +15,7 @@ window.SECTION_REQUIREMENTS = `
     <div class="sum-item"><div class="n">19</div><div class="l">Quy tắc nghiệp vụ (BR)</div></div>
     <div class="sum-item"><div class="n">55 / 67</div><div class="l">API Paths / Operations</div></div>
     <div class="sum-item"><div class="n" style="color:var(--ok)">106 / 113+</div><div class="l">Test BE + FE (Vitest)</div></div>
-    <div class="sum-item"><div class="n" style="color:var(--ok)">7,02 ms</div><div class="l">NFR-01 /api/slots p95</div></div>
+    <div class="sum-item"><div class="n" style="color:var(--ok)">6,86 ms</div><div class="l">NFR-01 /api/slots p95</div></div>
   </div>
 
   <div class="alert alert-ok">
@@ -203,7 +203,7 @@ sequenceDiagram
           <td><strong>FR-07</strong><span class="fr-arr" id="arr-FR-07">▸</span></td>
           <td>Tra cứu khung giờ khả dụng</td>
           <td><span class="badge bm3">M03</span></td>
-          <td>KHI tìm lịch theo bác sĩ, ngày, chuyên khoa và hình thức khám, trả slot trống theo thời gian thực (đã tối ưu <code>p95 = 7,02 ms</code>)</td>
+          <td>KHI tìm lịch theo bác sĩ, ngày, chuyên khoa và hình thức khám, trả slot trống theo thời gian thực (đã tối ưu <code>p95 = 6,86 ms</code>)</td>
           <td>UC-07 · <span class="badge bstat-ok">Đạt</span></td>
         </tr>
         <tr class="fr-detail" id="detail-FR-07"><td colspan="5"><div class="fr-dcard">
@@ -212,10 +212,10 @@ sequenceDiagram
             <div class="ev-card"><div class="ev-label">API &amp; Thành phần</div><div class="ev-val"><code>GET /slots?date=&amp;doctorId=&amp;specialtyId=&amp;mode=</code> · <code>ScheduleService.slots</code> · <code>V10</code>, <code>V11</code></div></div>
             <div class="ev-card"><div class="ev-label">Quy tắc &amp; Tiêu chí</div><div class="ev-val">BR-01, BR-02 · UC-07 · AC-07 · NFR-01</div></div>
             <div class="ev-card"><div class="ev-label">Ca kiểm thử</div><div class="ev-val"><code>TC-07</code>, <code>RG-03</code>, <code>AGENT-TC-020</code>, <code>AGENT-TC-023</code></div></div>
-            <div class="ev-card"><div class="ev-label">Bằng chứng đạt</div><div class="ev-val"><code>catalogReadsRequireAnOperationalRole</code> (<code>RG-03</code>, đã sửa BE-02/03), <code>BusinessRulesUnitTest</code>, k6 NFR-01 đạt <strong><code>p95 = 7,02 ms</code></strong> (nhanh hơn 578&times; so với trước tối ưu).</div></div>
+            <div class="ev-card"><div class="ev-label">Bằng chứng đạt</div><div class="ev-val"><code>catalogReadsRequireAnOperationalRole</code> (<code>RG-03</code>, đã sửa BE-02/03), <code>BusinessRulesUnitTest</code>, k6 NFR-01 đạt <strong><code>p95 = 6,86 ms</code></strong> (nhanh hơn 659&times; so với trước tối ưu).</div></div>
           </div>
           <div class="fr-diag-row">
-            <div class="fr-diag-thumb" onclick="lb('assets/design/sequence-diagrams/schedule-and-slots.png')"><img src="assets/design/sequence-diagrams/schedule-and-slots.png" alt=""><span>Sequence M03: Tối ưu NFR-01 (7,02 ms)</span></div>
+            <div class="fr-diag-thumb" onclick="lb('assets/design/sequence-diagrams/schedule-and-slots.png')"><img src="assets/design/sequence-diagrams/schedule-and-slots.png" alt=""><span>Sequence M03: Tối ưu NFR-01 (6,86 ms)</span></div>
           </div>
         </div></td></tr>
 
@@ -233,7 +233,7 @@ sequenceDiagram
             <div class="ev-card"><div class="ev-label">API &amp; Thành phần</div><div class="ev-val"><code>POST /appointments</code> (header <code>Idempotency-Key</code>) · <code>AppointmentService.book</code>, <code>Idempotency.java</code></div></div>
             <div class="ev-card"><div class="ev-label">Quy tắc &amp; Tiêu chí</div><div class="ev-val">BR-03, BR-04, BR-11, BR-16 · UC-08 · AC-08 · NFR-01, NFR-02, NFR-09</div></div>
             <div class="ev-card"><div class="ev-label">Ca kiểm thử</div><div class="ev-val"><code>TC-08</code>, <code>TC-N01/B01/A01/A02</code>, <code>TC-N05</code>, <code>AGENT-TC-001</code>, <code>AGENT-TC-023</code></div></div>
-            <div class="ev-card"><div class="ev-label">Bằng chứng đạt</div><div class="ev-val"><code>SchedulingIntegrationTest</code>, <code>k6 appointment-contention.js</code> (1 thành công / 99 trả 409), NFR-01 <code>POST /appointments p95 = 11,95 ms</code>, <code>booking-offline.test.tsx</code>.</div></div>
+            <div class="ev-card"><div class="ev-label">Bằng chứng đạt</div><div class="ev-val"><code>SchedulingIntegrationTest</code>, <code>k6 appointment-contention.js</code> (1 thành công / 99 trả 409), NFR-01 <code>POST /appointments p95 = 14,51 ms</code>, <code>booking-offline.test.tsx</code>.</div></div>
           </div>
           <div class="fr-diag-row">
             <div class="fr-diag-thumb" onclick="lb('assets/design/sequence-diagrams/book-appointment.png')"><img src="assets/design/sequence-diagrams/book-appointment.png" alt=""><span>Sequence: Đặt lịch</span></div>
@@ -655,18 +655,18 @@ sequenceDiagram
           <td><strong>NFR-01</strong><span class="fr-arr" id="arr-NFR-01">▸</span></td>
           <td>Hiệu năng &amp; Tải chuẩn</td>
           <td><code>p95 &le; 2.000 ms</code> (50 VU, 10.000 lịch, 15 phút đọc + ghi); <code>ERR &lt; 1%</code></td>
-          <td>Run <code>45176586430</code> (<code>b8fb03c</code>, hậu <code>V12</code>): <strong>70.248 req · p95 = 9,29 ms</strong> (<code>slots 7,02 ms</code>, <code>book 11,95 ms</code>) · <strong>100% checks</strong></td>
+          <td>Run <code>45451800655</code> (<code>65c48fe</code>, hậu <code>V13</code>): <strong>70.174 req · p95 = 9,58 ms</strong> (<code>slots 6,86 ms</code>, <code>book 14,51 ms</code>) · <strong>100% checks</strong></td>
           <td><span class="badge bstat-ok">✓ Đạt (vượt ngưỡng)</span></td>
         </tr>
         <tr class="fr-detail" id="detail-NFR-01"><td colspan="5"><div class="fr-dcard">
-          <p class="fr-desc-full">Kiểm chứng bằng workflow <code>.github/workflows/nfr01-load-test.yml</code> + <code>scripts/nfr01-load-harness.py</code> + <code>tests/k6/nfr01-full-load.js</code> trên MySQL 8.4 thật (<code>V1..V12</code> gồm chuỗi băm <code>HMAC-SHA256</code> và <code>audit_chain_head FOR UPDATE</code>) với 10.000 lịch hẹn quá khứ và 240 slot tương lai, 50 VU riêng biệt chạy liên tục 15 phút đọc + ghi.</p>
+          <p class="fr-desc-full">Kiểm chứng bằng workflow <code>.github/workflows/nfr01-load-test.yml</code> + <code>scripts/nfr01-load-harness.py</code> + <code>tests/k6/nfr01-full-load.js</code> trên MySQL 8.4 thật (<code>V1..V13</code> gồm chuỗi băm <code>HMAC-SHA256</code>, <code>audit_chain_head FOR UPDATE</code> và đồng bộ hồ sơ cá nhân <code>V13</code>) với 10.000 lịch hẹn quá khứ và 240 slot tương lai, 50 VU riêng biệt chạy liên tục 15 phút đọc + ghi.</p>
           <div class="tbl-wrap bench-table"><table>
-            <thead><tr><th>Chỉ số (50 VU &times; 15m &times; 10.000 lịch)</th><th>Trước tối ưu (<code>55286a9</code>)</th><th>Hậu <code>V12</code> (<code>b8fb03c</code> · Run <code>45176586430</code>)</th><th>Cải thiện</th></tr></thead>
+            <thead><tr><th>Chỉ số (50 VU &times; 15m &times; 10.000 lịch)</th><th>Trước tối ưu (<code>55286a9</code>)</th><th>Hậu <code>V13</code> (<code>65c48fe</code> · Run <code>45451800655</code>)</th><th>Cải thiện</th></tr></thead>
             <tbody>
-              <tr><td>Tổng thể HTTP <code>p95</code></td><td class="metric-bad">4.320 ms</td><td class="metric-good">9,29 ms (p50 5,59 ms)</td><td>Nhanh hơn 465&times;</td></tr>
-              <tr><td><code>GET /api/slots</code> <code>p95</code></td><td class="metric-bad">4.520 ms</td><td class="metric-good">7,02 ms</td><td>Nhanh hơn 644&times;</td></tr>
-              <tr><td><code>POST /api/appointments</code> <code>p95</code></td><td class="metric-bad">3.720 ms</td><td class="metric-good">11,95 ms</td><td>Nhanh hơn 311&times;</td></tr>
-              <tr><td>Tổng requests &amp; Checks</td><td>16.912 req (100% check)</td><td class="metric-good">70.248 req · 100,00% checks · 0% lỗi</td><td>Gấp 4,15&times;</td></tr>
+              <tr><td>Tổng thể HTTP <code>p95</code></td><td class="metric-bad">4.320 ms</td><td class="metric-good">9,58 ms (p50 5,43 ms)</td><td>Nhanh hơn 451&times;</td></tr>
+              <tr><td><code>GET /api/slots</code> <code>p95</code></td><td class="metric-bad">4.520 ms</td><td class="metric-good">6,86 ms</td><td>Nhanh hơn 659&times;</td></tr>
+              <tr><td><code>POST /api/appointments</code> <code>p95</code></td><td class="metric-bad">3.720 ms</td><td class="metric-good">14,51 ms</td><td>Nhanh hơn 256&times;</td></tr>
+              <tr><td>Tổng requests &amp; Checks</td><td>16.912 req (100% check)</td><td class="metric-good">70.174 req · 100,00% checks · 0% lỗi</td><td>Gấp 4,15&times;</td></tr>
             </tbody>
           </table></div>
         </div></td></tr>
@@ -1019,7 +1019,7 @@ Room Token TTL = 300 s | TURN quota: 4/user, 32/total | Signals &le; 300/60 s</d
     <div class="formula-card">
       <h4><span>6. Chỉ số Lượng hóa Đánh giá Chất lượng (NFR)</span><span class="badge bm9">NFR-01..16</span></h4>
       <div class="formula-src"><code>nfr01-load-harness.py</code> · <code>backend/pom.xml</code> · <code>verify-live-demo.py</code></div>
-      <div class="formula-expr">p95 = T_ceil(0.95 * N) &le; 2.000 ms   (thực đo: 9,37 ms tổng · 7,02 ms slots)
+      <div class="formula-expr">p95 = T_ceil(0.95 * N) &le; 2.000 ms   (thực đo: 9,58 ms tổng · 6,86 ms slots)
 ERR = N_err / N_total * 100% = 0,00%   (tranh chấp k6: 1/99 = 100% đúng)
 Cov_line, Cov_branch &ge; 60% (jacoco:check CI) | Smoke_pass = 6/6 = 100%</div>
       <div class="formula-note">Thỏa mãn đồng thời độ bao phủ tự động trong CI và độ trễ phân vị 95 trên bộ tải 50 VU / 10.000 lịch / 15 phút đọc + ghi.</div>
@@ -1057,8 +1057,8 @@ Cov_line, Cov_branch &ge; 60% (jacoco:check CI) | Smoke_pass = 6/6 = 100%</div>
         <tr class="plain-row" data-module="M02"><td><strong>FR-04</strong></td><td><span class="badge bm2">M02</span></td><td>BR-05 · UC-04 · AC-04 · <code>SCR-19</code></td><td><code>PUT /doctors/{id}</code></td><td><code>RG-08</code>, <code>RG-09</code>, <code>BusinessRulesUnitTest</code></td></tr>
         <tr class="plain-row" data-module="M03"><td><strong>FR-05</strong></td><td><span class="badge bm3">M03</span></td><td>BR-02,04,05 · UC-05 · AC-05 · <code>SCR-09, SCR-20, SCR-21</code></td><td><code>/clinic/hours</code>, <code>/clinic/holidays</code>, <code>/doctors/{id}/availability</code></td><td><code>RG-06</code>, <code>clinic-hours.test.ts</code>, <code>clinic-hours-ui.test.tsx</code>, <code>schedule-manager.test.tsx</code></td></tr>
         <tr class="plain-row" data-module="M03"><td><strong>FR-06</strong></td><td><span class="badge bm3">M03</span></td><td>BR-02,05 · UC-06 · AC-06 · <code>SCR-09, SCR-20</code></td><td><code>/doctors/{id}/time-off</code>, <code>DELETE /time-off/{id}</code></td><td><code>RG-07</code>, <code>schedule-delete.test.ts</code> (4/4)</td></tr>
-        <tr class="plain-row" data-module="M03"><td><strong>FR-07</strong></td><td><span class="badge bm3">M03</span></td><td>BR-01,02 · UC-07 · AC-07 · <code>SCR-04</code></td><td><code>GET /slots</code> (<code>V10</code>, <code>V11</code>)</td><td><code>RG-03</code>, <code>schedule-rules.test.ts</code>, k6 NFR-01 đạt <strong>p95 = 7,02 ms</strong></td></tr>
-        <tr class="plain-row" data-module="M04"><td><strong>FR-08</strong></td><td><span class="badge bm4">M04</span></td><td>BR-03,04,11 · UC-08 · AC-08 · <code>SCR-04</code></td><td><code>POST /appointments</code> (Idempotency 24h)</td><td>k6 100 VU (1/99), NFR-01 <strong>p95 = 11,95 ms</strong>, <code>booking-offline.test.tsx</code> (<code>AGENT-TC-001</code>)</td></tr>
+        <tr class="plain-row" data-module="M03"><td><strong>FR-07</strong></td><td><span class="badge bm3">M03</span></td><td>BR-01,02 · UC-07 · AC-07 · <code>SCR-04</code></td><td><code>GET /slots</code> (<code>V10</code>, <code>V11</code>)</td><td><code>RG-03</code>, <code>schedule-rules.test.ts</code>, k6 NFR-01 đạt <strong>p95 = 6,86 ms</strong></td></tr>
+        <tr class="plain-row" data-module="M04"><td><strong>FR-08</strong></td><td><span class="badge bm4">M04</span></td><td>BR-03,04,11 · UC-08 · AC-08 · <code>SCR-04</code></td><td><code>POST /appointments</code> (Idempotency 24h)</td><td>k6 100 VU (1/99), NFR-01 <strong>p95 = 14,51 ms</strong>, <code>booking-offline.test.tsx</code> (<code>AGENT-TC-001</code>)</td></tr>
         <tr class="plain-row" data-module="M04"><td><strong>FR-09</strong></td><td><span class="badge bm4">M04</span></td><td>BR-03,04,08 · UC-09 · AC-09 · <code>SCR-05, DLG-02</code></td><td><code>POST /appointments/{id}/reschedule</code></td><td><code>SchedulingIntegrationTest</code> (cửa sổ 2h, version, deadlock lock ordering)</td></tr>
         <tr class="plain-row" data-module="M04"><td><strong>FR-10</strong></td><td><span class="badge bm4">M04</span></td><td>BR-08,11 · UC-10 · AC-10 · <code>SCR-05, DLG-02</code></td><td><code>POST /appointments/{id}/cancel</code></td><td><code>SchedulingIntegrationTest</code>, <code>scripts/smoke.py</code> (bỏ nhắc cũ)</td></tr>
         <tr class="plain-row" data-module="M04"><td><strong>FR-11</strong></td><td><span class="badge bm4">M04</span></td><td>BR-07,08,15 · UC-11 · AC-11 · <code>SCR-03/05/08/10/12/14</code></td><td><code>GET /appointments/{id}</code>, <code>POST .../progress</code></td><td><code>SchedulingIntegrationTest</code> (chuyển trạng thái &amp; đồng bộ Encounter)</td></tr>
